@@ -20,10 +20,15 @@ class SampleInfoUpload(Resource):
     def post(self):
         filename = file_sam.save(request.files['file'])
         file = file_sam.path(filename)
-        dict_sample = excel_to_dict(file, '样本信息登记表')
+        dict_sample = excel_to_dict(file)
         dir_app = current_app.config['PRE_REPORT']
+        try:
+            os.mkdir(os.path.join(dir_app,'sample'))
+        except IOError:
+            pass
+
         dir_sample = os.path.join(dir_app, 'sample', 'sample.json')
-        save_json_file(dir_sample, dict_sample, '样本信息登记表')
+        save_json_file(dir_sample, dict_sample, 'sample_info')
         os.remove(file)
         return {'msg': '样本信息保存成功！！'}
 

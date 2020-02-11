@@ -67,6 +67,7 @@ class GetInfo(Resource):
         args = self.parser.parse_args()
         token = args.get('token')
         user = User.verify_auth_token(token)
+
         if user:
             user_info = {'name': user.username,
                          'user_id': user.id,

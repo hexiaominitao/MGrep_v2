@@ -9,4 +9,4 @@ bcrypt = Bcrypt()
 login_magager = LoginManager()
 principal = Principal()
 
-file_sam = UploadSet('filesam', ('xlsx', 'xls'))
+file_sam = UploadSet('filesam', DOCUMENTS)

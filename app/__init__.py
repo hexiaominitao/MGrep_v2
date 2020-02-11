@@ -1,4 +1,5 @@
-from flask import (Flask, redirect, url_for)
+
+from flask import (Flask, redirect, url_for, current_app)
 from flask_principal import (identity_loaded, UserNeed, RoleNeed)
 from flask_login import current_user
 from flask_uploads import configure_uploads, patch_request_class
@@ -18,6 +19,7 @@ def create_app(config_name):
     # configure_uploads(app, file_ork) # 配置上传文件
     configure_uploads(app, file_sam)
 
+
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
         # 设置当前用户身份为login登录对象
@@ -34,7 +36,7 @@ def create_app(config_name):
 
     @app.route('/')
     def index():
-        return redirect(url_for('home.index'))
+        return 'Hello'
 
     from app.api_v2 import api_v2
 

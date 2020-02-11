@@ -15,10 +15,11 @@ def save_json_file(db_path, dic_file, table_name):
     db = Flata(db_path, storage=JSONStorage)
     tb = db.table(table_name)
     tb.purge()
-    tb.insert(dic_file)
+    for dic in dic_file:
+        tb.insert(dic)
 
 
-def excel_to_dict(file, dict_key):
+def excel_to_dict(file):
     '''
     :param file: excel文件
     :param dict_key: 保存的键名
@@ -26,13 +27,13 @@ def excel_to_dict(file, dict_key):
     '''
     df = pd.read_excel(file, keep_default_na=False)
     result = []
-    for i in df.index():
+    for i in df.index:
         dic_row = {}
         df_row = df.loc[i].copy()
         for k in df.columns:
-            dic_row[k] = df_row[k].values
+            dic_row[k] = str(df_row[k])
         result.append(dic_row)
-    return {dict_key: result}
+    return result
 
 
 def time_set(item):
@@ -61,7 +62,7 @@ def df2dict(df):
         row_dict = {}
         df_row = df.loc[i].copy()
         for sam in df.columns:
-            row_dict[sam] = df_row[sam]
+            row_dict[sam] = str(df_row[sam])
         result_dict[i] = row_dict
     return result_dict
 

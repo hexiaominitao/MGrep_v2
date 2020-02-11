@@ -14,6 +14,7 @@ class Config(object):
     DATABASE = os.environ.get('SQL_DATABASE')
     MY_SQL = 'mysql+pymysql://{}:{}@127.0.0.1:{}/{}?charset=utf8'.format(USERNAME, PASSWORD, PORT, DATABASE)
     SQLALCHEMY_DATABASE_URI = MY_SQL
+    STATIC_DIR = 'app/static'
     COUNT_DEST = 'app/static/upload'
     PRE_REPORT = 'app/static/pre_report'  # 报告需求文件夹
     RES_REPORT = 'app/static/res_report'  # 报告结果保存文件夹
