@@ -23,7 +23,7 @@ class SampleInfoUpload(Resource):
         dict_sample = excel_to_dict(file)
         dir_app = current_app.config['PRE_REPORT']
         try:
-            os.mkdir(os.path.join(dir_app,'sample'))
+            os.mkdir(os.path.join(dir_app, 'sample'))
         except IOError:
             pass
 

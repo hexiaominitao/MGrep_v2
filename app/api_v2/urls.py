@@ -17,11 +17,14 @@ my_api.add_resource(SampleInfoUpload, '/upload/sample_info_upload')  # 样本信
 my_api.add_resource(RunInfoUpload, '/upload/run_info_upload')  # 上机信息上传
 
 # 获取数据
-from app.api_v2.get_data import GetAllSample
+from app.api_v2.get_data import GetAllSample, GetRunInfo, GetSeqInfo
 
 my_api.add_resource(GetAllSample, '/data/get_sample_info')  # 样本信息获取
+my_api.add_resource(GetRunInfo, '/data/get_run_info/')
+my_api.add_resource(GetSeqInfo, '/data/get_seq_info/')
 
 # admin
-from app.api_v2.admin import AdminSample
+from app.api_v2.admin import AdminSample, AdminTemplate
 
 my_api.add_resource(AdminSample, '/admin/sample/')
+my_api.add_resource(AdminTemplate, '/admin/template/')

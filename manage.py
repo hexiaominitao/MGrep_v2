@@ -24,31 +24,31 @@ def make_shell_content():
 
 @manager.shell
 def set_up():
-    # db.create_all()
+    db.create_all()
 
-    # admin_role = Role(name='admin')
-    # admin_role.description = 'admin'
-    # db.session.add(admin_role)
-    #
-    # super_admin = Role(name='super_admin')
-    # super_admin.description = 'super_admin'
-    # db.session.add(super_admin)
-    #
-    # default_role = Role(name='default')
+    admin_role = Role(name='admin')
+    admin_role.description = 'admin'
+    db.session.add(admin_role)
+
+    super_admin = Role(name='super_admin')
+    super_admin.description = 'super_admin'
+    db.session.add(super_admin)
+
+    default_role = Role(name='default')
+    default_role.description = 'default'
+    db.session.add(default_role)
+
+    # default_role = Role(name='default') #添加权限 联系 ext
     # default_role.description = 'default'
     # db.session.add(default_role)
-    #
-    # # default_role = Role(name='default') #添加权限 联系 ext
-    # # default_role.description = 'default'
-    # # db.session.add(default_role)
-    #
-    # admin = User(username='admin')
-    # admin.set_password("hm714012636")
-    # admin.roles.append(super_admin)
-    # admin.roles.append(admin_role)
-    # admin.roles.append(default_role)
-    # db.session.add(admin)
-    # db.session.commit()
+
+    admin = User(username='admin')
+    admin.set_password("hm714012636")
+    admin.roles.append(super_admin)
+    admin.roles.append(admin_role)
+    admin.roles.append(default_role)
+    db.session.add(admin)
+    db.session.commit()
     # if Role.query.filter(Role.name == 'admin').first():
     #     pass
     # else:

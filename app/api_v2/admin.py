@@ -20,11 +20,11 @@ class AdminSample(Resource):
         page_per = args.get('page_per')
         dir_app = current_app.config['PRE_REPORT']
         dir_sample = os.path.join(dir_app, 'sample', 'sample.json')
-        sams = read_json(dir_sample)['样本信息登记表'][0]['样本信息登记表']
+        sams = read_json(dir_sample, 'sample_info')
         pagenation_sam = [sam for sam in splitN(sams, page_per)]
         dict_sam = {}
         for k in (pagenation_sam[page][0].keys()):
-            print('''{
+            ('''{
           title: '%s',
           key: '%s',
           width: '120'
@@ -43,3 +43,19 @@ class AdminSample(Resource):
     #     db.session.delete(sam)
     #     db.session.commit()
     #     return {'msg': '{}删除成功'.format(mg)}, 200
+
+
+class AdminTemplate(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+
+    def get(self):
+        dir_app = current_app.config['PRE_REPORT']
+        dir_pgm_remplate = os.path.join(dir_app, 'template_config', 'template_pgm.json')
+        config = read_json(dir_pgm_remplate, 'config')
+        gene_card = read_json(dir_pgm_remplate, 'gene_card')
+        transcript = read_json(dir_pgm_remplate, 'transcript')
+        dic_template = {'all_template': config}
+        for c in config:
+            print(c.keys())
+        return jsonify(dic_template)
