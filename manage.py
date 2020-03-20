@@ -11,7 +11,7 @@ from app.models.user import User, Role
 
 app = create_app(DevConfig)
 manager = Manager(app)
-migrate = Migrate(app)
+migrate = Migrate(app, db)
 
 manager.add_command('server', Server())
 manager.add_command('db', MigrateCommand)
@@ -24,6 +24,7 @@ def make_shell_content():
 
 @manager.shell
 def set_up():
+    db.drop_all()
     db.create_all()
 
     admin_role = Role(name='admin')

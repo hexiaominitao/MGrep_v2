@@ -4,6 +4,7 @@ from flask import (jsonify, current_app)
 from flask_restful import (reqparse, Resource, fields, request)
 
 from app.models import db
+from app.models.user import User
 from app.libs.get_data import read_json, splitN
 
 
@@ -20,15 +21,9 @@ class AdminSample(Resource):
         page_per = args.get('page_per')
         dir_app = current_app.config['PRE_REPORT']
         dir_sample = os.path.join(dir_app, 'sample', 'sample.json')
-        sams = read_json(dir_sample, 'sample_info')
+        sams = read_json(dir_sample, 'sample_info')[0]['sams']
         pagenation_sam = [sam for sam in splitN(sams, page_per)]
         dict_sam = {}
-        for k in (pagenation_sam[page][0].keys()):
-            ('''{
-          title: '%s',
-          key: '%s',
-          width: '120'
-        },''' % (k, k))
         dict_sam['sample'] = pagenation_sam[page]
         dict_sam['total'] = len(sams)
         return jsonify(dict_sam)
@@ -59,3 +54,35 @@ class AdminTemplate(Resource):
         for c in config:
             print(c.keys())
         return jsonify(dic_template)
+
+
+class AdminUser(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('name', required=True)
+        self.parser.add_argument('passwd', required=True)
+        self.parser.add_argument('mail', required=True)
+
+    def get(self):
+        users = User.query.all()
+        all_user = []
+        for user in users:
+            all_user.append(user.to_dict())
+        dic_user = {'users': all_user}
+        return jsonify(dic_user)
+
+    def post(self):
+        args = self.parser.parse_args()
+        name = args.get('name')
+        passwd = args.get('passwd')
+        mail = args.get('mail')
+        if User.query.filter_by(username=name).first() is not None:
+            msg = '用户已存在!!'
+        else:
+            user = User(username=name)
+            user.mail = mail
+            user.set_password(passwd)
+            db.session.add(user)
+            db.session.commit()
+            msg = '注册成功'
+        return {'msg': msg}

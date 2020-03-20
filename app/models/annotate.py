@@ -5,11 +5,40 @@ class Annotate(db.Model):
     __tablename__ = 'annotate'
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     mu_name_usual = db.Column(db.String(500), nullable=False)  # 临床常用名
-    exon = db.Column(db.String(50), nullable=False)  # 外显子
-    gene = db.Column(db.String(100), nullable=False)  # 基因
-    mu_type = db.Column(db.String(100), nullable=False)  # 突变类型
+    exon = db.Column(db.String(50))  # 外显子
+    gene = db.Column(db.String(100))  # 基因
+    mu_type = db.Column(db.String(100))  # 突变类型
     cancer = db.Column(db.String(500), nullable=False)  # 癌症类型
     annotate_c = db.Column(db.String(5000), nullable=False)  # 变异解读
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id,
+            'mu_name_usual': self.mu_name_usual,
+            'exon': self.exon,
+            'gene': self.gene,
+            'mu_type': self.mu_type,
+            'cancer': self.cancer,
+            'annotate_c': self.annotate_c,
+        }
+
+
+class AnnotateAuto(db.Model):  # 自动注释库
+    __tablename__ = 'annotate_auto'
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    mu_name_usual = db.Column(db.String(500), nullable=False)  # 临床常用名
+    cancer = db.Column(db.String(500), nullable=False)  # 癌症类型
+    annotate_c = db.Column(db.String(5000), nullable=False)  # 变异解读
+    status = db.Column(db.String(200))  # 结果解释状态
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id,
+            'mu_name_usual': self.mu_name_usual,
+            'cancer': self.cancer,
+            'annotate_c': self.annotate_c,
+            'status': self.status
+        }
 
 
 # okr mysql -udebian-sys-maint -proqjjj6peel2eJMW

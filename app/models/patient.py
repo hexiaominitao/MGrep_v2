@@ -19,7 +19,7 @@ class PatientInfo(db.Model):
     pathological_date = db.Column(db.Date(), nullable=True)  # 病理诊断日期
     other_diseases = db.Column(db.String(500), nullable=True)  # 其他疾病
     smoke = db.Column(db.String(50), nullable=True)  # 吸烟史
-    # sample_info = db.relationship('SampleInfo', backref='patient_info', lazy='dynamic')
+    sample_info = db.relationship('SampleInfo', backref='patient_info', lazy='dynamic')
     family_info = db.relationship('FamilyInfo', backref='patient_info', lazy='dynamic')
 
     def to_dict(self):

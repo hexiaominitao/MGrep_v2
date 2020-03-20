@@ -19,6 +19,7 @@ class Config(object):
     PRE_REPORT = 'app/static/pre_report'  # 报告需求文件夹
     RES_REPORT = 'app/static/res_report'  # 报告结果保存文件夹
     UPLOADED_FILESAM_DEST = 'app/static/upload'
+    UPLOADED_FILEOKR_DEST = 'app/static/upload'
 
     MONGODB_SETTING = {
         'db': 'local',

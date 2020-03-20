@@ -71,7 +71,7 @@ class GetInfo(Resource):
         if user:
             user_info = {'name': user.username,
                          'user_id': user.id,
-                         'access': ['super_admin', 'admin'],
+                         'access': [role.name for role in user.roles],
                          'token': token,
                          'avator': 'https://avatars0.githubusercontent.com/u/20942571?s=460&v=4'}
             return user_info

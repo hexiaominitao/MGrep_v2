@@ -17,6 +17,7 @@ class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(255))
     passwd = db.Column(db.String(255))
+    mail = db.Column(db.String(255)) # 邮箱
     roles = db.relationship('Role', secondary=roles, backref=db.backref('users', lazy='dynamic'))
 
     def __init__(self, username):
@@ -33,7 +34,7 @@ class User(db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.passwd, password)
 
-    def generate_auth_token(self, expiration=600):
+    def generate_auth_token(self, expiration=6000):
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({'id': self.id})
 
@@ -69,6 +70,15 @@ class User(db.Model):
 
     def get_id(self):
         return str(self.id)
+
+    def to_dict(self):
+        return {
+            'id':self.id,
+            'username': self.username,
+            'mail': self.mail
+        }
+
+
 
 
 class Role(db.Model):

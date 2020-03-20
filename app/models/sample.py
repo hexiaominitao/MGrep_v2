@@ -13,6 +13,11 @@ class SampleInfo(db.Model):
     doctor = db.Column(db.String(50), nullable=True)  # 送检医生
     hosptial = db.Column(db.String(50), nullable=True)  # 送检单位
     room = db.Column(db.String(50), nullable=True)  # 送检科室
+    cancer = db.Column(db.String(100))  # 结果解释用癌症类型
+    diagnosis = db.Column(db.String(500), nullable=True)  # 临床诊断
+    diagnosis_date = db.Column(db.Date(), nullable=True)
+    pathological = db.Column(db.String(500), nullable=True)  # 病理诊断
+    pathological_date = db.Column(db.Date(), nullable=True)
     recive_date = db.Column(db.Date(), nullable=True)  # 样本接受日期
     mode_of_trans = db.Column(db.String(50), nullable=True)  # 运输方式
     send_sample_date = db.Column(db.Date(), nullable=True)  # 送检日期
@@ -27,8 +32,8 @@ class SampleInfo(db.Model):
     recorder = db.Column(db.String(50), nullable=True)  # 记录人
     reviewer = db.Column(db.String(50), nullable=True)  # 核对人
     # sample_qc = db.relationship('SampleQC', backref='sample_info', lazy='dynamic')  # 质控
-    pathology_info = db.relationship('PathologyInfo', backref='sample_info', lazy='dynamic')  # 病理信息
-    # patient_id = db.Column(db.Integer(), db.ForeignKey('patient_info.id'))  # 病人信息
+    pathology_info = db.relationship('PathologyInfo', backref='sample_info', uselist=False)  # 病理信息
+    patient_id = db.Column(db.Integer(), db.ForeignKey('patient_info.id'))  # 病人信息
     treat_info = db.relationship('TreatInfo', backref='sample_info', lazy='dynamic')  # 治疗信息
     operation_log = db.relationship('Operation', backref='sample_info', lazy='dynamic')  # 操作记录
     lab_operation_id = db.relationship('LabOperation', backref='sample_info', lazy='dynamic')  # 流转信息
@@ -46,6 +51,11 @@ class SampleInfo(db.Model):
             "doctor": self.doctor,
             "hosptial": self.hosptial,
             "room": self.room,
+            'cancer':self.cancer,
+            "diagnosis": self.diagnosis,
+            "diagnosis_date": self.diagnosis_date,
+            "pathological": self.pathological,
+            "pathological_date": self.pathological_date,
             "recive_date": self.recive_date,
             "mode_of_trans": self.mode_of_trans,
             "send_sample_date": self.send_sample_date,
@@ -126,7 +136,7 @@ class LabOperation(db.Model):
     fill_time = db.Column(db.DateTime, default=datetime.now)  # 填写时间
     name = db.Column(db.String(255))  # 操作步骤
     lose_c = db.Column(db.Integer())  # 失控天数
-    lose_reason = db.Column(db.String(225)) #
+    lose_reason = db.Column(db.String(225))  #
     time = db.Column(db.Integer())  # 环节天数
     status = db.Column(db.String(225))
     next_step = db.Column(db.String(225))

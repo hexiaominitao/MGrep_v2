@@ -1,11 +1,10 @@
-
 from flask import (Flask, redirect, url_for, current_app)
 from flask_principal import (identity_loaded, UserNeed, RoleNeed)
 from flask_login import current_user
 from flask_uploads import configure_uploads, patch_request_class
 
 from app.models import db
-from app.libs.ext import (bcrypt, login_magager, principal, file_sam)
+from app.libs.ext import (bcrypt, login_magager, principal, file_sam, file_okr)
 
 
 def create_app(config_name):
@@ -18,7 +17,7 @@ def create_app(config_name):
 
     # configure_uploads(app, file_ork) # 配置上传文件
     configure_uploads(app, file_sam)
-
+    configure_uploads(app, file_okr)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
@@ -39,7 +38,9 @@ def create_app(config_name):
         return 'Hello'
 
     from app.api_v2 import api_v2
+    from app.download_report.download import home
 
     app.register_blueprint(api_v2)
+    app.register_blueprint(home)
 
     return app
