@@ -41,13 +41,20 @@ class ReportStart(Resource):
         page_per = args.get('page_per')
         reps = Report.query.order_by(Report.id.desc()).paginate(page=page, per_page=page_per, error_out=False)
         list_rep = []
+        all_rep = []
         for rep in reps.items:
             report_user = rep.report_user
             if report_user == user.username:
                 rep_dict = rep.to_dict()
                 rep_dict['mg_id'] = rep.samples[0].mg_id
                 list_rep.append(rep_dict)
-        dict_rep = {'sample': list_rep, 'total': len(Report.query.all())}
+
+            rep_dict = rep.to_dict()
+            rep_dict['mg_id'] = rep.samples[0].mg_id
+            all_rep.append(rep_dict)
+        if 'admin' in [role.name for role in user.roles]:
+            list_rep = all_rep
+        dict_rep = {'sample': list_rep, 'all_rep': all_rep,'total': len(Report.query.all())}
         return jsonify(dict_rep)
 
     def post(self):

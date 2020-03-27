@@ -15,8 +15,7 @@ def save_json_file(db_path, dic_file, table_name):
     db = Flata(db_path, storage=JSONStorage)
     tb = db.table(table_name)
     tb.purge()
-    for dic in dic_file:
-        tb.insert(dic)
+    tb.insert({'sams': dic_file})
 
 
 def excel_to_dict(file):
@@ -110,3 +109,42 @@ def get_excel_title(file):
     table = data.sheets()[0]
     title = table.row_values(0)[0].strip('上机信息表')
     return title
+
+
+def tsv_to_list(file):
+    '''
+    :param file: tsv文件
+    :return: 列表
+    '''
+    df = pd.read_csv(file, delimiter='\t')
+    result = []
+    for i in df.index:
+        dic_row = {}
+        df_row = df.loc[i].copy()
+        for k in df.columns:
+            dic_row[k] = str(df_row[k])
+        result.append(dic_row)
+    return result
+
+
+def type_mu(row):
+    dict_type = {'融合': 'fusion', '拷贝数变异': 'cnv'}
+    v = dict_type.get(row)
+    if v:
+        pass
+    else:
+        v = 'snv_indel'
+    return v
+
+
+def file_2_dict(file):
+    df = pd.read_excel(file, keep_default_na=False)
+    df['type'] = [type_mu(v) for v in df['检测的突变类型'].values]
+    result = []
+    for i in df.index:
+        dic_row = {}
+        df_row = df.loc[i].copy()
+        for k in df.columns:
+            dic_row[k] = str(df_row[k])
+        result.append(dic_row)
+    return result

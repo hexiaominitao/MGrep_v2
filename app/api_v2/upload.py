@@ -56,6 +56,7 @@ class RunInfoUpload(Resource):
                 df_seq = get_seq_info(file)
                 for name, df in df_seq:
                     if name:
+                        print(df)
                         dict_run = df2dict(df)
                         for dict_val in dict_run.values():
                             run = RunInfo.query.filter(RunInfo.name == name).first()
@@ -65,6 +66,7 @@ class RunInfoUpload(Resource):
                                 run = RunInfo(name=name, platform=title,
                                               start_T=time_set(dict_val.get('上机时间')),
                                               end_T=time_set(dict_val.get('结束时间')))
+
                                 db.session.add(run)
                                 db.session.commit()
                             seq = SeqInfo.query.filter(SeqInfo.sample_name == dict_val.get('迈景编号')).first()
