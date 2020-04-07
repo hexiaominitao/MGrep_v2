@@ -40,9 +40,9 @@ my_api.add_resource(ReportStart, '/report/start/') # 开始
 my_api.add_resource(GetMutationList, '/report/mutation_list/')
 my_api.add_resource(ReportStage, '/report/report_stage/')  # 改变报告状态
 my_api.add_resource(EditMutation, '/report/edit_mutation/')  # 编辑突变
-my_api.add_resource(AnnotateMutation, '/report/annotate_mutation/')
-my_api.add_resource(AnnotateCheck, '/report/annotate_check/')
-my_api.add_resource(ExportReport, '/report/export_report/')
+my_api.add_resource(AnnotateMutation, '/report/annotate_mutation/')  # 突变注释
+# my_api.add_resource(AnnotateCheck, '/report/annotate_check/')  # 注释复核
+my_api.add_resource(ExportReport, '/report/export_report/')  # 生成报告
 
 # 前端配置
 

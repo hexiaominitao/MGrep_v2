@@ -13,6 +13,7 @@ class SampleInfo(db.Model):
     doctor = db.Column(db.String(50), nullable=True)  # 送检医生
     hosptial = db.Column(db.String(50), nullable=True)  # 送检单位
     room = db.Column(db.String(50), nullable=True)  # 送检科室
+    pnumber = db.Column(db.String(100))  # 病理号
     cancer = db.Column(db.String(100))  # 结果解释用癌症类型
     diagnosis = db.Column(db.String(500), nullable=True)  # 临床诊断
     diagnosis_date = db.Column(db.Date(), nullable=True)
@@ -21,12 +22,15 @@ class SampleInfo(db.Model):
     recive_date = db.Column(db.Date(), nullable=True)  # 样本接受日期
     mode_of_trans = db.Column(db.String(50), nullable=True)  # 运输方式
     send_sample_date = db.Column(db.Date(), nullable=True)  # 送检日期
+    Tytime = db.Column(db.Date(), nullable=True)  # 采样时间
+    mth = db.Column(db.String(100))  # 采样方式
     reciver = db.Column(db.String(50), nullable=True)  # 送检人
     recive_room_date = db.Column(db.Date(), nullable=True)  # 收样日期
     sample_status = db.Column(db.String(50), nullable=True)  # 样本状态
     sample_type = db.Column(db.String(50), nullable=True)  # 样本类型
     sample_size = db.Column(db.String(50), nullable=True)  # 样本大小
     sample_count = db.Column(db.String(50), nullable=True)  # 样本数量
+    Sour = db.Column(db.String(100))  # 样本来源
     seq_date = db.Column(db.Date(), nullable=True)  # 检测日期
     note = db.Column(db.String(500), nullable=True)  # 备注
     recorder = db.Column(db.String(50), nullable=True)  # 记录人
@@ -51,7 +55,11 @@ class SampleInfo(db.Model):
             "doctor": self.doctor,
             "hosptial": self.hosptial,
             "room": self.room,
-            'cancer':self.cancer,
+            "pnumber": self.pnumber,
+            "mth": self.mth,
+            "Tytime": self.Tytime,
+            "Sour": self.Sour,
+            'cancer': self.cancer,
             "diagnosis": self.diagnosis,
             "diagnosis_date": self.diagnosis_date,
             "pathological": self.pathological,
@@ -70,6 +78,9 @@ class SampleInfo(db.Model):
             "recorder": self.recorder,
             "reviewer": self.reviewer
         }
+        for k,v in dict.items():
+            if not v:
+                dict[k] = ''
         return dict
 
 
@@ -114,8 +125,7 @@ class TreatInfo(db.Model):
                 'name': self.name,
                 'star_time': self.star_time,
                 'end_time': self.end_time,
-                'effect': self.effect,
-                'is_family': self.is_family}
+                'effect': self.effect}
         return dict
 
 

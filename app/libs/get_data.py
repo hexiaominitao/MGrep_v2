@@ -22,3 +22,6 @@ def splitN(listS, n):
     '''
     for i in range(0, len(listS), n):
         yield listS[i:i + n]
+
+def dic_to_df(dic):
+    pass

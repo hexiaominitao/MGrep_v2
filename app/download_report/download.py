@@ -7,7 +7,7 @@ from app.models.report import Report
 from app.libs.report import first_check, get_rep_item, set_gene_list
 from app.libs.get_data import read_json, splitN
 
-from flask import (render_template, Blueprint, redirect, send_from_directory, current_app)
+from flask import (render_template, Blueprint, make_response, send_from_directory, current_app)
 
 home = Blueprint('home', __name__)
 
@@ -176,7 +176,13 @@ def download(id, item, note):
 def download1(id,item,note):
     dir_res = current_app.config['RES_REPORT']
     dir_report = os.path.join(dir_res, 'report')
-    file = os.path.join(dir_report, '{}.docx'.format(item))
+    report = Report.query.filter(Report.id == id).first()
+    sam = report.samples[0]
+    mg_id =sam.mg_id
+    file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id,item))
     if os.path.exists(file):
         path_rep = os.path.join(os.getcwd(), dir_report)
-        return send_from_directory(path_rep, '{}.docx'.format(item), as_attachment=True)
+        # return send_from_directory(path_rep, '{}_{}.docx'.format(mg_id,item), as_attachment=True)
+        response = make_response(
+        send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True))
+        return response

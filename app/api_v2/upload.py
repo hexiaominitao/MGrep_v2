@@ -10,10 +10,11 @@ from app.models import db
 from app.models.run_info import RunInfo, SeqInfo
 from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
-from app.models.mutation import Mutation, SNV_INDEL, Fusion, CNV, Chemotherapy
+from app.models.mutation import Mutation, Mutations, Chemotherapy
 from app.libs.ext import file_sam, file_okr
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
     tsv_to_list, file_2_dict
+from app.libs.report import del_db
 from app.libs.get_data import read_json
 
 
@@ -122,47 +123,27 @@ class MutationUpload(Resource):
         report = Report.query.filter(Report.id == id).first()
         mu = report.mutation
         if mu:
-            for snv in mu.snv:
-                db.session.delete(snv)
-            for fusion in mu.fusion:
-                db.session.delete(fusion)
-            for cnv in mu.cnv:
-                db.session.delete(cnv)
+            del_db(db, mu.snv)
+            del_db(db, mu.cnv)
+            del_db(db, mu.fusion)
             db.session.commit()
-        mutation = Mutation()
+        mutation = Mutations()
         dic = file_2_dict(file)
         print(dic)
         if dic:
             for row in dic:
-                if row['type'] == 'snv_indel':
-                    snv = SNV_INDEL(gene=row.get('基因'),
-                                    mu_type=row.get('检测的突变类型'),
-                                    mu_name=row.get('变异全称'),
-                                    mu_af=row.get('丰度'),
-                                    mu_name_usual=row.get('临床突变常用名称'),
-                                    reads=row.get('支持序列数'),
-                                    maf=row.get('maf'),
-                                    exon=row.get('外显子'),
-                                    fu_type=row.get('检测基因型'), status='等待审核',
-                                    locus=row.get('位置'), type=row.get('type'))
-                    db.session.add(snv)
-                    mutation.snv.append(snv)
-                if row['type'] == 'fusion':
-                    fusion = Fusion(gene=row.get('基因'),
-                                    mu_type=row.get('检测的突变类型'),
-                                    mu_name=row.get('变异全称'),
-                                    mu_af=row.get('丰度'), status='等待审核',
-                                    mu_name_usual=row.get('临床突变常用名称'), type=row.get('type'))
-                    db.session.add(fusion)
-                    mutation.fusion.append(fusion)
-                if row['type'] == "cnv":
-                    cnv = CNV(gene=row.get('基因'),
-                              mu_type=row.get('检测的突变类型'),
-                              mu_name=row.get('变异全称'),
-                              mu_af=row.get('丰度'), status='等待审核',
-                              mu_name_usual=row.get('临床突变常用名称'), type=row.get('type'))
-                    db.session.add(cnv)
-                    mutation.cnv.append(cnv)
+                snv = Mutation(gene=row.get('基因'),
+                               mu_type=row.get('检测的突变类型'),
+                               mu_name=row.get('变异全称'),
+                               mu_af=row.get('丰度'),
+                               mu_name_usual=row.get('临床突变常用名称'),
+                               reads=row.get('支持序列数'),
+                               maf=row.get('maf'),
+                               exon=row.get('外显子'),
+                               fu_type=row.get('检测基因型'), status='等待审核',
+                               locus=row.get('位置'), type=row.get('type'))
+                db.session.add(snv)
+                mutation.mutation.append(snv)
         db.session.add(mutation)
         report.mutation = mutation
         db.session.commit()

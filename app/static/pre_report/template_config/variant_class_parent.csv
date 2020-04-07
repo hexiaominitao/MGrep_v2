@@ -1,0 +1,932 @@
+kids,parents
+RAD51B deleterious mutation,HRR deleterious mutation
+RAD51B deleterious mutation,DNA repair deleterious mutation
+RAD51B deleterious mutation,RAD51B mutation
+FBXW7 deleterious mutation,FBXW7 mutation
+WT1 mutation,
+GATA2 codons 349-398 mutation,GATA2 mutation
+MLH1 V384D mutation,MLH1 mutation
+NTRK1 amplification,NTRK1 aberration
+NTRK1 amplification,NTRK amplification
+TP53 exon 8 mutation,TP53 mutation
+ROS1 mutation status,ROS1 positive
+BCR-ABL1 G250E mutation,BCR-ABL1 KD mutation
+NPM1 W288 frame shift,NPM1 mutation
+POLE P286 mutation,POLE codons 268-471 mutation
+POLE V411 mutation,POLE codons 268-471 mutation
+POLE L424 mutation,POLE codons 268-471 mutation
+POLE S459 mutation,POLE codons 268-471 mutation
+ERBB2 insertion,ERBB2 mutation
+ERBB2 exon 20 insertion,ERBB2 insertion
+ERBB2 exon 20 insertion,ERBB2 activating mutation
+ERBB2 exon 20 insertion,ERBB2 exon 20 mutation
+KIT exon 11 deletion,KIT activating mutation
+KIT exon 11 deletion,KIT exon 11 mutation
+CDK12 deleterious mutation,CDK12 mutation
+CDK12 deleterious mutation,DNA repair deleterious mutation
+CHEK1 deleterious mutation,CHEK1 mutation
+CHEK1 deleterious mutation,DNA repair deleterious mutation
+MLH1 deleterious mutation,MLH1 mutation
+MLH1 deleterious mutation,DNA repair deleterious mutation
+MRE11 deleterious mutation,MRE11 mutation
+MRE11 deleterious mutation,DNA repair deleterious mutation
+MRE11 deleterious mutation,HRR deleterious mutation
+PALB2 deleterious mutation,PALB2 mutation
+PALB2 deleterious mutation,HRR deleterious mutation
+PALB2 deleterious mutation,FANC deleterious mutation
+PALB2 deleterious mutation,DNA repair deleterious mutation
+BRCA2 deleterious mutation,BRCA2 mutation
+BRCA2 deleterious mutation,HRR deleterious mutation
+BRCA2 deleterious mutation,DNA repair deleterious mutation
+BRCA2 deleterious mutation,FANC deleterious mutation
+BRCA1 deleterious mutation,BRCA1 mutation
+BRCA1 deleterious mutation,DNA repair deleterious mutation
+BRCA1 deleterious mutation,FANC deleterious mutation
+BRCA1 deleterious mutation,HRR deleterious mutation
+ATM deleterious mutation,ATM mutation
+ATM deleterious mutation,DNA repair deleterious mutation
+ATM deleterious mutation,HRR deleterious mutation
+ERCC2 mutation,ERCC mutation
+ERCC2 mutation,DNA repair mutation
+ERCC3 mutation,ERCC mutation
+ERCC4 mutation,ERCC mutation
+ERCC4 mutation,FANC mutation
+ERCC5 mutation,ERCC mutation
+XRCC2 mutation,XRCC mutation
+XRCC2 mutation,HRR mutation
+FLT4 aberration,
+FLT4 amplification,FLT4 aberration
+SMO aberration,
+SMO mutation,SMO aberration
+PTCH1 aberration,
+SRC mutation,SRC aberration
+WT1 deleterious mutation,WT1 mutation
+MMR mutation pathway,MMR pathway
+ERBB3 mutation,ERBB aberration
+MSH2 mutation,MMR mutation pathway
+MSH2 mutation,DNA repair mutation
+ALK mutation status,ALK aberration
+ALK mutation,ALK mutation status
+ROS1 mutation,ROS1 mutation status
+CDKN2A aberration,G1/S cell cycle pathway
+CDKN2A negative,CDKN2A aberration
+CCND1 aberration,G1/S cell cycle pathway
+CCND1 amplification,CCND1 aberration
+FBXW7 aberration,G1/S cell cycle pathway
+FBXW7 mutation,FBXW7 aberration
+PALB2 deletion,DNA repair deletion
+PALB2 deletion,FANC deletion
+PALB2 deletion,HRR pathway
+FANC deletion,Fanconi anemia pathway
+FANC mutation,Fanconi anemia pathway
+BRCA aberration,Fanconi anemia pathway
+BRCA aberration,HRR pathway
+BRCA aberration,DNA repair pathway
+PMS2 mutation,MMR mutation pathway
+PMS2 mutation,Fanconi anemia pathway
+PMS2 mutation,DNA repair mutation
+POLD1 mutation,MMR mutation pathway
+POLD1 mutation,POLD1 aberration
+POLD1 mutation,HRR mutation
+MTOR mutation,MTOR aberration
+PIK3CA mutation status,PIK3CA aberration
+PIK3R1 mutation,PIK3R1 aberration
+PTEN mutation,PTEN aberration
+STK11 mutation,STK11 aberration
+NF1 mutation,RAS/RAF/MEK/ERK mutation
+NF1 mutation,NF1 aberration
+NF2 mutation,RAS/RAF/MEK/ERK mutation
+NF2 mutation,NF2 aberration
+NPM1 mutation,NPM1 positive
+PI3K activating mutation,PI3K/AKT/MTOR pathway
+NRAS mutation,NRAS aberration
+NRAS mutation,RAS mutation
+FGFR3 K650M mutation,FGFR3 activating mutation
+EGFR mutation status,EGFR positive
+NOTCH1 activating mutation,NOTCH aberration
+PIK3R1 aberration,PI3K/AKT/MTOR pathway
+AKT3 E17K mutation,AKT3 activating mutation
+ALK fusion,ALK fusion status
+CD274 positive,CD274 status
+MLH1 mutation,Fanconi anemia pathway
+MLH1 mutation,DNA repair mutation
+MLH1 mutation,MMR mutation pathway
+KRAS positive,KRAS aberration
+HRR mutation,HRR pathway
+KRAS mutation status,RAS mutation
+KRAS mutation status,KRAS positive
+FGFR2 positive,FGFR2 aberration
+KRAS mutation,KRAS mutation status
+KDR positive,KDR aberration
+FGFR3-BAIAP2L1 fusion,FGFR3 fusion
+BRAF mutation status,BRAF aberration
+BRAF mutation status,RAF mutation
+FGFR2-AFF3 fusion,FGFR2 fusion
+RAS mutation status,RAS/RAF/MEK/ERK mutation
+MSH6 mutation,DNA repair mutation
+MSH6 mutation,MMR mutation pathway
+FGFR2-CCDC6 fusion,FGFR2 fusion
+FGFR2-BICC1 fusion,FGFR2 fusion
+FGFR2-CASP7 fusion,FGFR2 fusion
+FGFR2-OFD1 fusion,FGFR2 fusion
+FGFR2-PLPP4 fusion,FGFR2 fusion
+ERBB2 status,ERBB aberration
+BRAF V600E mutation status,BRAF V600 mutation
+FGFR2-SLC45A3 fusion,FGFR2 fusion
+AKT2 activating mutation,AKT2 mutation
+BRAF V600E mutation,BRAF V600E mutation status
+FGFR2-TACC2 fusion,FGFR2 fusion
+AKT2 E17K mutation,AKT2 activating mutation
+BLM mutation,HRR mutation
+BLM mutation,Fanconi anemia pathway
+AKT3 activating mutation,AKT3 mutation
+RAD51C mutation,HRR mutation
+RAD51C mutation,FANC mutation
+RAD51C mutation,DNA repair mutation
+BRAF mutation,BRAF mutation status
+EML4-ALK fusion,ALK fusion
+RAF aberration,RAS/RAF/MEK/ERK pathway
+RAF mutation,RAF aberration
+RAF mutation,RAS/RAF/MEK/ERK mutation
+FGFR1-TACC1 fusion,FGFR1 fusion
+FGFR3-TACC3 fusion,FGFR3 fusion
+FLT1 amplification,FLT1 aberration
+FGFR2 N549K mutation,FGFR2 mutation
+FGFR2 N549K mutation,FGFR activating mutation
+FLT1 fusion,FLT1 aberration
+FLT1 mutation,FLT1 aberration
+RET-KIF5B fusion,RET fusion
+PDGFRA aberration,PDGFR aberration
+PDGFRB aberration,PDGFR aberration
+RAF1 amplification,RAF aberration
+RAF1 fusion,RAF aberration
+FGFR3 G370C mutation,FGFR3 activating mutation
+FGFR3 R248C mutation,FGFR3 activating mutation
+FGFR3 S249C mutation,FGFR3 activating mutation
+FGFR3 Y373C mutation,FGFR3 activating mutation
+FGFR3 S371C mutation,FGFR3 activating mutation
+ERBB2 aberration,ERBB2 status
+EGFR V774M mutation,EGFR resistance mutation
+EGFR V774M mutation,EGFR exon 20 mutation
+KDR mutation,KDR positive
+FGFR2 mutation,FGFR2 positive
+FGFR2 mutation,FGFR mutation
+ATM mutation,HRR mutation
+ATM mutation,ATM aberration
+ATM mutation,DNA repair mutation
+PALB2 mutation,FANC mutation
+PALB2 mutation,HRR mutation
+PALB2 mutation,DNA repair mutation
+ERBB2 V777L mutation,ERBB2 activating mutation
+ERBB2 V777L mutation,ERBB2 exon 20 mutation
+FANCA mutation,FANC mutation
+FANCA mutation,DNA repair mutation
+FANCD2 mutation,FANC mutation
+FANCD2 mutation,DNA repair mutation
+FANCL mutation,FANC mutation
+KIT activating mutation,KIT mutation
+NRAS exon 2 mutation,NRAS mutation
+NRAS A59 mutation,NRAS exon 3 mutation
+NRAS A59 mutation,NRAS activating mutation
+EGFR activating mutation,EGFR mutation
+EGFR amplification,EGFR positive
+EGFRi sensitizing mutation,EGFR activating mutation
+ERBB2 activating mutation,ERBB2 mutation
+ERBB2 amplification,ERBB2 positive
+KIT exon 11 mutation,KIT mutation
+KIT exon 13 mutation,KIT mutation
+KIT exon 9 mutation,KIT mutation
+KRAS G12D mutation,KRAS G12 mutation
+PTEN deletion,PTEN aberration
+EGFR L861 mutation,EGFR exon 21 mutation
+AXL amplification,
+AXL fusion,
+AXL mutation,
+IDH1 R132 mutation,IDH1 mutation
+EGFR L861Q mutation,EGFR L861 mutation
+EGFR L861Q mutation,EGFR exon 21 sensitizing mutation
+EGFR exon 19 activating mutation,EGFR activating mutation
+EGFR exon 19 activating mutation,EGFR exon 19 mutation
+AKT3 mutation,AKT3 aberration
+AKT3 mutation,AKT mutation
+EGFR mutation,EGFR mutation status
+PDGFR mutation,PDGFR aberration
+BRIP1 mutation,FANC mutation
+BRIP1 mutation,HRR mutation
+BRAF activating mutation,BRAF mutation
+BRAF amplification,BRAF aberration
+BRAF fusion,BRAF aberration
+AKT2 aberration,PI3K/AKT/MTOR pathway
+PDGFRA mutation,PDGFR mutation
+PDGFRA mutation,PDGFRA aberration
+TSC2 mutation,TSC mutation
+TSC2 mutation,TSC2 aberration
+HRAS activating mutation,HRAS mutation
+HRAS activating mutation,RAS activating mutation
+NRAS K117 mutation,NRAS activating mutation
+NRAS K117 mutation,NRAS exon 4 mutation
+PIK3CA exon 20 mutation,PIK3CA mutation
+CD274 amplification,CD274 positive
+PDGFRA amplification,PDGFRA aberration
+BRAF V600D mutation,BRAF V600 mutation
+BRAF V600R mutation,BRAF V600 mutation
+KRAS G12C mutation,KRAS G12 mutation
+KRAS G12V mutation,KRAS G12 mutation
+MET amplification,MET positive
+EGFR L858R mutation,EGFR L858 mutation
+EGFR L858R mutation,EGFR exon 21 sensitizing mutation
+NRAS G12 mutation,NRAS exon 2 mutation
+NRAS G12 mutation,NRAS activating mutation
+NRAS G13 mutation,NRAS exon 2 mutation
+NRAS G13 mutation,NRAS activating mutation
+NRAS Q61 mutation,NRAS exon 3 mutation
+NRAS Q61 mutation,NRAS activating mutation
+PIK3CA mutation,PIK3CA mutation status
+NRAS A146 mutation,NRAS activating mutation
+NRAS A146 mutation,NRAS exon 4 mutation
+ERBB2 positive,ERBB2 aberration
+KRAS G12 mutation,KRAS activating mutation
+KRAS G12 mutation,KRAS exon 2 mutation
+KRAS G13 mutation,KRAS exon 2 mutation
+KRAS G13 mutation,KRAS activating mutation
+KRAS A59 mutation,KRAS exon 3 mutation
+KRAS A59 mutation,KRAS activating mutation
+KRAS Q61 mutation,KRAS exon 3 mutation
+KRAS Q61 mutation,KRAS activating mutation
+KRAS K117 mutation,KRAS exon 4 mutation
+KRAS K117 mutation,KRAS activating mutation
+PDGFRA fusion,PDGFRA aberration
+PDGFRA fusion,PDGFR fusion
+ALK amplification,ALK aberration
+KIT mutation,KIT aberration
+FGFR2 P253R mutation,FGFR2 mutation
+FGFR2 P253R mutation,FGFR activating mutation
+FGFR2 S252W mutation,FGFR2 mutation
+FGFR2 S252W mutation,FGFR activating mutation
+FGFR2 Y375C mutation,FGFR2 mutation
+FGFR2 Y375C mutation,FGFR activating mutation
+PIK3CA amplification,PIK3CA aberration
+DDR2 mutation,
+SMO activating mutation,SMO mutation
+ALK positive,ALK aberration
+AKT1 mutation,AKT1 aberration
+AKT1 mutation,AKT mutation
+FGFR1 activating mutation,FGFR1 mutation
+FGFR1 activating mutation,FGFR activating mutation
+FGFR1 amplification,FGFR1 aberration
+FGFR1 amplification,FGFR amplification
+FGFR1 fusion,FGFR1 aberration
+FGFR1 fusion,FGFR fusion
+FGFR1 mutation,FGFR1 aberration
+FGFR1 mutation,FGFR mutation
+FGFR3 fusion,FGFR3 aberration
+FGFR3 fusion,FGFR fusion
+FGFR3 amplification,FGFR3 aberration
+FGFR3 amplification,FGFR amplification
+FGFR3 mutation,FGFR3 aberration
+FGFR3 mutation,FGFR mutation
+BRCA1 mutation,BRCA mutation
+BRCA1 mutation,BRCA1 aberration
+FGFR1 K656E mutation,FGFR1 activating mutation
+FGFR1 N546K mutation,FGFR1 activating mutation
+FGFR3-NSD2 fusion,FGFR3 fusion
+ALK fusion status,ALK positive
+FGFR2 K659E mutation,FGFR2 mutation
+FGFR2 K659E mutation,FGFR activating mutation
+FGFR3 K650E mutation,FGFR3 activating mutation
+FGFR3 activating mutation,FGFR3 mutation
+FGFR3 activating mutation,FGFR activating mutation
+FGFR4 fusion,FGFR fusion
+FGFR4 fusion,FGFR4 aberration
+FGFR4 mutation,FGFR mutation
+FGFR4 mutation,FGFR4 aberration
+EGFR exon 19 mutation,EGFR mutation
+EGFR exon 21 mutation,EGFR mutation
+HRAS G12 mutation,HRAS activating mutation
+HRAS G13 mutation,HRAS activating mutation
+HRAS Q61 mutation,HRAS activating mutation
+NRAS exon 3 mutation,NRAS mutation
+PIK3CA exon 9 mutation,PIK3CA mutation
+KRAS exon 2 mutation,KRAS mutation
+KRAS exon 3 mutation,KRAS mutation
+KRAS exon 4 mutation,KRAS mutation
+BRAF V600K mutation,BRAF V600 mutation
+KRAS A146 mutation,KRAS exon 4 mutation
+KRAS A146 mutation,KRAS activating mutation
+MET mutation,MET positive
+KRAS activating mutation,KRAS mutation
+KRAS activating mutation,RAS activating mutation
+ROS1 fusion,ROS1 positive
+EGFR G719A mutation,EGFR G719 mutation
+TSC1 mutation,TSC1 aberration
+TSC1 mutation,TSC mutation
+EGFR G719C mutation,EGFR G719 mutation
+EGFR G719S mutation,EGFR G719 mutation
+EGFR exon 18 mutation,EGFR mutation
+EGFR exon 20 mutation,EGFR mutation
+EGFR L858 mutation,EGFR exon 21 mutation
+EGFR exon 21 activating mutation,EGFR activating mutation
+EGFR exon 21 activating mutation,EGFR exon 21 mutation
+AKT1 amplification,AKT1 aberration
+NRAS exon 4 mutation,NRAS mutation
+FGFR fusion,FGFR aberration
+FGFR amplification,FGFR aberration
+MET fusion,MET positive
+MET positive,MET aberration
+FGFR2 C382R mutation,FGFR2 mutation
+FGFR2 C382R mutation,FGFR activating mutation
+TP53 mutation,TP53 aberration
+BRAF V600 mutation,BRAF V600 mutation status
+ERBB2 exon 20 mutation,ERBB2 mutation
+KIT exon 17 mutation,KIT mutation
+KIT exon 18 mutation,KIT mutation
+PDGFRA D842 mutation,PDGFRA mutation
+PDGFRA D842V mutation,PDGFRA D842 mutation
+EGFR exon 19 sensitizing mutation,EGFRi sensitizing mutation
+EGFR exon 19 sensitizing mutation,EGFR exon 19 activating mutation
+RET fusion,RET positive
+EGFR G719 mutation,EGFRi sensitizing mutation
+EGFR G719 mutation,EGFR exon 18 activating mutation
+EGFR exon 19 deletion,EGFR exon 19 sensitizing mutation
+EGFR exon 19 insertion,EGFR exon 19 sensitizing mutation
+EGFR exon 21 sensitizing mutation,EGFRi sensitizing mutation
+EGFR exon 21 sensitizing mutation,EGFR exon 21 activating mutation
+EGFR resistance mutation,EGFR mutation
+AKT1 activating mutation,AKT1 mutation
+AKT1 E17K mutation,AKT1 activating mutation
+AKT1 E17K mutation,AKT1 E17 mutation
+EGFR exon 20 insertion,EGFR resistance mutation
+EGFR exon 20 insertion,EGFR exon 20 mutation
+FGFR1 aberration,FGFR aberration
+FGFR activating mutation,FGFR mutation
+FGFR mutation,FGFR aberration
+FGFR2 aberration,FGFR aberration
+HRAS mutation,RAS mutation
+HRAS mutation,HRAS aberration
+FGFR4 aberration,FGFR aberration
+FGFR4 amplification,FGFR4 aberration
+FGFR4 amplification,FGFR amplification
+FGFR2 amplification,FGFR amplification
+FGFR2 amplification,FGFR2 positive
+FGFR2 fusion,FGFR fusion
+FGFR2 fusion,FGFR2 positive
+FGFR3 aberration,FGFR aberration
+EGFR T790M mutation,EGFR T790M mutation status
+KIT exon 14 mutation,KIT mutation
+EGFR exon 20 sensitizing mutation,EGFRi sensitizing mutation
+EGFR exon 20 sensitizing mutation,EGFR exon 20 mutation
+NRAS activating mutation,NRAS mutation
+NRAS activating mutation,RAS activating mutation
+MAP2K1 mutation,RAS/RAF/MEK/ERK mutation
+ABL1 amplification,ABL1 aberration
+ABL1 fusion,ABL1 aberration
+ABL1 mutation,ABL1 aberration
+AKT1 aberration,PI3K/AKT/MTOR pathway
+AKT mutation,PI3K/AKT/MTOR pathway
+DDR2 amplification,
+EGFR positive,EGFR aberration
+BRCA2 mutation,BRCA mutation
+BRCA2 mutation,BRCA2 aberration
+KRAS fusion,KRAS positive
+TSC2 deletion,TSC2 aberration
+RAF1 mutation,RAF mutation
+TSC1 deletion,TSC1 aberration
+EGFR fusion,EGFR positive
+EGFR S768I mutation,EGFR exon 20 sensitizing mutation
+MET exon 14 skipping,MET positive
+ROS1 positive,ROS1 aberration
+KIT resistance mutation,KIT mutation
+RAS activating mutation,RAS mutation
+NTRK1 fusion,NTRK1 aberration
+NTRK1 fusion,NTRK fusion
+NTRK2 fusion,NTRK fusion
+NTRK3 fusion,NTRK3 aberration
+NTRK3 fusion,NTRK fusion
+EGFR exon 18 activating mutation,EGFR exon 18 mutation
+EGFR exon 18 activating mutation,EGFR activating mutation
+NTRK1 aberration,NTRK aberration
+NTRK fusion,NTRK aberration
+NTRK mutation,NTRK aberration
+NTRK3 aberration,NTRK aberration
+NTRK1 mutation,NTRK1 aberration
+NTRK1 mutation,NTRK mutation
+AKT3 aberration,PI3K/AKT/MTOR pathway
+AKT2 amplification,AKT2 aberration
+FGF19 amplification,FGF19 aberration
+TSC2 aberration,PI3K/AKT/MTOR pathway
+AKT2 mutation,AKT2 aberration
+AKT2 mutation,AKT mutation
+FLT3 fusion,FLT3 positive
+FLT3 amplification,FLT3 positive
+KIT D816 mutation,KIT exon 17 mutation
+KIT D816 mutation,KIT activating mutation
+MTOR aberration,PI3K/AKT/MTOR pathway
+PDGFRB fusion,PDGFRB aberration
+PDGFRB fusion,PDGFR fusion
+PDGFRB amplification,PDGFRB aberration
+PIK3CA aberration,PI3K/AKT/MTOR pathway
+PTEN aberration,PI3K/AKT/MTOR pathway
+RHEB aberration,PI3K/AKT/MTOR pathway
+STK11 aberration,PI3K/AKT/MTOR pathway
+TP53 deletion,TP53 aberration
+TSC1 aberration,PI3K/AKT/MTOR pathway
+ALK overexpression,ALK positive
+ERBB2 overexpression,ERBB2 positive
+RAS amplification,RAS/RAF/MEK/ERK pathway
+IDH1 R132H mutation,IDH1 R132 mutation
+KRAS aberration,RAS/RAF/MEK/ERK pathway
+NF1 aberration,RAS/RAF/MEK/ERK pathway
+NF2 aberration,RAS/RAF/MEK/ERK pathway
+NRAS aberration,RAS/RAF/MEK/ERK pathway
+KDR amplification,KDR positive
+PIK3CB amplification,PI3K/AKT/MTOR pathway
+PDGFRB mutation,PDGFR mutation
+PDGFRB mutation,PDGFRB aberration
+PTCH1 mutation,PTCH1 aberration
+ERBB3 amplification,ERBB aberration
+RAS mutation,RAS mutation status
+KRAS amplification,RAS amplification
+KRAS amplification,KRAS positive
+MYC amplification,MYC aberration
+SF3B1 G742 mutation,SF3B1 mutation
+CCND2 amplification,G1/S cell cycle pathway
+CCND3 amplification,G1/S cell cycle pathway
+ABL1 aberration,ABL aberration
+PIK3CB mutation,PI3K/AKT/MTOR pathway
+FGF aberration,
+PIK3CA E542K mutation,PIK3CA activating mutation
+PIK3CA E542K mutation,PIK3CA E542 mutation
+TSC mutation,PI3K/AKT/MTOR pathway
+PIK3CA E545K mutation,PIK3CA E545 mutation
+CDK6 amplification,CDK6 aberration
+CDK6 mutation,CDK6 aberration
+CDK4 mutation,CDK4 aberration
+CDK4 amplification,CDK4 aberration
+KDR fusion,KDR positive
+ATR mutation,Fanconi anemia pathway
+ATR mutation,DNA repair mutation
+BAP1 mutation,DNA repair mutation
+CSF1R fusion,CSF1R aberration
+BARD1 mutation,HRR mutation
+RAD51D mutation,HRR mutation
+RAD51D mutation,DNA repair mutation
+CSF1R amplification,CSF1R aberration
+CSF1R mutation,CSF1R aberration
+EGFR L861R mutation,EGFR L861 mutation
+CDKN2A deletion,CDKN2A negative
+CDKN2A mutation,CDKN2A negative
+FGFR aberration,FGFR pathway
+ERBB4 mutation,ERBB aberration
+EGFR aberration,ERBB aberration
+ERBB2 G776V mutation,ERBB2 exon 20 mutation
+ATM deletion,ATM aberration
+ATM deletion,DNA repair deletion
+FANCC mutation,FANC mutation
+BRCA fusion,BRCA aberration
+CCNE1 amplification,CCNE1 aberration
+FANCE mutation,FANC mutation
+FANCF mutation,FANC mutation
+FANCG mutation,FANC mutation
+NTRK amplification,NTRK aberration
+KDR aberration,
+FLT1 aberration,
+ATM aberration,DNA repair pathway
+ATM aberration,HRR pathway
+RAD54L mutation,HRR mutation
+POLE codons 268-471 mutation,POLE mutation
+RAD51 mutation,HRR mutation
+RAD51 mutation,DNA repair mutation
+RAD51 mutation,FANC mutation
+RAD51B mutation,HRR mutation
+RAD51B mutation,DNA repair mutation
+NBN mutation,HRR mutation
+NBN mutation,DNA repair mutation
+FLT4 mutation,FLT4 aberration
+MRE11 mutation,HRR mutation
+MRE11 mutation,DNA repair mutation
+BRCA mutation,HRR mutation
+BRCA mutation,DNA repair mutation
+BRCA mutation,FANC mutation
+BRCA mutation,BRCA aberration
+FLT3 activating mutation,FLT3 mutation
+ABRAXAS1 mutation,HRR mutation
+FLT3 ITD mutation,FLT3 activating mutation
+FLT3 TKD mutation,FLT3 activating mutation
+KIT D816V mutation,KIT D816 mutation
+FLT3 I836 mutation,FLT3 TKD mutation
+IDH2 R140 mutation,IDH2 mutation
+IDH2 R172 mutation,IDH2 mutation
+FLT3 D835 mutation,FLT3 TKD mutation
+RAS/RAF/MEK/ERK mutation,RAS/RAF/MEK/ERK pathway
+ERBB2 L755S mutation,ERBB2 activating mutation
+BRCA1 deletion,BRCA1 aberration
+BRCA1 deletion,FANC deletion
+BRCA1 deletion,DNA repair deletion
+MYH11-CBFB fusion,t(16;16)(p13.1;q22)
+MYH11-CBFB fusion,inv(16)(p13.1;q22)
+RUNX1-RUNX1T1 fusion,t(8;21)(q22;q22)
+PML-RARA fusion,t(15;17)(q24;q21)
+BCR-ABL1 V299L mutation,BCR-ABL1 KD mutation
+BCR-ABL1 T315I mutation,BCR-ABL1 KD mutation
+CDK12 mutation,DNA repair mutation
+CHEK1 mutation,DNA repair mutation
+CHEK2 mutation,DNA repair mutation
+EGFR T790M mutation status,EGFR resistance mutation
+EGFR T790M mutation status,EGFR exon 20 mutation
+t(15;17),Core binding factor abnormalities
+t(15;17),RARA fusion
+t(8;21),Core binding factor abnormalities
+PTPN11 activating mutation,PTPN11 mutation
+NRAS G12V mutation,NRAS G12 mutation
+HRAS G12V mutation,HRAS G12 mutation
+RB1 mutation,RB1 aberration
+PIK3CA activating mutation,PI3K activating mutation
+PIK3CA activating mutation,PIK3CA mutation
+FGF19 aberration,FGF aberration
+RET positive,RET aberration
+JAK2 exon 12 mutation,JAK2 mutation
+MPL W515K mutation,MPL mutation
+MPL W515L mutation,MPL mutation
+EGFR V769L mutation,EGFR exon 20 mutation
+EGFR V769L mutation,EGFR activating mutation
+ERBB2 S310F mutation,ERBB2 activating mutation
+SRSF2 P95 mutation,SRSF2 mutation
+U2AF1 Q157 mutation,U2AF1 mutation
+U2AF1 S34 mutation,U2AF1 mutation
+IDH2 R140Q mutation,IDH2 R140 mutation
+CALR mutation,CALR mutation status
+SF3B1 E622 mutation,SF3B1 mutation
+SF3B1 Y623 mutation,SF3B1 mutation
+SF3B1 R625 mutation,SF3B1 mutation
+SF3B1 N626 mutation,SF3B1 mutation
+SF3B1 H662 mutation,SF3B1 mutation
+SF3B1 T663 mutation,SF3B1 mutation
+SF3B1 K666 mutation,SF3B1 mutation
+SF3B1 K700E mutation,SF3B1 mutation
+SF3B1 I704 mutation,SF3B1 mutation
+SF3B1 G740 mutation,SF3B1 mutation
+SF3B1 D781 mutation,SF3B1 mutation
+ERBB2 mutation,ERBB2 mutation status
+ERBB2 mutation status,ERBB2 aberration
+PTPN11 mutation,RAS/RAF/MEK/ERK mutation
+FGFR1 T141A mutation,FGFR1 mutation
+FGFR2 G380R mutation,FGFR2 mutation
+FGFR3 G697C mutation,FGFR3 mutation
+FGFR3 A391E mutation,FGFR3 mutation
+FGFR3 F384L mutation,FGFR3 mutation
+t(15;17)(q24;q21),t(15;17)
+t(16;16)(p13.1;q22),t(16;16)
+t(16;16)(p13.1;q22),Core binding factor abnormalities
+RAD50 mutation,HRR mutation
+RAD50 mutation,DNA repair mutation
+inv(16),Core binding factor abnormalities
+IDH2 R172S mutation,IDH2 R172 mutation
+IDH2 R172W mutation,IDH2 R172 mutation
+IDH2 R172K mutation,IDH2 R172 mutation
+IDH2 R172G mutation,IDH2 R172 mutation
+IDH2 R140W mutation,IDH2 R140 mutation
+IDH2 R140L mutation,IDH2 R140 mutation
+IDH2 R140G mutation,IDH2 R140 mutation
+IDH2 R172M mutation,IDH2 R172 mutation
+FGFR2-MCU fusion,FGFR2 fusion
+FGFR2-VCL fusion,FGFR2 fusion
+FGFR2-CCAR1 fusion,FGFR2 fusion
+FGFR2-UBQLN1 fusion,FGFR2 fusion
+DNA repair mutation,DNA repair pathway
+FGFR2-CFAP58 fusion,FGFR2 fusion
+FGFR3 K650T mutation,FGFR3 activating mutation
+POLD1 aberration,HRR pathway
+POLD1 aberration,MMR pathway
+BRCA2 deletion,BRCA2 aberration
+BRCA2 deletion,FANC deletion
+BRCA2 deletion,DNA repair deletion
+FLT3 positive,FLT3 aberration
+FLT3 mutation,FLT3 positive
+inv(16)(p13.1;q22),inv(16)
+inv(3)(q21;q26.2),inv(3)
+t(3;3)(q21q26.2),t(3;3)
+BCR-ABL1 F317L mutation,BCR-ABL1 KD mutation
+BCR-ABL1 F317V mutation,BCR-ABL1 KD mutation
+BCR-ABL1 E255K mutation,BCR-ABL1 KD mutation
+BCR-ABL1 E255V mutation,BCR-ABL1 KD mutation
+BCR-ABL1 F317C mutation,BCR-ABL1 KD mutation
+BCR-ABL1 F317I mutation,BCR-ABL1 KD mutation
+BCR-ABL1 F359C mutation,BCR-ABL1 KD mutation
+BCR-ABL1 F359I mutation,BCR-ABL1 KD mutation
+BCR-ABL1 Y253H mutation,BCR-ABL1 KD mutation
+t(8;21)(q22;q22),t(8;21)
+t(11;16)(q23;p13.3),KMT2A fusion
+BCR-ABL1 T315A mutation,BCR-ABL1 KD mutation
+BCR-ABL1 F359V mutation,BCR-ABL1 KD mutation
+NUP214-DEK fusion,t(6;9)(p23;q34)
+t(6;9)(p23;q34),t(6;9)
+POLE mutation,POLE aberration
+POLE mutation,DNA repair mutation
+RARA fusion,RARA pathway
+RET amplification,RET positive
+RET activating mutation,RET mutation
+SLX4 mutation,FANC mutation
+SLX4 mutation,DNA repair mutation
+FGFR3 K650Q mutation,FGFR3 activating mutation
+BCR-ABL1 KD mutation,ABL1 mutation
+AKT1 E17 mutation,AKT1 mutation
+AKT1 L52 mutation,AKT1 mutation
+AKT1 Q79 mutation,AKT1 mutation
+PIK3CA R88 mutation,PIK3CA mutation
+PIK3CA G106 mutation,PIK3CA mutation
+PIK3CA N345 mutation,PIK3CA mutation
+PIK3CA K111 mutation,PIK3CA mutation
+PIK3CA G118 mutation,PIK3CA mutation
+PIK3CA E453 mutation,PIK3CA mutation
+PIK3CA C420 mutation,PIK3CA mutation
+PTEN C124S mutation,PTEN mutation
+PTEN G129E mutation,PTEN mutation
+Deletion 5q,Monosomy 5
+Deletion 7q,Monosomy 7
+Deletion 12p,Abnormal 12p
+Abnormal 17p,Abnormal 17
+Deletion 17,Abnormal 17
+Deletion 17p,Abnormal 17p
+Deletion 17p,Deletion 17
+Monosomy 7,Abnormal 7
+Deletion 3q,Abnormal 3q
+Abnormal 21q,Chromosomal abnormality
+PIK3CA E542 mutation,PIK3CA exon 9 mutation
+PIK3CA E545 mutation,PIK3CA exon 9 mutation
+PIK3CA E545 mutation,PIK3CA activating mutation
+PIK3CA M1043 mutation,PIK3CA exon 20 mutation
+PIK3CA G1049 mutation,PIK3CA exon 20 mutation
+PIK3CA H1047 mutation,PIK3CA exon 20 mutation
+PIK3CA H1047 mutation,PIK3CA activating mutation
+PIK3CA H1047R mutation,PIK3CA H1047 mutation
+Monosomy 5,Abnormal 5
+PIK3CA Q546 mutation,PIK3CA exon 9 mutation
+PIK3CA Q546 mutation,PIK3CA activating mutation
+BRAF V600 mutation status,BRAF activating mutation
+Isochromosome 17q,Abnormal 17
+t(3q),Abnormal 3q
+Deletion 20q,Abnormal 20q
+Deletion 13q,Deletion 13
+Deletion 9q,Abnormal 9q
+t(11;19)(q23;p13.1),t(11;19)
+t(11;19)(q23;p13.1),KMT2A fusion
+Abnormal 3q26.2,Abnormal 3q
+BRAF aberration,RAF aberration
+Abnormal 3q,Chromosomal abnormality
+Abnormal 5,Chromosomal abnormality
+Abnormal 7,Chromosomal abnormality
+Trisomy 8,Chromosomal abnormality
+Abnormal 9q,Chromosomal abnormality
+Deletion 11q,Chromosomal abnormality
+Abnormal 12p,Chromosomal abnormality
+Deletion 13,Chromosomal abnormality
+Abnormal 17,Chromosomal abnormality
+Abnormal 20q,Chromosomal abnormality
+Isodicentric Xq13,Chromosomal abnormality
+Deletion Y,Chromosomal abnormality
+CDK6 aberration,G1/S cell cycle pathway
+CDK4 aberration,G1/S cell cycle pathway
+MET Y1003* mutation,MET mutation
+inv(3),
+t(3;21)(q26.2;q22.1),
+CCND1 mutation,CCND1 aberration
+Trisomy 19,Chromosomal abnormality
+IDH1 R132L mutation,IDH1 R132 mutation
+IDH1 R132C mutation,IDH1 R132 mutation
+IDH1 R132G mutation,IDH1 R132 mutation
+IDH1 R132S mutation,IDH1 R132 mutation
+MPL mutation,MPL mutation status
+JAK2 mutation status,JAK2 positive
+JAK2 mutation,JAK2 mutation status
+PTEN R130* mutation,PTEN deleterious mutation
+RB1 aberration,G1/S cell cycle pathway
+RB1 deletion,RB1 aberration
+EGFR vIII,EGFR positive
+RICTOR amplification,PI3K/AKT/MTOR pathway
+AR F877L mutation,AR positive
+FANCA deletion,FANC deletion
+FANCA deletion,DNA repair deletion
+PDGFR fusion,PDGFR aberration
+ATRX mutation,DNA repair mutation
+ATR deletion,Fanconi anemia pathway
+ATR deletion,DNA repair deletion
+FANCD2 deletion,FANC deletion
+FANCD2 deletion,DNA repair deletion
+BRCA1 aberration,BRCA aberration
+BRCA2 aberration,BRCA aberration
+POLE deletion,POLE aberration
+POLE deletion,DNA repair deletion
+POLE aberration,DNA repair pathway
+KIT amplification,KIT aberration
+RAD51 deletion,FANC deletion
+RAD51 deletion,HRR pathway
+RAD51 deletion,DNA repair deletion
+RAD51C deletion,FANC deletion
+RAD51C deletion,HRR pathway
+RAD51C deletion,DNA repair deletion
+SETD2 mutation,DNA repair mutation
+CDKN2B deletion,G1/S cell cycle pathway
+BRAF V600M mutation,BRAF V600 mutation
+ALK L1198 mutation,ALK mutation
+IDH1 R100 mutation,IDH1 mutation
+IDH1 mutation,IDH mutation
+STK11 deletion,STK11 aberration
+KIT fusion,KIT aberration
+KIT exon 13 resistance mutation,KIT exon 13 mutation
+KIT exon 13 resistance mutation,KIT resistance mutation
+IDH2 mutation,IDH mutation
+RAD50 deletion,HRR pathway
+RAD50 deletion,DNA repair deletion
+CCNE1 aberration,G1/S cell cycle pathway
+FGF9 amplification,FGF aberration
+MYC mutation,MYC aberration
+BCR-ABL1 fusion,ABL1 fusion
+BCR-ABL1 fusion,t(9;22)(q34;q11.2)
+EWSR1-ATF1 fusion,
+ZRSR2 deleterious mutation,ZRSR2 mutation
+ASXL1 deleterious mutation,ASXL1 mutation
+TP53 deleterious mutation,TP53 mutation
+STAG2 deleterious mutation,STAG2 mutation
+RUNX1 deleterious mutation,RUNX1 mutation
+ETV6 deleterious mutation,
+BCOR deleterious mutation,BCOR mutation
+SETD2 deletion,DNA repair deletion
+RAD51D deletion,HRR pathway
+RAD51D deletion,DNA repair deletion
+RAD51B deletion,HRR pathway
+RAD51B deletion,DNA repair deletion
+NBN deletion,HRR pathway
+NBN deletion,DNA repair deletion
+MRE11 deletion,HRR pathway
+MRE11 deletion,DNA repair deletion
+ATRX deletion,DNA repair deletion
+CHEK1 deletion,DNA repair deletion
+CDK12 deletion,DNA repair deletion
+t(9;22)(q34;q11.2),t(9;22)
+HRR deleterious mutation,HRR mutation
+MSH2 deleterious mutation,MSH2 mutation
+MSH2 deleterious mutation,DNA repair deleterious mutation
+MSH6 deleterious mutation,MSH6 mutation
+MSH6 deleterious mutation,DNA repair deleterious mutation
+GATA2-MECOM fusion,t(3;3)(q21.3;q26.2)
+GATA2-MECOM fusion,inv(3)(q21.3;q26.2)
+RAD51D deleterious mutation,RAD51D mutation
+RAD51D deleterious mutation,HRR deleterious mutation
+RAD51D deleterious mutation,DNA repair deleterious mutation
+RICTOR mutation,PI3K/AKT/MTOR pathway
+RAD51C deleterious mutation,DNA repair deleterious mutation
+RAD51C deleterious mutation,RAD51C mutation
+RAD51C deleterious mutation,FANC deleterious mutation
+RAD51C deleterious mutation,HRR deleterious mutation
+DNA repair deleterious mutation,DNA repair mutation
+Trisomy 9,Chromosomal abnormality
+EGFR C797S mutation,EGFR resistance mutation
+EGFR C797S mutation,EGFR exon 20 mutation
+PMS2 deleterious mutation,PMS2 mutation
+PMS2 deleterious mutation,DNA repair deleterious mutation
+DNA repair deletion,DNA repair pathway
+NRAS G12D mutation,NRAS G12 mutation
+MSH3 mutation,MMR mutation pathway
+HRAS G12D mutation,HRAS G12 mutation
+FANC deleterious mutation,FANC mutation
+PTEN deleterious mutation,PTEN mutation
+BAP1 deletion,DNA repair deletion
+JAK2 V617F mutation,JAK2 mutation
+MTOR amplification,MTOR aberration
+BRAF G464E mutation,BRAF activating mutation
+BRAF G469A mutation,BRAF activating mutation
+BRAF P367L mutation,BRAF activating mutation
+BRAF P367S mutation,BRAF activating mutation
+AKT3 amplification,AKT3 aberration
+t(9;11)(p21.3;q23.3),KMT2A fusion
+t(9;11)(p21.3;q23.3),t(9;11)
+KMT2A-MLLT3 fusion,t(9;11)(p21.3;q23.3)
+BRAF E586K mutation,BRAF activating mutation
+BRAF L597Q mutation,BRAF activating mutation
+BRAF L485W mutation,BRAF activating mutation
+BRAF G464V mutation,BRAF activating mutation
+BRAF G469R mutation,BRAF activating mutation
+BRAF G469V mutation,BRAF activating mutation
+BRAF K601E mutation,BRAF activating mutation
+BRAF K601N mutation,BRAF activating mutation
+BRAF K601T mutation,BRAF activating mutation
+BRAF L597S mutation,BRAF activating mutation
+BRAF L597V mutation,BRAF activating mutation
+BRAF N486_A489delinsK mutation,BRAF activating mutation
+BRAF N486_P490del mutation,BRAF activating mutation
+BRAF T599K mutation,BRAF activating mutation
+BRAF T599TS mutation,BRAF activating mutation
+BRAF T599TT mutation,BRAF activating mutation
+BRAF V600_K601delinsE mutation,BRAF V600 mutation
+BRAF T599I mutation,BRAF activating mutation
+BRAF kinase duplication,BRAF activating mutation
+EGFR G796A mutation,EGFR resistance mutation
+EGFR G796A mutation,EGFR exon 20 mutation
+IDH1 R132V mutation,IDH1 R132 mutation
+RET mutation,RET positive
+INPP4B mutation,
+CBL amplification,
+Microsatellite stable,
+Microsatellite instability-High,
+RPTOR mutation,
+CSF1R aberration,
+t(11;19),
+EWSR1-FLI1 fusion,
+ALK aberration,
+STAG2 mutation,
+DNMT3A mutation,
+GATA2 mutation,
+EP300 mutation,
+XRCC mutation,
+MUTYH mutation,
+Core binding factor abnormalities,
+PI3K/AKT/MTOR pathway,
+ETV6 fusion,
+MYC aberration,
+CREBBP mutation,
+t(6;11),
+TGFBR2 mutation,
+JAK2 positive,
+MUC1 positive,
+RSPO fusion,
+ARID1A mutation,
+SF3B1 mutation,
+IDH mutation,
+MDM2 amplification,
+ABL aberration,
+ESR1 mutation,
+Complex Cytogenetics,
+Chromosome 1 duplication,
+t(9;11),
+RAS/RAF/MEK/ERK pathway,
+t(3;3),
+ARID1A deletion,
+Microsatellite instability-Low,
+Fanconi anemia pathway,
+CBL mutation,
+t(10;11),
+NFE2L2 mutation,
+t(9;22),
+t(3;3)(q21.3;q26.2),
+H3F3A K27M mutation,
+ZRSR2 mutation,
+EZH2 mutation,
+BCOR mutation,
+DPYD mutation,
+Monosomal Karyotype,
+HRAS aberration,
+G1/S cell cycle pathway,
+t(6;9),
+MPL mutation status,
+RECQL4 mutation,
+MCL1 amplification,
+INPP4B deletion,
+SMARCB1 deletion,
+NPM1 positive,
+TET2 mutation,
+Chromosome 1 translocation,
+CD274 status,
+HRR pathway,
+SRC aberration,
+RUNX1 mutation,
+t(4;11),
+PPP2R2A mutation,
+FGFR pathway,
+RARA pathway,
+CYP2D6 mutation,
+RNF43 mutation,
+UGT1A1 mutation,
+VHL aberration,
+PRKDC mutation,
+ROS1 aberration,
+PDGFR aberration,
+inv(3)(q21.3;q26.2),
+MET aberration,
+NTRK aberration,
+PMS1 mutation,
+ASXL1 mutation,
+SH2B3 mutation,
+RET aberration,
+TP53 aberration,
+ERBB aberration,
+KIT aberration,
+KEAP1 mutation,
+GEN1 mutation,
+MMR pathway,
+CALR mutation status,
+FLT3 aberration,
+U2AF1 mutation,
+SRSF2 mutation,
+ERCC mutation,
+DNA repair pathway,
+FLCN aberration,
+Tumor Mutational Burden,
+CEBPA mutation,
+LCK mutation,
+NOTCH aberration,
+Microsatellite instability,
+KMT2A fusion,
+WRN mutation,
+Chromosomal abnormality,
+t(16;16),
+AR positive,

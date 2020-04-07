@@ -21,7 +21,24 @@ class Annotate(db.Model):
             'cancer': self.cancer,
             'annotate_c': self.annotate_c,
         }
+        return my_dict
 
+class OkrDrug(db.Model):
+    __tablename__ = 'okr_drug'
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    drug = db.Column(db.String(500))
+    level = db.Column(db.String(500))
+    drug_effect = db.Column(db.String(500))
+    mutation_id = db.Column(db.Integer(), db.ForeignKey('mutation.id'))
+
+    def to_dict(self):
+        my_dict = {
+            'id':self.id,
+            'drug': self.drug,
+            'level': self.level,
+            'drug_effect': self.drug_effect
+        }
+        return my_dict
 
 class AnnotateAuto(db.Model):  # 自动注释库
     __tablename__ = 'annotate_auto'

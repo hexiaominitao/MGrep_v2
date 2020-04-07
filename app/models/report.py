@@ -21,7 +21,7 @@ class Report(db.Model):
     check_r = db.Column(db.String(255))  # 复核人
     samples = db.relationship('SampleInfo',
                               secondary=sam_report, backref=db.backref('reports', lazy='dynamic'))
-    mutation = db.relationship('Mutation', backref='report', uselist=False)  # 突变
+    mutation = db.relationship('Mutations', backref='report', uselist=False)  # 突变
 
     def to_dict(self):
         my_dict = {

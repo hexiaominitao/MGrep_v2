@@ -138,14 +138,14 @@ class GetSeqInfo(Resource):
                                           doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
                                           room=row.get('科室'), diagnosis=row.get('临床诊断'),
                                           diagnosis_date=str2time(row.get('诊断日期')),
-                                          pathological=row.get('病理诊断'),
+                                          pathological=row.get('病理诊断'),pnumber=row.get('病理号'),
                                           pathological_date=str2time(row.get('诊断日期.1')),
-                                          recive_date=str2time(row.get('病理样本收到日期')),
-                                          mode_of_trans=row.get('运输方式'),
-                                          send_sample_date=str2time(row.get('送检日期')),
+                                          recive_date=str2time(row.get('病理样本收到日期')),Sour=row.get('样本来源'),
+                                          mode_of_trans=row.get('运输方式'),Tytime=str2time(row.get('采样时间')),
+                                          send_sample_date=str2time(row.get('送检日期')),mth=row.get('采样方式'),
                                           reciver=row.get('收样人'), recive_room_date=str2time(row.get('收样日期')),
                                           sample_status=row.get('状态是否正常'), sample_type=row.get('样本类型（报告用）'),
-                                          sample_size=row.get('样本来源'), sample_count=row.get('数量'),
+                                          sample_size=row.get('样本大小'), sample_count=row.get('数量'),
                                           seq_date=str2time(row.get('检测日期')), note=row.get('备注'),
                                           recorder=row.get('录入'), reviewer=row.get('审核'))
                         tre_h = TreatInfo(name='化疗', is_treat=row.get('是否接受化疗'),
@@ -157,7 +157,7 @@ class GetSeqInfo(Resource):
                         tre_b = TreatInfo(name='靶向治疗', is_treat=row.get('是否靶向药治疗'),
                                           star_time=str2time(row.get('开始时间.1')),
                                           end_time=str2time(row.get('结束时间.1')), effect=row.get('治疗效果.1'))
-                        fam = FamilyInfo(is_family=row.get('有无家族遗传疾病'))
+                        fam = FamilyInfo(diseases=row.get('有无家族遗传疾病'))
                         patho = PathologyInfo(pathology=row.get('病理审核'), cell_count=row.get('标本内细胞总量'),
                                               cell_content=set_float(row.get('肿瘤细胞含量')),
                                               spical_note=row.get('特殊说明'))
@@ -180,11 +180,11 @@ class GetSeqInfo(Resource):
                     else:
                         seq = SeqInfo.query.filter(SeqInfo.id == sam.get('id')).update({'status': '{}承包中'.format(name)})
                         msgs.append(sample)
-                        rep = Report(rep_code=rep_name, stage='突变二审', report_user=name) # todo 简化
+                        rep = Report(rep_code=rep_name, stage='突变审核', report_user=name) # todo 简化
                         db.session.add(rep)
                         rep.samples.append(samp)
 
-                        operation = Operation(user=name, name='突变二审', time=datetime.datetime.now())
+                        operation = Operation(user=name, name='突变审核', time=datetime.datetime.now())
                         samp.operation_log.append(operation)
                         db.session.add(operation)
                     db.session.commit()

@@ -47,7 +47,7 @@ def time_set(item):
             date = datetime.datetime.strptime(item, "%Y%m%d %H:%M")
         time = date.strftime('%Y-%m-%d %H:%M:%S')
     else:
-        time = None
+        time = ''
     return time
 
 
