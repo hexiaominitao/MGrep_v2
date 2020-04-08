@@ -15,6 +15,7 @@ from app.libs.ext import file_sam, file_okr
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
     tsv_to_list, file_2_dict
 from app.libs.report import del_db
+from app.libs.ir import save_mutation
 from app.libs.get_data import read_json
 
 
@@ -189,3 +190,15 @@ class OKRUpload(Resource):
 
         os.remove(file)
         return {'msg': 'okr更新成功!!!'}
+
+
+class IrUpload(Resource):
+    def __init__(self):
+        pass
+
+    def post(self):
+        filename = file_okr.save(request.files['file'])
+        file = file_okr.path(filename)
+        id = request.form['name']
+        report = Report.query.filter(Report.id == id).first()
+        mu = report.mutation

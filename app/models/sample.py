@@ -41,6 +41,7 @@ class SampleInfo(db.Model):
     treat_info = db.relationship('TreatInfo', backref='sample_info', lazy='dynamic')  # 治疗信息
     operation_log = db.relationship('Operation', backref='sample_info', lazy='dynamic')  # 操作记录
     lab_operation_id = db.relationship('LabOperation', backref='sample_info', lazy='dynamic')  # 流转信息
+    seq = db.relationship('SeqInfo',backref='sample_info', lazy='dynamic')
 
     # operation_record = db.relationship('Tag', secondary=record, backref=db.backref('sample_info', lazy='dynamic'))
     # seq_info = db.relationship('SeqInfo', backref='sample_info', lazy='dynamic')

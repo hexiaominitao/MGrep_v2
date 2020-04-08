@@ -10,7 +10,7 @@ login_magager = LoginManager()
 principal = Principal()
 
 file_sam = UploadSet('filesam', DOCUMENTS)
-file_okr = UploadSet('fileokr', ('tsv','json','xls','xlsx'))
+file_okr = UploadSet('fileokr', ('tsv','json','xls','xlsx','zip'))
 
 
 def str2time(string):

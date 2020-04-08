@@ -1,5 +1,46 @@
 import zipfile, shutil, os, csv, re
 import pandas as pd
+from flata import Flata
+from flata.storages import JSONStorage
+
+
+def df2dict(df):
+    '''
+    :param df: pandas.Datafram
+    :return:
+    '''
+    result_dict = []
+    for i in df.index:
+        row_dict = {}
+        df_row = df.loc[i].copy()
+        for sam in df.columns:
+            row_dict[sam] = str(df_row[sam])
+        result_dict.append(row_dict)
+    return result_dict
+
+
+def save_json_file(db_path, dic_file, table_name):
+    '''
+    :param db_path: json文件保存路径
+    :param dic_file: 要保存的字典
+    :param table_name: 表的名字
+    :return: None
+    '''
+    db = Flata(db_path, storage=JSONStorage)
+    tb = db.table(table_name)
+    tb.purge()
+    tb.insert({'tsv': dic_file})
+
+
+def read_json(path_db, table_name):
+    '''
+    :param path_db: json文件路径
+    :return:
+    '''
+    db = Flata(path_db, storage=JSONStorage)
+    tb = db.table(table_name)
+    dic = tb.all()
+    return dic
 
 
 def merge_tsv(vcf):
@@ -11,14 +52,14 @@ def merge_tsv(vcf):
     return df_merge
 
 
-def unzip_file(path_wk, mg_id, rep_id):
+def unzip_file(path_wk, mg_id, rep_id, dir_rep):
     '''
     :param path_wk: 工作目录
     :param mg_id: 迈景编号
     :param rep_id: 报告编号
     :return: vcf文件
     '''
-    dir_zip = dir_unzip = dir_rep = path_wk
+    dir_zip = dir_unzip = path_wk
     path_rep = os.path.join(dir_rep, rep_id)
     if not os.path.exists(path_rep):
         os.mkdir(path_rep)
@@ -175,11 +216,29 @@ def ir_10086(tsv, excel_file, df_d=pd.DataFrame()):
     df_rep['参考基因型'] = re_gene
     df_rep['检测基因型'] = de_gene
 
-    with pd.ExcelWriter(excel_file, mode='a') as writer:
-        df_ir.to_excel(writer, sheet_name='IR', index=False)
-        df_m.to_excel(writer, sheet_name='IR过滤', index=False)
-        df_c.to_excel(writer, sheet_name='CNV', index=False)
-        df_f.to_excel(writer, sheet_name='Fusion', index=False)
-        df_rep.to_excel(writer, sheet_name='Report', index=False)
-        pd.DataFrame().to_excel(writer, sheet_name='覆盖度', index=False)
-        df_d.to_excel(writer, sheet_name='详情', index=False)
+    dic_df = {'IR': df_ir, 'IR过滤': df_m, 'CNV': df_c, 'Fusion': df_f, 'Report': df_rep}  # 表格文件名
+    for k, df in dic_df.items():
+        save_json_file(excel_file, df2dict(df), k)
+
+    # 保存为excel
+    # with pd.ExcelWriter(excel_file, mode='a') as writer:
+    #     df_ir.to_excel(writer, sheet_name='IR', index=False)
+    #     df_m.to_excel(writer, sheet_name='IR过滤', index=False)
+    #     df_c.to_excel(writer, sheet_name='CNV', index=False)
+    #     df_f.to_excel(writer, sheet_name='Fusion', index=False)
+    #     df_rep.to_excel(writer, sheet_name='Report', index=False)
+    #     pd.DataFrame().to_excel(writer, sheet_name='覆盖度', index=False)
+    #     df_d.to_excel(writer, sheet_name='详情', index=False)
+
+
+def save_mutation(path_wk, dir_rep, mg_id, rep_id, excel_file):
+    '''
+    :param path_wk:  压缩文件所在目录
+    :param dir_rep:  输出文件夹目录
+    :param mg_id: 压缩文件编号
+    :param rep_id: mg_id对应申请单号
+    :param excel_file: 输出文件
+    :return: None
+    '''
+    tsv = unzip_file(path_wk, mg_id, rep_id, dir_rep)
+    ir_10086(tsv, excel_file)
