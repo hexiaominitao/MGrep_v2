@@ -9,7 +9,7 @@ from app.models.user import User
 class LoginView(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('username', required=True,
+        self.parser.add_argument('userName', required=True,
                                  help='请输入用户名')
         self.parser.add_argument('password', required=True,
                                  help='请输入密码')
@@ -22,7 +22,7 @@ class LoginView(Resource):
 
     def post(self):
         args = self.parser.parse_args()
-        username = args.get('username')
+        username = args.get('userName')
         password = args.get('password')
         user = User.query.filter_by(
             username=username
