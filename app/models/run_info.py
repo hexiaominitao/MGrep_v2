@@ -26,7 +26,7 @@ class SeqInfo(db.Model):
     note = db.Column(db.String(255))  # 备注
     status = db.Column(db.String(255))  # 状态
     run_info_id = db.Column(db.Integer(), db.ForeignKey('run_info.id'))
-    sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample.id'))
+    sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info.id'))
 
     def to_dict(self):
         my_dict = {
