@@ -231,7 +231,7 @@ def ir_10086(tsv, excel_file, df_d=pd.DataFrame()):
     #     df_d.to_excel(writer, sheet_name='详情', index=False)
 
 
-def save_mutation(path_wk, dir_rep, mg_id, rep_id, excel_file):
+def save_mutation(path_wk, dir_rep, mg_id, rep_id):
     '''
     :param path_wk:  压缩文件所在目录
     :param dir_rep:  输出文件夹目录
@@ -241,4 +241,5 @@ def save_mutation(path_wk, dir_rep, mg_id, rep_id, excel_file):
     :return: None
     '''
     tsv = unzip_file(path_wk, mg_id, rep_id, dir_rep)
+    excel_file = os.path.join(dir_rep,rep_id,'{}.json'.format(mg_id))
     ir_10086(tsv, excel_file)
