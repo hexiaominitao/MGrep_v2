@@ -197,8 +197,19 @@ class IrUpload(Resource):
         pass
 
     def post(self):
-        filename = file_okr.save(request.files['file'])
-        file = file_okr.path(filename)
-        id = request.form['name']
-        report = Report.query.filter(Report.id == id).first()
-        mu = report.mutation
+        path_wk = current_app.config['COUNT_DEST']
+        dir_res = current_app.config['RES_REPORT']
+
+        for file in request.files.getlist('file'):
+            file_okr.save(file)
+
+        rep_id = request.form['name']
+        report = Report.query.filter(Report.id == rep_id).first()
+        sample = report.samples[0]
+        rep_mg = sample.req_mg
+        mg_id = sample.mg_id
+
+        dir_rep = os.path.join(dir_res, rep_mg)
+
+        save_mutation(path_wk, dir_rep, mg_id, rep_mg)
+        return {'msg': '保存完成'}
