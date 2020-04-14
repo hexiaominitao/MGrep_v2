@@ -186,3 +186,15 @@ def download1(id,item,note):
         response = make_response(
         send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True))
         return response
+
+
+@home.route('/api/download_okr/<filename>/')
+def download_ork(filename):
+    dir_res = current_app.config['RES_REPORT']
+    path_res = os.path.join(dir_res, 'okr')
+    file = os.path.join(path_res,'{}.xlsx'.format(filename))
+    if file:
+        path_rep = os.path.join(os.getcwd(), path_res)
+        response = make_response(
+            send_from_directory(path_rep, '{}.xlsx'.format(filename), as_attachment=True))
+        return response

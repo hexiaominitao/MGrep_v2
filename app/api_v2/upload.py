@@ -11,6 +11,9 @@ from app.models.run_info import RunInfo, SeqInfo
 from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations, Chemotherapy
+from app.models.record_config import PatientRecord, SampleRecord, \
+    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod
+
 from app.libs.ext import file_sam, file_okr
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
     tsv_to_list, file_2_dict
@@ -213,3 +216,22 @@ class IrUpload(Resource):
 
         save_mutation(path_wk, dir_rep, mg_id, rep_mg)
         return {'msg': '保存完成'}
+
+
+class SampleRecordUpload(Resource):
+    def post(self):
+        filename = file_okr.save(request.files['file'])
+        file = file_okr.path(filename)
+        list_sample = excel_to_dict(file)
+        for row in list_sample:
+            mg_id = row['迈景编号']
+            req_mg = row['申请单号']
+            sample = SampleRecord.query.filter(and_(
+                SampleRecord.mg_id == mg_id, SampleRecord.req_mg == req_mg))
+            if sample:
+                pass
+            else:
+                sample = SampleRecord(mg_id=mg_id, req_mg=req_mg)
+                db.session.add(sample)
+        db.session.commit()
+        os.remove(file)

@@ -282,12 +282,32 @@ def get_drug(list_dic):
     else:
         drug = []
     drug_set = set()
+    effect_set = set()
     out_drug = []
+
+    rep_eff = {'indicated': '敏感', 'contraindicated': '禁忌',
+               'resistance': '耐药', 'not_recommended': '不推荐'}
+
     if drug:
+        for row in drug:
+            effect_set.add(row['drug_effect'])
+        if 'indicated' in effect_set and 'not_recommended' in effect_set:
+            for row in drug:
+                if 'not_recommended' in row['drug_effect']:
+                    drug.remove(row)
         for row in drug:
             drug_set.add(row['drug'])
         for row in drug:
             if row['drug'] in drug_set:
+                effect = row['drug_effect']
+                row['drug_effect'] = convert_str(effect, rep_eff)
                 out_drug.append(row)
                 drug_set.remove(row['drug'])
     return out_drug
+
+
+def convert_str(row, rep):
+    rep = dict((re.escape(k), v) for k, v in rep.items())
+    pat = re.compile('|'.join(rep.keys()))
+    out = pat.sub(lambda n: rep[re.escape(n.group(0))], row)
+    return out

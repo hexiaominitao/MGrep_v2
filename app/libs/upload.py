@@ -148,3 +148,5 @@ def file_2_dict(file):
             dic_row[k] = str(df_row[k])
         result.append(dic_row)
     return result
+
+
