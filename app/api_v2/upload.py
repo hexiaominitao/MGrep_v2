@@ -12,7 +12,7 @@ from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations, Chemotherapy
 from app.models.record_config import PatientRecord, SampleRecord, \
-    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod
+    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod,SalesInfo,HospitalInfo
 
 from app.libs.ext import file_sam, file_okr
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
@@ -227,11 +227,44 @@ class SampleRecordUpload(Resource):
             mg_id = row['迈景编号']
             req_mg = row['申请单号']
             sample = SampleRecord.query.filter(and_(
-                SampleRecord.mg_id == mg_id, SampleRecord.req_mg == req_mg))
+                SampleRecord.mg_id == mg_id, SampleRecord.req_mg == req_mg)).first()
             if sample:
                 pass
             else:
                 sample = SampleRecord(mg_id=mg_id, req_mg=req_mg)
                 db.session.add(sample)
+        db.session.commit()
+        os.remove(file)
+
+
+class GeneralUpload(Resource):
+    def post(self):
+        filename = file_okr.save(request.files['file'])
+        file = file_okr.path(filename)
+        list_sample = excel_to_dict(file)
+        item = request.form['name']
+
+        for row in list_sample:
+            if item == 'sales':
+                code = row['销售代码']
+                sale = SalesInfo.query.filter(SalesInfo.code==code).first()
+                if sale:
+                    pass
+                else:
+                    sale = SalesInfo(code=code,name=row.get('销售姓名'),
+                                     status=row.get('状态'),mail=row.get('电子邮箱'),
+                                     region=row.get('所属区域'),phone=row.get('电话'),
+                                     address=row.get('地址'))
+                    db.session.add(sale)
+            if item == 'hospital':
+                name = row['医院名称']
+                hospital = HospitalInfo.query.filter(HospitalInfo.name==name).first()
+                if hospital:
+                    pass
+                else:
+                    hospital = HospitalInfo(name=name)
+                    db.session.add(hospital)
+            # 利用item 添加新的项目
+
         db.session.commit()
         os.remove(file)

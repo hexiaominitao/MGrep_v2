@@ -11,14 +11,17 @@ my_api.add_resource(LoginOut, '/user/logout')
 my_api.add_resource(GetInfo, '/user/get_info')
 
 # 文件上传
-from app.api_v2.upload import SampleInfoUpload, RunInfoUpload, MutationUpload, OKRUpload, IrUpload, SampleRecordUpload
+from app.api_v2.upload import SampleInfoUpload, RunInfoUpload, MutationUpload, \
+    OKRUpload, IrUpload, SampleRecordUpload, GeneralUpload
 
 my_api.add_resource(SampleInfoUpload, '/upload/sample_info_upload')  # 样本信息上传
 my_api.add_resource(RunInfoUpload, '/upload/run_info_upload')  # 上机信息上传
 my_api.add_resource(MutationUpload, '/upload/mutation_upload/')  # 突变结果上传
-my_api.add_resource(OKRUpload, '/upload/okr/')
-my_api.add_resource(IrUpload, '/upload/ir_upload/')
-my_api.add_resource(SampleRecordUpload, '/upload/sample_record/')
+my_api.add_resource(OKRUpload, '/upload/okr/') # okr
+my_api.add_resource(IrUpload, '/upload/ir_upload/') # ir压缩包
+my_api.add_resource(SampleRecordUpload, '/upload/sample_record/') # 样本信息登记
+my_api.add_resource(GeneralUpload, '/upload/general/') # 通用上传模块
+
 
 # 获取数据
 from app.api_v2.get_data import GetAllSample, GetRunInfo, GetSeqInfo

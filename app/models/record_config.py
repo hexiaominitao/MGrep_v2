@@ -19,7 +19,20 @@ class PatientRecord(db.Model):
     contact = db.Column(db.String(50), nullable=True)  # 联系方式
     ID_number = db.Column(db.String(50), nullable=True)  # 身份证号
     address = db.Column(db.String(50), nullable=True)  # 地址
+    smoke = db.Column(db.String(50), nullable=True)  # 吸烟史
     samples = db.relationship('SampleRecord', backref='patien_trecord', lazy='dynamic')
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name,
+            'age': self.age, 'gender': self.gender,
+            'nation': self.nation, 'origo': self.origo, 'contact': self.contact,
+            'ID_number': self.ID_number, 'address': self.address, 'smoke': self.smoke
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
 
 
 class SampleRecord(db.Model):
@@ -64,7 +77,7 @@ class SampleRecord(db.Model):
             'sample_type': self.sample_type, 'mth': self.mth, 'mth_position': self.mth_position,
             'Tytime': self.Tytime, 'sample_count': self.sample_count, 'note': self.note
         }
-        for k,v in my_dict.items():
+        for k, v in my_dict.items():
             if not v:
                 my_dict[k] = ''
         return my_dict
@@ -98,6 +111,9 @@ class FamilyRecord(db.Model):
             'id': self.id, 'relationship': self.relationship,
             'age': self.age, 'diseases': self.diseases
         }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
         return my_dict
 
 
@@ -116,6 +132,9 @@ class TreatRecord(db.Model):
             'star_time': self.star_time, 'end_time': self.end_time,
             'effect': self.effect
         }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
         return my_dict
 
 
@@ -134,4 +153,73 @@ class SendMethod(db.Model):
             'to': self.to, 'phone_n': self.phone_n,
             'addr': self.addr
         }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+
+class SalesInfo(db.Model):
+    __tablename__ = 'sales_info'
+    id = db.Column(db.Integer(),primary_key=True)
+    code = db.Column(db.String(20),nullable=False)
+    name = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    mail = db.Column(db.String(50))
+    region = db.Column(db.String(50))
+    phone = db.Column(db.String(50))
+    address = db.Column(db.String(50))
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'code': self.code,
+            'name': self.name, 'status': self.status,
+            'mail': self.mail, 'region': self.region, 'phone': self.phone,
+            'address': self.address
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+class HospitalInfo(db.Model):
+    __tablename__ = 'hosptial_info'
+    id = db.Column(db.Integer(),primary_key=True)
+    name = db.Column(db.String(50))
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+class SampleType(db.Model):
+    __tablename__ = 'sample_type'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50))
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+class MethodSample(db.Model):
+    __tablename__ = 'method_sample'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50))
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
         return my_dict

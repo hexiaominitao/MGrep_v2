@@ -32,5 +32,5 @@ class SampleInfoRecord(Resource):
             dic_sam['edit_able'] = False
             list_sam.append(dic_sam)
 
-        print(list_sam[0])
+        # print(list_sam[0])
         return jsonify({'sample': list_sam, 'total': total, 'test': {'name': 'hah'}})
