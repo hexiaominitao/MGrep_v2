@@ -12,11 +12,11 @@ from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations, Chemotherapy
 from app.models.record_config import PatientRecord, SampleRecord, \
-    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod,SalesInfo,HospitalInfo
+    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod, SalesInfo, HospitalInfo,SampleType
 
 from app.libs.ext import file_sam, file_okr
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
-    tsv_to_list, file_2_dict
+    tsv_to_list, file_2_dict, m_excel2list
 from app.libs.report import del_db
 from app.libs.ir import save_mutation
 from app.libs.get_data import read_json
@@ -235,35 +235,49 @@ class SampleRecordUpload(Resource):
                 db.session.add(sample)
         db.session.commit()
         os.remove(file)
+        return {'msg': '上传成功!!!'}
 
 
 class GeneralUpload(Resource):
     def post(self):
         filename = file_okr.save(request.files['file'])
         file = file_okr.path(filename)
-        list_sample = excel_to_dict(file)
-        item = request.form['name']
 
-        for row in list_sample:
-            if item == 'sales':
-                code = row['销售代码']
-                sale = SalesInfo.query.filter(SalesInfo.code==code).first()
-                if sale:
-                    pass
-                else:
-                    sale = SalesInfo(code=code,name=row.get('销售姓名'),
-                                     status=row.get('状态'),mail=row.get('电子邮箱'),
-                                     region=row.get('所属区域'),phone=row.get('电话'),
-                                     address=row.get('地址'))
-                    db.session.add(sale)
-            if item == 'hospital':
-                name = row['医院名称']
-                hospital = HospitalInfo.query.filter(HospitalInfo.name==name).first()
-                if hospital:
-                    pass
-                else:
-                    hospital = HospitalInfo(name=name)
-                    db.session.add(hospital)
+        item = request.form['name']
+        if item == 'sales':
+            list_sample = m_excel2list(file)
+            for name, dict_r in list_sample.items():
+                print(name)
+                if name == 'sales':
+                    for row in dict_r:
+                        code = row['销售代码']
+                        sale = SalesInfo.query.filter(SalesInfo.code == code).first()
+                        if sale:
+                            pass
+                        else:
+                            sale = SalesInfo(code=code, name=row.get('销售姓名'),
+                                             status=row.get('状态'), mail=row.get('电子邮箱'),
+                                             region=row.get('所属区域'), phone=row.get('电话'),
+                                             address=row.get('地址'))
+                            db.session.add(sale)
+                if name == 'hospital':
+                    for row in dict_r:
+                        h_name = row['医院']
+                        hospital = HospitalInfo.query.filter(HospitalInfo.name == h_name).first()
+                        if hospital:
+                            pass
+                        else:
+                            hospital = HospitalInfo(name=h_name)
+                            db.session.add(hospital)
+                if name == 'type':
+                    for row in dict_r:
+                        name = row['样本类型']
+                        ty = SampleType.query.filter(SampleType.name == name).first()
+                        if ty:
+                            pass
+                        else:
+                            ty = SampleType(name=name)
+                            db.session.add(ty)
             # 利用item 添加新的项目
 
         db.session.commit()

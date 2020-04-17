@@ -20,3 +20,4 @@ class TemplateItem(Resource):
 
         template_item = {'item': [{'value': cc['item'], 'label': cc['item']} for cc in config]}
         return jsonify(template_item)
+

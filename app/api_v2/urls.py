@@ -20,7 +20,7 @@ my_api.add_resource(MutationUpload, '/upload/mutation_upload/')  # 突变结果�
 my_api.add_resource(OKRUpload, '/upload/okr/') # okr
 my_api.add_resource(IrUpload, '/upload/ir_upload/') # ir压缩包
 my_api.add_resource(SampleRecordUpload, '/upload/sample_record/') # 样本信息登记
-my_api.add_resource(GeneralUpload, '/upload/general/') # 通用上传模块
+my_api.add_resource(GeneralUpload, '/upload/general_upload/') # 通用上传模块
 
 
 # 获取数据
@@ -62,5 +62,6 @@ my_api.add_resource(TemplateItem, '/config/template_item/')
 
 # 样本录入
 
-from app.api_v2.sample_record import SampleInfoRecord
+from app.api_v2.sample_record import SampleInfoRecord,SalesHospitalType
 my_api.add_resource(SampleInfoRecord, '/sample_record/')
+my_api.add_resource(SalesHospitalType, '/sample_record_config/')

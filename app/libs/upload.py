@@ -150,3 +150,24 @@ def file_2_dict(file):
     return result
 
 
+def df2list(df):
+    '''
+    :param df: pandas.Datafram
+    :return:
+    '''
+    result_dict = []
+    for i in df.index:
+        row_dict = {}
+        df_row = df.loc[i].copy()
+        for sam in df.columns:
+            row_dict[sam] = str(df_row[sam])
+        result_dict.append(row_dict)
+    return result_dict
+
+
+def m_excel2list(file):
+    df_a = pd.read_excel(file,sheet_name=None,keep_default_na=False)
+    res_dict = {}
+    for name,df in df_a.items():
+        res_dict[name] = df2list(df)
+    return res_dict

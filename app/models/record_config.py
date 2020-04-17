@@ -161,8 +161,8 @@ class SendMethod(db.Model):
 
 class SalesInfo(db.Model):
     __tablename__ = 'sales_info'
-    id = db.Column(db.Integer(),primary_key=True)
-    code = db.Column(db.String(20),nullable=False)
+    id = db.Column(db.Integer(), primary_key=True)
+    code = db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(50))
     status = db.Column(db.String(50))
     mail = db.Column(db.String(50))
@@ -182,9 +182,10 @@ class SalesInfo(db.Model):
                 my_dict[k] = ''
         return my_dict
 
+
 class HospitalInfo(db.Model):
-    __tablename__ = 'hosptial_info'
-    id = db.Column(db.Integer(),primary_key=True)
+    __tablename__ = 'hospital_info'
+    id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50))
 
     def to_dict(self):
@@ -195,6 +196,7 @@ class HospitalInfo(db.Model):
             if not v:
                 my_dict[k] = ''
         return my_dict
+
 
 class SampleType(db.Model):
     __tablename__ = 'sample_type'
@@ -209,6 +211,7 @@ class SampleType(db.Model):
             if not v:
                 my_dict[k] = ''
         return my_dict
+
 
 class MethodSample(db.Model):
     __tablename__ = 'method_sample'
