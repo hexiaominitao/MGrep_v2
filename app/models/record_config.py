@@ -190,7 +190,7 @@ class HospitalInfo(db.Model):
 
     def to_dict(self):
         my_dict = {
-            'id': self.id, 'name': self.name
+            'id': self.id, 'name': self.name, 'label': self.name
         }
         for k, v in my_dict.items():
             if not v:
@@ -205,7 +205,7 @@ class SampleType(db.Model):
 
     def to_dict(self):
         my_dict = {
-            'id': self.id, 'name': self.name
+            'id': self.id, 'name': self.name, 'label': self.name
         }
         for k, v in my_dict.items():
             if not v:
@@ -217,6 +217,36 @@ class MethodSample(db.Model):
     __tablename__ = 'method_sample'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(50))
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+
+class CancerTypes(db.Model):
+    __tablename__ = 'cancer_types'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(100))
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+
+class SeqItems(db.Model):
+    __tablename__ = 'seq_items'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(100))
 
     def to_dict(self):
         my_dict = {

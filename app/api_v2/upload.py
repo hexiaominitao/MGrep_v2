@@ -12,7 +12,8 @@ from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations, Chemotherapy
 from app.models.record_config import PatientRecord, SampleRecord, \
-    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod, SalesInfo, HospitalInfo,SampleType
+    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod, SalesInfo, HospitalInfo, SampleType, \
+    SeqItems, CancerTypes
 
 from app.libs.ext import file_sam, file_okr
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
@@ -226,12 +227,14 @@ class SampleRecordUpload(Resource):
         for row in list_sample:
             mg_id = row['迈景编号']
             req_mg = row['申请单号']
+            code = req_mg[4:8]
+            sale = SalesInfo.query.filter(SalesInfo.code==code).first()
             sample = SampleRecord.query.filter(and_(
                 SampleRecord.mg_id == mg_id, SampleRecord.req_mg == req_mg)).first()
             if sample:
                 pass
             else:
-                sample = SampleRecord(mg_id=mg_id, req_mg=req_mg)
+                sample = SampleRecord(mg_id=mg_id, req_mg=req_mg,sales=sale.name)
                 db.session.add(sample)
         db.session.commit()
         os.remove(file)
@@ -278,6 +281,24 @@ class GeneralUpload(Resource):
                         else:
                             ty = SampleType(name=name)
                             db.session.add(ty)
+                if name == 'cancer':
+                    for row in dict_r:
+                        name = row['癌症类型']
+                        cancer = CancerTypes.query.filter(CancerTypes.name == name).first()
+                        if cancer:
+                            pass
+                        else:
+                            cancer = CancerTypes(name=name)
+                            db.session.add(cancer)
+                if name == 'items':
+                    for row in dict_r:
+                        name = row['检测项目']
+                        items = SeqItems.query.filter(SeqItems.name == name).first()
+                        if items:
+                            pass
+                        else:
+                            items = SeqItems(name=name)
+                            db.session.add(items)
             # 利用item 添加新的项目
 
         db.session.commit()

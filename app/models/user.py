@@ -34,7 +34,7 @@ class User(db.Model):
     def check_password(self, password):
         return bcrypt.check_password_hash(self.passwd, password)
 
-    def generate_auth_token(self, expiration=6000):
+    def generate_auth_token(self, expiration=184000):
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({'id': self.id})
 

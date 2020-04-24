@@ -4,7 +4,8 @@ from sqlalchemy import and_
 
 from app.models.user import User
 from app.models.record_config import PatientRecord, SampleRecord, \
-    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod, SalesInfo, HospitalInfo, SampleType
+    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod, SalesInfo, HospitalInfo, \
+    SampleType, SeqItems, CancerTypes
 
 
 class SampleInfoRecord(Resource):
@@ -43,22 +44,17 @@ class SalesHospitalType(Resource):
 
     def get(self):
         reslt = {}
-        sales = SalesInfo.query.all()
-        list_sale = []
-        for sale in sales:
-            list_sale.append(sale.to_dict())
 
-        list_hospital = []
-        hospitals = HospitalInfo.query.all()
-        for hospital in hospitals:
-            list_hospital.append(hospital.to_dict())
+        def get_info(sales):
+            list_sale = []
+            for sale in sales:
+                list_sale.append(sale.to_dict())
+            return list_sale
 
-        list_type = []
-        types = SampleType.query.all()
-        for type in types:
-            list_type.append(type.to_dict())
-        reslt['sales'] = list_sale
-        reslt['hospital'] = list_hospital
-        reslt['type'] = list_type
+        reslt['sales'] = get_info(SalesInfo.query.all())
+        reslt['hospital'] = get_info(HospitalInfo.query.all())
+        reslt['type'] = get_info(SampleType.query.all())
+        reslt['cancers'] = get_info(CancerTypes.query.all())
+        reslt['seq_items'] = get_info(SeqItems.query.all())
         # return jsonify({'sales': list_sale, 'hospital': list_hospital, 'type': list_type})
         return jsonify(reslt)
