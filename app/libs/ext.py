@@ -35,3 +35,11 @@ def set_float(row):
     except:
         row = None
     return row
+
+def get_local_time(str):
+    if str:
+        utc_time = datetime.datetime.strptime(str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        local_time = utc_time + datetime.timedelta(hours=8)
+    else:
+        local_time = None
+    return local_time

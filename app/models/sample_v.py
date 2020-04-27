@@ -13,6 +13,10 @@ class PatientInfoV(db.Model):
     ID_number = db.Column(db.String(50), nullable=True)  # 身份证号
     address = db.Column(db.String(50), nullable=True)  # 地址
     smoke = db.Column(db.String(50), nullable=True)  # 吸烟史
+    have_family = db.Column(db.String(50))  # 家族史情况
+    targeted_info = db.Column(db.String(50))  # 靶向治疗
+    chem_info = db.Column(db.String(50))  # 化疗
+    radio_info = db.Column(db.String(50))  # 放疗
 
     applys = db.relationship('ApplyInfo', backref='patient_info_v', lazy='dynamic')  # 申请信息
     family_infos = db.relationship('FamilyInfoV', backref='patient_info_v', lazy='dynamic')  # 家族史信息
@@ -23,7 +27,9 @@ class PatientInfoV(db.Model):
             'id': self.id, 'name': self.name,
             'age': self.age, 'gender': self.gender,
             'nation': self.nation, 'origo': self.origo, 'contact': self.contact,
-            'ID_number': self.ID_number, 'address': self.address, 'smoke': self.smoke
+            'ID_number': self.ID_number, 'address': self.address, 'smoke': self.smoke,
+            'targeted_info': self.targeted_info, 'have_family': self.have_family,
+            'chem_info': self.chem_info, 'radio_info': self.radio_info
         }
         for k, v in my_dict.items():
             if not v:
@@ -53,7 +59,8 @@ class FamilyInfoV(db.Model):
 class TreatInfoV(db.Model):
     __tablename__ = 'treat_info_v'
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), nullable=True)  # 项目
+    item = db.Column(db.String(50), nullable=True)  # 项目
+    name = db.Column(db.String(50), nullable=True)  # 药物
     star_time = db.Column(db.Date(), nullable=True)  # 开始时间
     end_time = db.Column(db.Date(), nullable=True)  # 结束时间
     effect = db.Column(db.String(100), nullable=True)  # 效果
@@ -75,32 +82,34 @@ class ApplyInfo(db.Model):
     __tablename__ = 'apply_info'
     id = db.Column(db.Integer(), primary_key=True)
     req_mg = db.Column(db.String(50), nullable=False)  # 申请单号
+    mg_id = db.Column(db.String(50), nullable=False)  # 迈景编号
     pi_name = db.Column(db.String(50))  # PI姓名
     sales = db.Column(db.String(50))  # 销售代表
     outpatient_id = db.Column(db.String(50))  # 门诊号/住院号
     doctor = db.Column(db.String(50), nullable=True)  # 送检医生
     hosptial = db.Column(db.String(50), nullable=True)  # 送检单位
     room = db.Column(db.String(50), nullable=True)  # 送检科室
-    pnumber = db.Column(db.String(100))  # 病理号
     cancer = db.Column(db.String(100))  # 结果解释用癌症类型
     cancer_d = db.Column(db.String(100))  # 肿瘤类型
     original = db.Column(db.String(500))  # 原发部位
     metastasis = db.Column(db.String(500))  # 转移部位
     pathological = db.Column(db.String(500), nullable=True)  # 病理诊断
     pathological_date = db.Column(db.Date(), nullable=True)  # 病理诊断日期
+    note = db.Column(db.String(1000))  # 备注
 
     patient_info_id = db.Column(db.Integer(), db.ForeignKey('patient_info_v.id'))  # 患者信息
 
     send_methods = db.relationship('SendMethodV', backref='apply_info', lazy='dynamic')  # 报告发送信息
     sample_infos = db.relationship('SampleInfoV', backref='apply_info', lazy='dynamic')  # 样本信息
+    rep_item_infos = db.relationship('ReportItem', backref='apply_info', lazy='dynamic')  # 检测项目
 
     def to_dict(self):
         my_dict = {
-            'id': self.id, 'req_mg': self.req_mg, 'pi_name': self.pi_name, 'sales': self.sales,
+            'id': self.id, 'req_mg': self.req_mg, 'mg_id': self.mg_id, 'pi_name': self.pi_name, 'sales': self.sales,
             'outpatient_id': self.outpatient_id, 'doctor': self.doctor, 'hosptial': self.hosptial,
-            'room': self.room,'pnumber': self.pnumber,'cancer': self.cancer,'cancer_d': self.cancer_d,
-            'original': self.original,'metastasis': self.metastasis,'pathological': self.pathological,
-            'pathological_date': self.pathological_date
+            'room': self.room, 'cancer': self.cancer, 'cancer_d': self.cancer_d,
+            'original': self.original, 'metastasis': self.metastasis, 'pathological': self.pathological,
+            'pathological_date': self.pathological_date, 'note': self.note
         }
         for k, v in my_dict.items():
             if not v:
@@ -133,7 +142,8 @@ class SendMethodV(db.Model):
 class SampleInfoV(db.Model):
     __tablename__ = 'sample_info_v'
     id = db.Column(db.Integer(), primary_key=True)
-    mg_id = db.Column(db.String(50), nullable=False)  # 迈景编号
+    sample_id = db.Column(db.String(50), nullable=False)  # 样本编号
+    pnumber = db.Column(db.String(100))  # 病理号
     seq_type = db.Column(db.String(50), nullable=True)  # 项目类型
     sample_type = db.Column(db.String(50), nullable=True)  # 样本类型
     mth = db.Column(db.String(100))  # 采样方式
@@ -144,13 +154,13 @@ class SampleInfoV(db.Model):
 
     apply_info_id = db.Column(db.Integer(), db.ForeignKey('apply_info.id'))  # 申请信息
 
-    report_items = db.relationship('ReportItem', backref='sample_info_v', lazy='dynamic')
+    # report_items = db.relationship('ReportItem', backref='sample_info_v', lazy='dynamic')
 
     def to_dict(self):
         my_dict = {
-            'id': self.id, 'mg_id': self.mg_id, 'seq_type': self.seq_type, 'sample_type': self.sample_type,
-            'mth': self.mth, 'mth_position': self.mth_position, 'Tytime': self.Tytime,
-            'sample_count': self.sample_count,
+            'id': self.id, 'code': self.sample_id[-2:], 'seq_type': self.seq_type, 'sample_type': self.sample_type,
+            'mth': self.mth, 'mth_position': self.mth_position, 'Tytime': self.Tytime,'pnumber': self.pnumber,
+            'counts': self.sample_count,
             'note': self.note
         }
         for k, v in my_dict.items():
@@ -162,9 +172,10 @@ class SampleInfoV(db.Model):
 class ReportItem(db.Model):
     __tablename__ = 'report_item'
     id = db.Column(db.Integer(), primary_key=True)
+    req_mg = db.Column(db.String(50), nullable=False)  # 申请单号
     name = db.Column(db.String(100))
 
-    sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))
+    apply_info_id = db.Column(db.Integer(), db.ForeignKey('apply_info.id'))  # 申请信息
 
     def to_dict(self):
         my_dict = {
