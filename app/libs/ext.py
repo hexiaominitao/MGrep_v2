@@ -1,4 +1,4 @@
-import os, datetime
+import os, datetime, time
 
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -43,3 +43,10 @@ def get_local_time(str):
     else:
         local_time = None
     return local_time
+
+
+def get_utc_time(local_t):
+    """本地时间转UTC时间（-8: 00）"""
+    utc_t = local_t - datetime.timedelta(hours=8)
+    utc_st = datetime.datetime.strftime(utc_t, "%Y-%m-%dT%H:%M:%S.%fZ")
+    return utc_st

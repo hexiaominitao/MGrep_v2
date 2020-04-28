@@ -1,4 +1,5 @@
 from . import db
+from app.libs.ext import get_utc_time
 
 
 class PatientInfoV(db.Model):
@@ -159,7 +160,8 @@ class SampleInfoV(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id, 'code': self.sample_id[-2:], 'seq_type': self.seq_type, 'sample_type': self.sample_type,
-            'mth': self.mth, 'mth_position': self.mth_position, 'Tytime': self.Tytime,'pnumber': self.pnumber,
+            'mth': self.mth, 'mth_position': self.mth_position, 'Tytime': get_utc_time(self.Tytime),
+            'pnumber': self.pnumber,
             'counts': self.sample_count,
             'note': self.note
         }

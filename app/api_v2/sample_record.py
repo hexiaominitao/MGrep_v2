@@ -11,7 +11,7 @@ from app.models.record_config import PatientRecord, SampleRecord, \
     SampleType, SeqItems, CancerTypes
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem
-from app.libs.ext import get_local_time
+from app.libs.ext import get_local_time, get_utc_time
 
 
 class SampleInfoRecord(Resource):
@@ -41,7 +41,8 @@ class SampleInfoRecord(Resource):
                 list_sam = []
                 if sams:
                     for sam in sams:
-                        list_sam.append(sam.to_dict())
+                        dic_sam = sam.to_dict()
+                        list_sam.append(dic_sam)
                 return list_sam
 
             dic_apply = apply.to_dict()
@@ -108,9 +109,9 @@ class SampleInfoRecord(Resource):
                 pat = PatientInfoV(name=name, age=sam['patient_info']['age'],
                                    gender=sam['patient_info']['gender'], nation=sam['patient_info']['nation'],
                                    origo=sam['patient_info']['origo'], contact=sam['patient_info']['contact'],
-                                   ID_number=ID_number, smoke=smoke, have_family=sam['have_family'],
-                                   targeted_info=sam['targeted_info'], chem_info=sam['chem_info'],
-                                   radio_info=sam['radio_info'])
+                                   ID_number=ID_number, smoke=smoke, have_family=sam['patient_info']['have_family'],
+                                   targeted_info=sam['patient_info']['targeted_info'], chem_info=sam['patient_info']['chem_info'],
+                                   radio_info=sam['patient_info']['radio_info'])
                 db.session.add(pat)
             for fam in sam['family_info']:
                 if fam['relationship']:
@@ -148,6 +149,11 @@ class SampleInfoRecord(Resource):
             samples = sam['samplinfos']
             print(samples)
             for sample in samples:
+                print(sample['Tytime'])
+                time1 = (get_local_time(sample['Tytime']))
+                print(time1)
+                time2 = get_utc_time((time1))
+                print(time2)
                 sample_id = '{}{}'.format(mg_id, sample['code'])
                 print(sample_id)
                 sample_info = SampleInfoV.query.filter(SampleInfoV.sample_id == sample_id).first()
@@ -230,7 +236,7 @@ class SampleInfoRecord(Resource):
                     'sample_count': sample['counts'], 'note': sample['note']
                 })
             SendMethodV.query.filter(SendMethodV.id == sam['send_methods']['id']).update({
-                'the_way': sam['send_methods']['id'], 'to': sam['send_methods']['to'],
+                'the_way': sam['send_methods']['the_way'], 'to': sam['send_methods']['to'],
                 'phone_n': sam['send_methods']['phone_n'], 'addr': sam['send_methods']['addr'],
             })
             for item in apply.rep_item_infos:
