@@ -232,10 +232,11 @@ class CancerTypes(db.Model):
     __tablename__ = 'cancer_types'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
+    okr_name = db.Column(db.String(100))
 
     def to_dict(self):
         my_dict = {
-            'id': self.id, 'name': self.name
+            'id': self.id, 'name': self.name, 'okr_name': self.okr_name
         }
         for k, v in my_dict.items():
             if not v:

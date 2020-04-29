@@ -284,11 +284,12 @@ class GeneralUpload(Resource):
                 if name == 'cancer':
                     for row in dict_r:
                         name = row['癌症类型']
+                        okr_name = row['okr']
                         cancer = CancerTypes.query.filter(CancerTypes.name == name).first()
                         if cancer:
                             pass
                         else:
-                            cancer = CancerTypes(name=name)
+                            cancer = CancerTypes(name=name,okr_name=okr_name)
                             db.session.add(cancer)
                 if name == 'items':
                     for row in dict_r:
