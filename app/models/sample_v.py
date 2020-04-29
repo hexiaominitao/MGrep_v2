@@ -154,6 +154,11 @@ class SampleInfoV(db.Model):
     note = db.Column(db.String(500), nullable=True)  # 备注
 
     apply_info_id = db.Column(db.Integer(), db.ForeignKey('apply_info.id'))  # 申请信息
+    seq = db.relationship('SeqInfo', backref='sample_info_v', lazy='dynamic')
+    pathology_info = db.relationship('PathologyInfo', backref='sample_info_v', uselist=False)  # 病理信息
+    operation_log = db.relationship('Operation', backref='sample_info_v', lazy='dynamic')  # 操作记录
+    lab_operation_id = db.relationship('LabOperation', backref='sample_info_v', lazy='dynamic')  # 流转信息
+    report = db.relationship('Report', backref='sample_info_v', uselist=False)
 
     # report_items = db.relationship('ReportItem', backref='sample_info_v', lazy='dynamic')
 
@@ -187,3 +192,56 @@ class ReportItem(db.Model):
             if not v:
                 my_dict[k] = ''
         return my_dict
+
+
+#  病理信息
+class PathologyInfo(db.Model):
+    __tablename__ = 'pathology_info'
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    pathology = db.Column(db.String(500), nullable=True)  # 病理审核
+    view = db.Column(db.String(500), nullable=True)  # 镜下所见
+    cell_count = db.Column(db.String(50), nullable=True)  # 样本内细胞数量
+    cell_content = db.Column(db.Float(), nullable=True)  # 细胞含量
+    spical_note = db.Column(db.String(500), nullable=True)  # 特殊说明
+    sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))
+
+    # pathology_pic = db.relationship('PathologyPic', backref='pathology_info', lazy='dynamic')
+
+    def to_dict(self):
+        dict = {
+            "id": self.id,
+            'pathology': self.pathology,
+            'view': self.view,
+            'cell_count': self.cell_count,
+            'cell_content': self.cell_content,
+            'spical_note': self.spical_note
+        }
+        return dict
+
+
+from datetime import datetime
+
+
+class Operation(db.Model):
+    __tablename__ = 'operation'
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    time = db.Column(db.DateTime, default=datetime.now)  # 操作时间
+    user = db.Column(db.String(255))  # 操作人
+    name = db.Column(db.String(255))  # 操作步骤
+    sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))
+
+
+class LabOperation(db.Model):
+    __tablename__ = 'lab_operation'
+    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
+    date = db.Column(db.Date())  # 结束时间
+    user = db.Column(db.String(255))  # 操作人
+    fill_time = db.Column(db.DateTime, default=datetime.now)  # 填写时间
+    name = db.Column(db.String(255))  # 操作步骤
+    lose_c = db.Column(db.Integer())  # 失控天数
+    lose_reason = db.Column(db.String(225))  #
+    time = db.Column(db.Integer())  # 环节天数
+    status = db.Column(db.String(225))
+    next_step = db.Column(db.String(225))
+    not_transfer_reason = db.Column(db.String(500))
+    sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))

@@ -47,6 +47,9 @@ def get_local_time(str):
 
 def get_utc_time(local_t):
     """本地时间转UTC时间（-8: 00）"""
-    utc_t = local_t - datetime.timedelta(hours=8)
-    utc_st = datetime.datetime.strftime(utc_t, "%Y-%m-%dT%H:%M:%S.%fZ")
+    if local_t:
+        utc_t = local_t - datetime.timedelta(hours=8)
+        utc_st = datetime.datetime.strftime(utc_t, "%Y-%m-%dT%H:%M:%S.%fZ")
+    else:
+        utc_st = ''
     return utc_st

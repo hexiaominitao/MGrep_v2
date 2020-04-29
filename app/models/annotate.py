@@ -40,6 +40,7 @@ class OkrDrug(db.Model):
         }
         return my_dict
 
+
 class AnnotateAuto(db.Model):  # 自动注释库
     __tablename__ = 'annotate_auto'
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)

@@ -96,6 +96,8 @@ class SampleInfoRecord(Resource):
             req_mg = sam['req_mg']
             name = sam['patient_info']['name']
             if name and req_mg:
+                pass
+            else:
                 return {'msg': '请填写患者姓名和申请单号'}
             ID_number = sam['patient_info']['ID_number']
             code = req_mg[4:8]
@@ -149,13 +151,10 @@ class SampleInfoRecord(Resource):
             samples = sam['samplinfos']
             print(samples)
             for sample in samples:
-                print(sample['Tytime'])
-                time1 = (get_local_time(sample['Tytime']))
-                print(time1)
-                time2 = get_utc_time((time1))
-                print(time2)
-                sample_id = '{}{}'.format(mg_id, sample['code'])
-                print(sample_id)
+                if sample['code']:
+                    sample_id = '{}{}'.format(mg_id, sample['code'])
+                else:
+                    sample_id = ''
                 sample_info = SampleInfoV.query.filter(SampleInfoV.sample_id == sample_id).first()
                 if sample_info:
                     pass

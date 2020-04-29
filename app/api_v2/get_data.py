@@ -10,8 +10,8 @@ from sqlalchemy import and_
 from app.models import db
 from app.models.user import User
 from app.models.run_info import RunInfo, SeqInfo
-from app.models.patient import PatientInfo, FamilyInfo
-from app.models.sample import (SampleInfo, TreatInfo, PathologyInfo, Operation)
+from app.models.sample_v import PatientInfoV, FamilyInfoV
+from app.models.sample_v import (SampleInfoV, TreatInfoV, PathologyInfo, Operation)
 from app.models.report import Report
 
 from app.libs.get_data import read_json
@@ -118,22 +118,22 @@ class GetSeqInfo(Resource):
             sample = sam.get('sample_name')
             for row in samples:
                 if sample in row.values():  # 使用迈景编号 todo：新的方案？
-                    pat = PatientInfo.query.filter(PatientInfo.name == row.get('患者姓名')).first()
+                    pat = PatientInfoV.query.filter(PatientInfoV.name == row.get('患者姓名')).first()
                     if pat:
                         pass
                     else:
-                        pat = PatientInfo(name=row.get('患者姓名'), age=row.get('病人年龄'), gender=row.get('病人性别'),
+                        pat = PatientInfoV(name=row.get('患者姓名'), age=row.get('病人年龄'), gender=row.get('病人性别'),
                                           nation=row.get('民族'), origo=row.get('籍贯'), contact=row.get('病人联系方式'),
                                           ID_number=row.get('病人身份证号码'), other_diseases=row.get('有无其他基因疾病'),
                                           smoke=row.get('有无吸烟史'))
                         db.session.add(pat)
                         # db.session.commit()
-                    samp = SampleInfo.query.filter(and_(SampleInfo.req_mg == row.get('申请单号'),
-                                                        SampleInfo.mg_id == row.get('迈景编号'))).first()
+                    samp = SampleInfoV.query.filter(and_(SampleInfoV.req_mg == row.get('申请单号'),
+                                                        SampleInfoV.mg_id == row.get('迈景编号'))).first()
                     if samp:
                         pass
                     else:
-                        samp = SampleInfo(mg_id=row.get('迈景编号'), req_mg=row.get('申请单号'),
+                        samp = SampleInfoV(mg_id=row.get('迈景编号'), req_mg=row.get('申请单号'),
                                           seq_item=row.get('检测项目'), seq_type=row.get('项目类型'),
                                           doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
                                           room=row.get('科室'), diagnosis=row.get('临床诊断'),
@@ -148,16 +148,16 @@ class GetSeqInfo(Resource):
                                           sample_size=row.get('样本大小'), sample_count=row.get('数量'),
                                           seq_date=str2time(row.get('检测日期')), note=row.get('备注'),
                                           recorder=row.get('录入'), reviewer=row.get('审核'))
-                        tre_h = TreatInfo(name='化疗', is_treat=row.get('是否接受化疗'),
+                        tre_h = TreatInfoV(name='化疗', is_treat=row.get('是否接受化疗'),
                                           star_time=str2time(row.get('开始时间')),
                                           end_time=str2time(row.get('结束时间')), effect=row.get('治疗效果'))
-                        tre_f = TreatInfo(name='放疗', is_treat=row.get('是否放疗'),
+                        tre_f = TreatInfoV(name='放疗', is_treat=row.get('是否放疗'),
                                           star_time=str2time(row.get('起始时间')),
                                           end_time=str2time(row.get('结束时间.2')), effect=row.get('治疗效果.2'))
-                        tre_b = TreatInfo(name='靶向治疗', is_treat=row.get('是否靶向药治疗'),
+                        tre_b = TreatInfoV(name='靶向治疗', is_treat=row.get('是否靶向药治疗'),
                                           star_time=str2time(row.get('开始时间.1')),
                                           end_time=str2time(row.get('结束时间.1')), effect=row.get('治疗效果.1'))
-                        fam = FamilyInfo(diseases=row.get('有无家族遗传疾病'))
+                        fam = FamilyInfoV(diseases=row.get('有无家族遗传疾病'))
                         patho = PathologyInfo(pathology=row.get('病理审核'), cell_count=row.get('标本内细胞总量'),
                                               cell_content=set_float(row.get('肿瘤细胞含量')),
                                               spical_note=row.get('特殊说明'))
