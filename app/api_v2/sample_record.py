@@ -151,10 +151,7 @@ class SampleInfoRecord(Resource):
             samples = sam['samplinfos']
             print(samples)
             for sample in samples:
-                if sample['code']:
-                    sample_id = '{}{}'.format(mg_id, sample['code'])
-                else:
-                    sample_id = ''
+                sample_id = '{}{}'.format(mg_id, sample['code'])
                 sample_info = SampleInfoV.query.filter(SampleInfoV.sample_id == sample_id).first()
                 if sample_info:
                     pass
