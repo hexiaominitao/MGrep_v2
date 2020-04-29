@@ -11,8 +11,7 @@ from app.models.run_info import RunInfo, SeqInfo
 from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations, Chemotherapy
-from app.models.record_config import PatientRecord, SampleRecord, \
-    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod, SalesInfo, HospitalInfo, SampleType, \
+from app.models.record_config import SalesInfo, HospitalInfo, SampleType, \
     SeqItems, CancerTypes
 
 from app.libs.ext import file_sam, file_okr
@@ -81,10 +80,11 @@ class RunInfoUpload(Resource):
                             else:
                                 seq = SeqInfo(sample_name=dict_val.get('迈景编号'), sample_mg=dict_val.get('申请单号'),
                                               item=dict_val.get('检测内容'), barcode=dict_val.get('Barcode编号'),
-                                              note=dict_val.get('备注'))
+                                              note=dict_val.get('备注'), cancer=dict_val.get('肿瘤类型(报告用)'),
+                                              report_item=dict_val.get('报告模板'))
                                 db.session.add(seq)
                                 run.seq_info.append(seq)
-                            db.session.commit()
+                            # db.session.commit()
             else:
                 dict_run = excel2dict(file)
                 for dict_val in dict_run.values():
@@ -219,26 +219,26 @@ class IrUpload(Resource):
         return {'msg': '保存完成'}
 
 
-class SampleRecordUpload(Resource):
-    def post(self):
-        filename = file_okr.save(request.files['file'])
-        file = file_okr.path(filename)
-        list_sample = excel_to_dict(file)
-        for row in list_sample:
-            mg_id = row['迈景编号']
-            req_mg = row['申请单号']
-            code = req_mg[4:8]
-            sale = SalesInfo.query.filter(SalesInfo.code==code).first()
-            sample = SampleRecord.query.filter(and_(
-                SampleRecord.mg_id == mg_id, SampleRecord.req_mg == req_mg)).first()
-            if sample:
-                pass
-            else:
-                sample = SampleRecord(mg_id=mg_id, req_mg=req_mg,sales=sale.name)
-                db.session.add(sample)
-        db.session.commit()
-        os.remove(file)
-        return {'msg': '上传成功!!!'}
+# class SampleRecordUpload(Resource):
+#     def post(self):
+#         filename = file_okr.save(request.files['file'])
+#         file = file_okr.path(filename)
+#         list_sample = excel_to_dict(file)
+#         for row in list_sample:
+#             mg_id = row['迈景编号']
+#             req_mg = row['申请单号']
+#             code = req_mg[4:8]
+#             sale = SalesInfo.query.filter(SalesInfo.code == code).first()
+#             sample = SampleRecord.query.filter(and_(
+#                 SampleRecord.mg_id == mg_id, SampleRecord.req_mg == req_mg)).first()
+#             if sample:
+#                 pass
+#             else:
+#                 sample = SampleRecord(mg_id=mg_id, req_mg=req_mg, sales=sale.name)
+#                 db.session.add(sample)
+#         db.session.commit()
+#         os.remove(file)
+#         return {'msg': '上传成功!!!'}
 
 
 class GeneralUpload(Resource):
@@ -283,12 +283,13 @@ class GeneralUpload(Resource):
                             db.session.add(ty)
                 if name == 'cancer':
                     for row in dict_r:
-                        name = row['癌症类型']
-                        cancer = CancerTypes.query.filter(CancerTypes.name == name).first()
+                        name = row['okr']
+                        cn_name = row['癌症类型']
+                        cancer = CancerTypes.query.filter(CancerTypes.cn_name == cn_name).first()
                         if cancer:
                             pass
                         else:
-                            cancer = CancerTypes(name=name)
+                            cancer = CancerTypes(name=name, cn_name=cn_name)
                             db.session.add(cancer)
                 if name == 'items':
                     for row in dict_r:

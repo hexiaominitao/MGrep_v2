@@ -72,8 +72,8 @@ def get_seq_info(file):
     :return: 上机信息
     '''
     df = pd.read_excel(file, header=1, keep_default_na=False)
-    df1 = df[['文件名(Run)', '迈景编号', '申请单号', '检测内容',
-              'Barcode编号', '上机时间', '结束时间', '备注']].copy()
+    df1 = df[['文件名(Run)', '迈景编号', '申请单号', '检测内容', 'Barcode编号',
+              '上机时间', '结束时间', '备注', '肿瘤类型(报告用)', '报告模板']].copy()
     return df1.groupby(pd.Grouper(key='文件名(Run)'))
 
 
@@ -166,8 +166,8 @@ def df2list(df):
 
 
 def m_excel2list(file):
-    df_a = pd.read_excel(file,sheet_name=None,keep_default_na=False)
+    df_a = pd.read_excel(file, sheet_name=None, keep_default_na=False)
     res_dict = {}
-    for name,df in df_a.items():
+    for name, df in df_a.items():
         res_dict[name] = df2list(df)
     return res_dict

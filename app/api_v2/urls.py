@@ -12,14 +12,14 @@ my_api.add_resource(GetInfo, '/user/get_info')
 
 # 文件上传
 from app.api_v2.upload import SampleInfoUpload, RunInfoUpload, MutationUpload, \
-    OKRUpload, IrUpload, SampleRecordUpload, GeneralUpload
+    OKRUpload, IrUpload,  GeneralUpload
 
 my_api.add_resource(SampleInfoUpload, '/upload/sample_info_upload')  # 样本信息上传
 my_api.add_resource(RunInfoUpload, '/upload/run_info_upload')  # 上机信息上传
 my_api.add_resource(MutationUpload, '/upload/mutation_upload/')  # 突变结果上传
 my_api.add_resource(OKRUpload, '/upload/okr/') # okr
 my_api.add_resource(IrUpload, '/upload/ir_upload/') # ir压缩包
-my_api.add_resource(SampleRecordUpload, '/upload/sample_record/') # 样本信息登记
+# my_api.add_resource(SampleRecordUpload, '/upload/sample_record/') # 样本信息登记
 my_api.add_resource(GeneralUpload, '/upload/general_upload/') # 通用上传模块
 
 

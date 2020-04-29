@@ -70,7 +70,7 @@ class TreatInfoV(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id, 'name': self.name,
-            'star_time': self.star_time, 'end_time': self.end_time,
+            'treat_date': [get_utc_time(self.star_time),get_utc_time(self.end_time)],
             'effect': self.effect
         }
         for k, v in my_dict.items():

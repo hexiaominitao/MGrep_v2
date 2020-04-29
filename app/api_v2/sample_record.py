@@ -6,8 +6,7 @@ from sqlalchemy import and_
 
 from app.models import db
 from app.models.user import User
-from app.models.record_config import PatientRecord, SampleRecord, \
-    SeqItemRecord, FamilyRecord, TreatRecord, SendMethod, SalesInfo, HospitalInfo, \
+from app.models.record_config import  SalesInfo, HospitalInfo, \
     SampleType, SeqItems, CancerTypes
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem
@@ -112,7 +111,8 @@ class SampleInfoRecord(Resource):
                                    gender=sam['patient_info']['gender'], nation=sam['patient_info']['nation'],
                                    origo=sam['patient_info']['origo'], contact=sam['patient_info']['contact'],
                                    ID_number=ID_number, smoke=smoke, have_family=sam['patient_info']['have_family'],
-                                   targeted_info=sam['patient_info']['targeted_info'], chem_info=sam['patient_info']['chem_info'],
+                                   targeted_info=sam['patient_info']['targeted_info'],
+                                   chem_info=sam['patient_info']['chem_info'],
                                    radio_info=sam['patient_info']['radio_info'])
                 db.session.add(pat)
             for fam in sam['family_info']:
@@ -151,7 +151,9 @@ class SampleInfoRecord(Resource):
             samples = sam['samplinfos']
             print(samples)
             for sample in samples:
+
                 sample_id = '{}{}'.format(mg_id, sample['code'])
+                print(sample_id)
                 sample_info = SampleInfoV.query.filter(SampleInfoV.sample_id == sample_id).first()
                 if sample_info:
                     pass
@@ -185,7 +187,7 @@ class SampleInfoRecord(Resource):
             pat_info = sam['patient_info']
             ID_number = pat_info['ID_number']
             code = req_mg[4:8]
-            print(sam)
+            print(pat_info)
             sale = SalesInfo.query.filter(SalesInfo.code == code).first()
             apply = ApplyInfo.query.filter(ApplyInfo.id == sam['id']).first()
             ApplyInfo.query.filter(ApplyInfo.id == sam['id']).update({
@@ -212,25 +214,47 @@ class SampleInfoRecord(Resource):
                 if treat['treat_date']:
                     start_t = treat['treat_date'][0]
                     end_t = treat['treat_date'][1]
-                    TreatInfoV.query.filter(TreatInfoV.id == treat['id']).update({
-                        'item': treat['item'], 'name': treat['name'], 'star_time': get_local_time(start_t),
-                        'end_time': get_local_time(end_t), 'effect': treat['effect']
-                    })
+                    if treat.get('id'):
+                        TreatInfoV.query.filter(TreatInfoV.id == treat['id']).update({
+                            'item': treat['item'], 'name': treat['name'], 'star_time': get_local_time(start_t),
+                            'end_time': get_local_time(end_t), 'effect': treat['effect']
+                        })
+                    else:
+                        treat_info = TreatInfoV(item=treat['item'], name=treat['name'],
+                                                star_time=get_local_time(start_t),
+                                                end_time=get_local_time(end_t), effect=treat['effect'])
+                        db.session.add(treat_info)
+                        pat.treat_infos.append(treat_info)
             for fam in sam['family_info']:
                 if fam['relationship']:
-                    FamilyInfoV.query.filter(FamilyInfoV.id == fam['id']).update({
-                        'relationship': fam['relationship'], 'age': fam['age'],
-                        'diseases': fam['diseases']
-                    })
+                    if fam.get('id'):
+                        FamilyInfoV.query.filter(FamilyInfoV.id == fam['id']).update({
+                            'relationship': fam['relationship'], 'age': fam['age'],
+                            'diseases': fam['diseases']
+                        })
+                    else:
+                        family = FamilyInfoV(relationship=fam['relationship'], age=fam['age'],
+                                             diseases=fam['diseases'])
+                        db.session.add(family)
+                        pat.family_infos.append(family)
             for sample in sam['samplinfos']:
                 sample_id = '{}{}'.format(mg_id, sample['code'])
-                SampleInfoV.query.filter(SampleInfoV.id == sample['id']).update({
-                    'sample_id': sample_id, 'pnumber': sample['pnumber'],
-                    'sample_type': sample['sample_type'],
-                    'mth': sample['mth'], 'mth_position': sample['mth_position'],
-                    'Tytime': get_local_time(sample['Tytime']),
-                    'sample_count': sample['counts'], 'note': sample['note']
-                })
+                if sample.get('id'):
+                    SampleInfoV.query.filter(SampleInfoV.id == sample['id']).update({
+                        'sample_id': sample_id, 'pnumber': sample['pnumber'],
+                        'sample_type': sample['sample_type'],
+                        'mth': sample['mth'], 'mth_position': sample['mth_position'],
+                        'Tytime': get_local_time(sample['Tytime']),
+                        'sample_count': sample['counts'], 'note': sample['note']
+                    })
+                else:
+                    sample_info = SampleInfoV(sample_id=sample_id, pnumber=sample['pnumber'],
+                                              sample_type=sample['sample_type'],
+                                              Tytime=get_local_time(sample['Tytime']),
+                                              mth=sample['mth'], mth_position=sample['mth_position'],
+                                              sample_count=sample['counts'], note=sample['note'])
+                    db.session.add(sample_info)
+                    apply.sample_infos.append(sample_info)
             SendMethodV.query.filter(SendMethodV.id == sam['send_methods']['id']).update({
                 'the_way': sam['send_methods']['the_way'], 'to': sam['send_methods']['to'],
                 'phone_n': sam['send_methods']['phone_n'], 'addr': sam['send_methods']['addr'],
