@@ -98,7 +98,7 @@ class SampleInfoRecord(Resource):
             if name and req_mg:
                 pass
             else:
-                return {'msg': '请填写患者姓名和申请单号'}
+                return {'msg': '请填写患者姓名,申请单号和迈景编号!!!!!!'}
             ID_number = sam['patient_info']['ID_number']
             code = req_mg[4:8]
             sale = SalesInfo.query.filter(SalesInfo.code == code).first()
@@ -187,6 +187,11 @@ class SampleInfoRecord(Resource):
             req_mg = sam['req_mg']
             pat_info = sam['patient_info']
             ID_number = pat_info['ID_number']
+            name = sam['patient_info']['name']
+            if name and req_mg:
+                pass
+            else:
+                return {'msg': '请填写患者姓名,申请单号和迈景编号!!!!!!'}
             code = req_mg[4:8]
             print(pat_info)
             sale = SalesInfo.query.filter(SalesInfo.code == code).first()
