@@ -32,61 +32,68 @@ class SampleInfoRecord(Resource):
 
         applys = ApplyInfo.query.order_by(ApplyInfo.id.desc()). \
             paginate(page=page, per_page=per_page, error_out=False)
-        list_apply = []
+
         total = len(ApplyInfo.query.all())
-        for apply in applys.items:
-            sams = apply.sample_infos
 
-            def get_list_dic(sams):
-                list_sam = []
-                if sams:
-                    for sam in sams:
-                        dic_sam = sam.to_dict()
-                        list_sam.append(dic_sam)
-                return list_sam
+        def get_sample(applys):
+            list_apply = []
+            for apply in applys:
+                sams = apply.sample_infos
 
-            dic_apply = apply.to_dict()
-            dic_apply['samplinfos'] = get_list_dic(sams)
-            print(get_list_dic(sams))
-            pat = apply.patient_info_v
-            if '岁' in pat.age:
-                dic_apply['age_v'] = '岁'
-                dic_apply['age'] = pat.age.strip('岁')
-            elif '个月' in pat.age:
-                dic_apply['age_v'] = '个月'
-                dic_apply['age'] = pat.age.strip('个月')
-            else:
-                dic_apply['age_v'] = '岁'
-                dic_apply['age'] = ''
-            dic_apply['patient_info'] = pat.to_dict()
-            print([i.name for i in pat.treat_infos])
+                def get_list_dic(sams):
+                    list_sam = []
+                    if sams:
+                        for sam in sams:
+                            dic_sam = sam.to_dict()
+                            list_sam.append(dic_sam)
+                    return list_sam
 
-            dic_apply['family_info'] = get_list_dic(pat.family_infos) if get_list_dic(pat.family_infos) else [{
-                'relationship': '',
-                'age': '',
-                'diseases': ''
-            }]
-
-            treat_info = get_list_dic(pat.treat_infos)
-            dic_apply['treat_info'] = treat_info if treat_info else [{
-                'item': '', 'name': '', 'treat_date': '', 'effect': ''
-            }]
-
-            rep_item_infos = apply.rep_item_infos
-            dic_apply['seq_type'] = [i['name'] for i in get_list_dic(rep_item_infos)]
-            dic_apply['send_methods'] = get_list_dic(apply.send_methods)[0]
-
-            def is_snoke_i(str_s):
-                if not str_s in ['', '无']:
-                    return {'is_smoke': '有', 'smoke': str_s}
+                dic_apply = apply.to_dict()
+                dic_apply['samplinfos'] = get_list_dic(sams)
+                print(get_list_dic(sams))
+                pat = apply.patient_info_v
+                if '岁' in pat.age:
+                    dic_apply['age_v'] = '岁'
+                    dic_apply['age'] = pat.age.strip('岁')
+                elif '个月' in pat.age:
+                    dic_apply['age_v'] = '个月'
+                    dic_apply['age'] = pat.age.strip('个月')
                 else:
-                    return {'is_smoke': str_s, 'smoke': ''}
+                    dic_apply['age_v'] = '岁'
+                    dic_apply['age'] = ''
+                dic_apply['patient_info'] = pat.to_dict()
+                print([i.name for i in pat.treat_infos])
 
-            dic_apply['smoke_info'] = is_snoke_i(pat.smoke)
-            list_apply.append(dic_apply)
+                dic_apply['family_info'] = get_list_dic(pat.family_infos) if get_list_dic(pat.family_infos) else [{
+                    'relationship': '',
+                    'age': '',
+                    'diseases': ''
+                }]
+
+                treat_info = get_list_dic(pat.treat_infos)
+                dic_apply['treat_info'] = treat_info if treat_info else [{
+                    'item': '', 'name': '', 'treat_date': '', 'effect': ''
+                }]
+
+                rep_item_infos = apply.rep_item_infos
+                dic_apply['seq_type'] = [i['name'] for i in get_list_dic(rep_item_infos)]
+                dic_apply['send_methods'] = get_list_dic(apply.send_methods)[0]
+
+                def is_snoke_i(str_s):
+                    if not str_s in ['', '无']:
+                        return {'is_smoke': '有', 'smoke': str_s}
+                    else:
+                        return {'is_smoke': str_s, 'smoke': ''}
+
+                dic_apply['smoke_info'] = is_snoke_i(pat.smoke)
+                list_apply.append(dic_apply)
+            return list_apply
+
+        list_apply = get_sample(applys.items)
+        list_all = get_sample(ApplyInfo.query.all())
 
         print(list_apply)
-        return jsonify({'sample': list_apply, 'total': total, 'test': {'name': 'hah'}})
+        return jsonify({'sample': list_apply, 'all_sample': list_all,'total': total, 'test': {'name': 'hah'}})
 
     def post(self):
         data = request.get_data()
