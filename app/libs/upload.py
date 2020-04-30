@@ -72,7 +72,7 @@ def get_seq_info(file):
     :return: 上机信息
     '''
     df = pd.read_excel(file, header=1, keep_default_na=False)
-    df1 = df[['文件名(Run)', '迈景编号', '申请单号', '检测内容', 'Barcode编号',
+    df1 = df[['文件名(Run)', '迈景编号', '申请单号', '检测内容', '样本类型','Barcode编号',
               '上机时间', '结束时间', '备注', '肿瘤类型(报告用)', '报告模板']].copy()
     return df1.groupby(pd.Grouper(key='文件名(Run)'))
 

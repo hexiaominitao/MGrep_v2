@@ -22,10 +22,11 @@ class SeqInfo(db.Model):
     sample_name = db.Column(db.String(255))  # 迈景编号
     sample_mg = db.Column(db.String(255))  # 申请单号
     item = db.Column(db.String(255))  # 检测项目
+    sam_type = db.Column(db.String(255))  # 样本类型
     barcode = db.Column(db.String(255))  # Barcode编号
     note = db.Column(db.String(255))  # 备注
-    cancer = db.Column(db.String(255)) # 报告用癌症类型
-    report_item = db.Column(db.String(255)) # 报告模板类型
+    cancer = db.Column(db.String(255))  # 报告用癌症类型
+    report_item = db.Column(db.String(255))  # 报告模板类型
     status = db.Column(db.String(255))  # 状态
     run_info_id = db.Column(db.Integer(), db.ForeignKey('run_info.id'))
     sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))

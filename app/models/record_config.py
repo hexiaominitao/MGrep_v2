@@ -74,11 +74,11 @@ class CancerTypes(db.Model):
     __tablename__ = 'cancer_types'
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100))
-    cn_name = db.Column(db.String(100))
+    okr_name = db.Column(db.String(100))
 
     def to_dict(self):
         my_dict = {
-            'id': self.id, 'name': self.cn_name, 'cn_name': self.name
+            'id': self.id, 'name': self.name, 'okr_name': self.okr_name
         }
         for k, v in my_dict.items():
             if not v:
@@ -94,6 +94,38 @@ class SeqItems(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id, 'name': self.name
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+
+class Barcode(db.Model):
+    __tablename__ = 'barcode'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    full_name = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name,'full_name':self.full_name
+        }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
+
+
+class FlowItem(db.Model):
+    __tablename__ = 'flow_name'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    type = db.Column(db.String(100))
+
+    def to_dict(self):
+        my_dict = {
+            'id': self.id, 'name': self.name,'type':self.type
         }
         for k, v in my_dict.items():
             if not v:

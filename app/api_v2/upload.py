@@ -12,7 +12,9 @@ from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations, Chemotherapy
 from app.models.record_config import SalesInfo, HospitalInfo, SampleType, \
-    SeqItems, CancerTypes
+    SeqItems, CancerTypes, Barcode, FlowItem
+from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
+    SendMethodV, SampleInfoV, ReportItem, PathologyInfo, Operation
 
 from app.libs.ext import file_sam, file_okr
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
@@ -44,6 +46,22 @@ class SampleInfoUpload(Resource):
         return {'msg': '样本信息保存成功！！'}
 
 
+class SampleInfoVUpload(Resource):
+    def post(self):
+        filename = file_sam.save(request.files['file'])
+        file = file_sam.path(filename)
+        list_sam = excel_to_dict(file)
+        for row in list_sam:
+            apply = ApplyInfo.query.filter(ApplyInfo.req_mg==row.get('申请单号')).first()
+            if apply:
+                pat = apply.patient_info_v
+                if pat:
+                    for fam in pat.family_infos:
+                        pass
+        os.remove(file)
+        return {'msg': '文件上传成功'}
+
+
 class RunInfoUpload(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
@@ -54,6 +72,13 @@ class RunInfoUpload(Resource):
     def post(self):
         filename = file_sam.save(request.files['file'])
         file = file_sam.path(filename)
+        erro = []
+        barcodes = set()
+        for bar in Barcode.query.all():
+            barcodes.add(bar.name)
+        flowitems = set()
+        for items in FlowItem.query.all():
+            flowitems.add(items.name)
         try:
             title = get_excel_title(file)
             print(title)
@@ -74,6 +99,18 @@ class RunInfoUpload(Resource):
 
                                 db.session.add(run)
                                 db.session.commit()
+                            barcode = dict_val.get('Barcode编号').split('/')
+                            sam_type = dict_val.get('样本类型').split('/')
+
+                            for bar in barcode:
+                                if bar in barcodes:
+                                    continue
+                                erro.append('样本{}Barcode编号存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
+                            for i in sam_type:
+                                if i in flowitems:
+                                    continue
+                                erro.append('样本{}样本类型存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
+
                             seq = SeqInfo.query.filter(SeqInfo.sample_name == dict_val.get('迈景编号')).first()
                             if seq:
                                 pass
@@ -81,10 +118,10 @@ class RunInfoUpload(Resource):
                                 seq = SeqInfo(sample_name=dict_val.get('迈景编号'), sample_mg=dict_val.get('申请单号'),
                                               item=dict_val.get('检测内容'), barcode=dict_val.get('Barcode编号'),
                                               note=dict_val.get('备注'), cancer=dict_val.get('肿瘤类型(报告用)'),
-                                              report_item=dict_val.get('报告模板'))
+                                              report_item=dict_val.get('报告模板'), sam_type=dict_val.get('样本类型'))
                                 db.session.add(seq)
                                 run.seq_info.append(seq)
-                            # db.session.commit()
+                            db.session.commit()
             else:
                 dict_run = excel2dict(file)
                 for dict_val in dict_run.values():
@@ -107,10 +144,13 @@ class RunInfoUpload(Resource):
                         db.session.add(seq)
                         run.seq_info.append(seq)
                     db.session.commit()
+
             msg = '文件上传成功!'
         except IOError:
             msg = '文件有问题,请检查后再上传!!!!!'
         os.remove(file)
+        if erro:
+            msg = ','.join(erro)
         return {'msg': msg}, 200
 
 
@@ -283,13 +323,13 @@ class GeneralUpload(Resource):
                             db.session.add(ty)
                 if name == 'cancer':
                     for row in dict_r:
-                        name = row['okr']
-                        cn_name = row['癌症类型']
-                        cancer = CancerTypes.query.filter(CancerTypes.cn_name == cn_name).first()
+                        okr_name = row['okr']
+                        name = row['癌症类型']
+                        cancer = CancerTypes.query.filter(CancerTypes.name == name).first()
                         if cancer:
                             pass
                         else:
-                            cancer = CancerTypes(name=name, cn_name=cn_name)
+                            cancer = CancerTypes(name=name, okr_name=okr_name)
                             db.session.add(cancer)
                 if name == 'items':
                     for row in dict_r:
@@ -300,6 +340,30 @@ class GeneralUpload(Resource):
                         else:
                             items = SeqItems(name=name)
                             db.session.add(items)
+                if name == 'Barcode':
+                    for row in dict_r:
+                        name = row['barcode']
+                        full_name = row['barcode_a']
+                        barcode = Barcode.query.filter(Barcode.name == name).first()
+                        if barcode:
+                            Barcode.query.filter(Barcode.name == name).update({
+                                'full_name': full_name
+                            })
+                        else:
+                            barcode = Barcode(name=name, full_name=full_name)
+                            db.session.add(barcode)
+                if name == 'Sample':
+                    for row in dict_r:
+                        name = row['编号']
+                        type = row['类型']
+                        barcode = FlowItem.query.filter(FlowItem.name == name).first()
+                        if barcode:
+                            FlowItem.query.filter(FlowItem.name == name).update({
+                                'type': type
+                            })
+                        else:
+                            barcode = FlowItem(name=name, type=type)
+                            db.session.add(barcode)
             # 利用item 添加新的项目
 
         db.session.commit()

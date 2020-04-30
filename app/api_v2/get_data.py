@@ -11,7 +11,7 @@ from app.models import db
 from app.models.user import User
 from app.models.run_info import RunInfo, SeqInfo
 from app.models.sample_v import PatientInfoV, FamilyInfoV
-from app.models.sample_v import (SampleInfoV, TreatInfoV, PathologyInfo, Operation)
+from app.models.sample_v import (SampleInfoV, ApplyInfo, TreatInfoV, PathologyInfo, Operation)
 from app.models.report import Report
 
 from app.libs.get_data import read_json
@@ -63,13 +63,29 @@ class GetRunInfo(Resource):
         run_info['run'] = list_run
         return jsonify(run_info)
 
+    def post(self):
+        args = self.parser.parse_args()
+        id = args.get('id')
+        run = RunInfo.query.filter(RunInfo.id == id).first()
+        for seq in run.seq_info:
+            apply = ApplyInfo.query.filter(ApplyInfo.req_mg==seq.sample_mg).first()
+            for sam in apply.sample_infos:
+                if seq.sample_name in sam.sample_id:
+                    sam.seq.append(seq)
+        return {'msg': '成功'}
+
     def delete(self):
         args = self.parser.parse_args()
         id = args.get('id')
         run = RunInfo.query.filter(RunInfo.id == id).first()
         run_id = run.name
         db.session.delete(run)
-        db.session.commit()
+        for seq in run.seq_info:
+            sam = seq.sample_info_v
+            sam.remove(sam)
+            db.session.delete(seq)
+
+        # db.session.commit()
         return {'msg': '{}.删除完成'.format(run_id)}
 
 
@@ -123,40 +139,40 @@ class GetSeqInfo(Resource):
                         pass
                     else:
                         pat = PatientInfoV(name=row.get('患者姓名'), age=row.get('病人年龄'), gender=row.get('病人性别'),
-                                          nation=row.get('民族'), origo=row.get('籍贯'), contact=row.get('病人联系方式'),
-                                          ID_number=row.get('病人身份证号码'), other_diseases=row.get('有无其他基因疾病'),
-                                          smoke=row.get('有无吸烟史'))
+                                           nation=row.get('民族'), origo=row.get('籍贯'), contact=row.get('病人联系方式'),
+                                           ID_number=row.get('病人身份证号码'), other_diseases=row.get('有无其他基因疾病'),
+                                           smoke=row.get('有无吸烟史'))
                         db.session.add(pat)
                         # db.session.commit()
                     samp = SampleInfoV.query.filter(and_(SampleInfoV.req_mg == row.get('申请单号'),
-                                                        SampleInfoV.mg_id == row.get('迈景编号'))).first()
+                                                         SampleInfoV.mg_id == row.get('迈景编号'))).first()
                     if samp:
                         pass
                     else:
                         samp = SampleInfoV(mg_id=row.get('迈景编号'), req_mg=row.get('申请单号'),
-                                          seq_item=row.get('检测项目'), seq_type=row.get('项目类型'),
-                                          doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
-                                          room=row.get('科室'), diagnosis=row.get('临床诊断'),
-                                          diagnosis_date=str2time(row.get('诊断日期')),
-                                          pathological=row.get('病理诊断'),pnumber=row.get('病理号'),
-                                          pathological_date=str2time(row.get('诊断日期.1')),
-                                          recive_date=str2time(row.get('病理样本收到日期')),Sour=row.get('样本来源'),
-                                          mode_of_trans=row.get('运输方式'),Tytime=str2time(row.get('采样时间')),
-                                          send_sample_date=str2time(row.get('送检日期')),mth=row.get('采样方式'),
-                                          reciver=row.get('收样人'), recive_room_date=str2time(row.get('收样日期')),
-                                          sample_status=row.get('状态是否正常'), sample_type=row.get('样本类型（报告用）'),
-                                          sample_size=row.get('样本大小'), sample_count=row.get('数量'),
-                                          seq_date=str2time(row.get('检测日期')), note=row.get('备注'),
-                                          recorder=row.get('录入'), reviewer=row.get('审核'))
+                                           seq_item=row.get('检测项目'), seq_type=row.get('项目类型'),
+                                           doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
+                                           room=row.get('科室'), diagnosis=row.get('临床诊断'),
+                                           diagnosis_date=str2time(row.get('诊断日期')),
+                                           pathological=row.get('病理诊断'), pnumber=row.get('病理号'),
+                                           pathological_date=str2time(row.get('诊断日期.1')),
+                                           recive_date=str2time(row.get('病理样本收到日期')), Sour=row.get('样本来源'),
+                                           mode_of_trans=row.get('运输方式'), Tytime=str2time(row.get('采样时间')),
+                                           send_sample_date=str2time(row.get('送检日期')), mth=row.get('采样方式'),
+                                           reciver=row.get('收样人'), recive_room_date=str2time(row.get('收样日期')),
+                                           sample_status=row.get('状态是否正常'), sample_type=row.get('样本类型（报告用）'),
+                                           sample_size=row.get('样本大小'), sample_count=row.get('数量'),
+                                           seq_date=str2time(row.get('检测日期')), note=row.get('备注'),
+                                           recorder=row.get('录入'), reviewer=row.get('审核'))
                         tre_h = TreatInfoV(name='化疗', is_treat=row.get('是否接受化疗'),
-                                          star_time=str2time(row.get('开始时间')),
-                                          end_time=str2time(row.get('结束时间')), effect=row.get('治疗效果'))
+                                           star_time=str2time(row.get('开始时间')),
+                                           end_time=str2time(row.get('结束时间')), effect=row.get('治疗效果'))
                         tre_f = TreatInfoV(name='放疗', is_treat=row.get('是否放疗'),
-                                          star_time=str2time(row.get('起始时间')),
-                                          end_time=str2time(row.get('结束时间.2')), effect=row.get('治疗效果.2'))
+                                           star_time=str2time(row.get('起始时间')),
+                                           end_time=str2time(row.get('结束时间.2')), effect=row.get('治疗效果.2'))
                         tre_b = TreatInfoV(name='靶向治疗', is_treat=row.get('是否靶向药治疗'),
-                                          star_time=str2time(row.get('开始时间.1')),
-                                          end_time=str2time(row.get('结束时间.1')), effect=row.get('治疗效果.1'))
+                                           star_time=str2time(row.get('开始时间.1')),
+                                           end_time=str2time(row.get('结束时间.1')), effect=row.get('治疗效果.1'))
                         fam = FamilyInfoV(diseases=row.get('有无家族遗传疾病'))
                         patho = PathologyInfo(pathology=row.get('病理审核'), cell_count=row.get('标本内细胞总量'),
                                               cell_content=set_float(row.get('肿瘤细胞含量')),
@@ -180,7 +196,7 @@ class GetSeqInfo(Resource):
                     else:
                         seq = SeqInfo.query.filter(SeqInfo.id == sam.get('id')).update({'status': '{}承包中'.format(name)})
                         msgs.append(sample)
-                        rep = Report(rep_code=rep_name, stage='突变审核', report_user=name) # todo 简化
+                        rep = Report(rep_code=rep_name, stage='突变审核', report_user=name)  # todo 简化
                         db.session.add(rep)
                         rep.samples.append(samp)
 

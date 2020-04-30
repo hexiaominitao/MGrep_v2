@@ -12,16 +12,15 @@ my_api.add_resource(GetInfo, '/user/get_info')
 
 # 文件上传
 from app.api_v2.upload import SampleInfoUpload, RunInfoUpload, MutationUpload, \
-    OKRUpload, IrUpload,  GeneralUpload
+    OKRUpload, IrUpload, GeneralUpload, SampleInfoVUpload
 
 my_api.add_resource(SampleInfoUpload, '/upload/sample_info_upload')  # 样本信息上传
 my_api.add_resource(RunInfoUpload, '/upload/run_info_upload')  # 上机信息上传
 my_api.add_resource(MutationUpload, '/upload/mutation_upload/')  # 突变结果上传
-my_api.add_resource(OKRUpload, '/upload/okr/') # okr
-my_api.add_resource(IrUpload, '/upload/ir_upload/') # ir压缩包
-# my_api.add_resource(SampleRecordUpload, '/upload/sample_record/') # 样本信息登记
-my_api.add_resource(GeneralUpload, '/upload/general_upload/') # 通用上传模块
-
+my_api.add_resource(OKRUpload, '/upload/okr/')  # okr
+my_api.add_resource(IrUpload, '/upload/ir_upload/')  # ir压缩包
+my_api.add_resource(SampleInfoVUpload, '/upload/sample_record/') # 样本信息登记
+my_api.add_resource(GeneralUpload, '/upload/general_upload/')  # 通用上传模块
 
 # 获取数据
 from app.api_v2.get_data import GetAllSample, GetRunInfo, GetSeqInfo
@@ -32,6 +31,7 @@ my_api.add_resource(GetSeqInfo, '/data/get_seq_info/')
 
 # okr
 from app.api_v2.okr import OkrAnnotate, OkrResult
+
 my_api.add_resource(OkrAnnotate, '/data/okr/')
 my_api.add_resource(OkrResult, '/data/okrfile/')
 
@@ -43,10 +43,10 @@ my_api.add_resource(AdminTemplate, '/admin/template/')
 my_api.add_resource(AdminUser, '/admin/user/')
 
 # 报告
-from app.api_v2.report import ReportStart, GetMutationList, ReportStage, EditMutation,\
+from app.api_v2.report import ReportStart, GetMutationList, ReportStage, EditMutation, \
     AnnotateMutation, AnnotateCheck, ExportReport
 
-my_api.add_resource(ReportStart, '/report/start/') # 开始
+my_api.add_resource(ReportStart, '/report/start/')  # 开始
 my_api.add_resource(GetMutationList, '/report/mutation_list/')
 my_api.add_resource(ReportStage, '/report/report_stage/')  # 改变报告状态
 my_api.add_resource(EditMutation, '/report/edit_mutation/')  # 编辑突变
@@ -62,6 +62,7 @@ my_api.add_resource(TemplateItem, '/config/template_item/')
 
 # 样本录入
 
-from app.api_v2.sample_record import SampleInfoRecord,SalesHospitalType
+from app.api_v2.sample_record import SampleInfoRecord, SalesHospitalType
+
 my_api.add_resource(SampleInfoRecord, '/sample_record/')
 my_api.add_resource(SalesHospitalType, '/sample_record_config/')
