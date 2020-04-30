@@ -243,29 +243,26 @@ class SampleInfoRecord(Resource):
                                              diseases=fam['diseases'])
                         db.session.add(family)
                         pat.family_infos.append(family)
+            for sample in apply.sample_infos:
+                apply.sample_infos.remove(sample)
+                db.session.delete(sample)
+
             for sample in sam['samplinfos']:
                 sample_id = '{}{}'.format(mg_id, sample['code'])
-                if sample.get('id'):
-                    SampleInfoV.query.filter(SampleInfoV.id == sample['id']).update({
-                        'sample_id': sample_id, 'pnumber': sample['pnumber'],
-                        'sample_type': sample['sample_type'],
-                        'mth': sample['mth'], 'mth_position': sample['mth_position'],
-                        'Tytime': get_local_time(sample['Tytime']),
-                        'sample_count': sample['counts'], 'note': sample['note']
-                    })
-                else:
-                    sample_info = SampleInfoV(sample_id=sample_id, pnumber=sample['pnumber'],
-                                              sample_type=sample['sample_type'],
-                                              Tytime=get_local_time(sample['Tytime']),
-                                              mth=sample['mth'], mth_position=sample['mth_position'],
-                                              sample_count=sample['counts'], note=sample['note'])
-                    db.session.add(sample_info)
-                    apply.sample_infos.append(sample_info)
+
+                sample_info = SampleInfoV(sample_id=sample_id, pnumber=sample['pnumber'],
+                                          sample_type=sample['sample_type'],
+                                          Tytime=get_local_time(sample['Tytime']),
+                                          mth=sample['mth'], mth_position=sample['mth_position'],
+                                          sample_count=sample['counts'], note=sample['note'])
+                db.session.add(sample_info)
+                apply.sample_infos.append(sample_info)
             SendMethodV.query.filter(SendMethodV.id == sam['send_methods']['id']).update({
                 'the_way': sam['send_methods']['the_way'], 'to': sam['send_methods']['to'],
                 'phone_n': sam['send_methods']['phone_n'], 'addr': sam['send_methods']['addr'],
             })
             for item in apply.rep_item_infos:
+                apply.rep_item_infos.remove(item)
                 db.session.delete(item)
             for item in sam['seq_type']:
                 report_item = ReportItem.query. \
