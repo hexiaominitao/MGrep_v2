@@ -4,7 +4,7 @@ from flask import (jsonify, current_app)
 from flask_restful import (reqparse, Resource, fields, request)
 
 from app.models import db
-from app.models.user import User
+from app.models.user import User, Role
 from app.libs.get_data import read_json, splitN
 
 
@@ -62,6 +62,7 @@ class AdminUser(Resource):
         self.parser.add_argument('name', required=True)
         self.parser.add_argument('passwd', required=True)
         self.parser.add_argument('mail', required=True)
+        self.parser.add_argument('role',help='权限')
 
     def get(self):
         users = User.query.all()
@@ -76,13 +77,30 @@ class AdminUser(Resource):
         name = args.get('name')
         passwd = args.get('passwd')
         mail = args.get('mail')
+        roles = args.get('role')
         if User.query.filter_by(username=name).first() is not None:
             msg = '用户已存在!!'
         else:
             user = User(username=name)
             user.mail = mail
             user.set_password(passwd)
+            for role in roles:
+                rol = Role.query.filter(Role.name==role).first()
+                user.roles.append(rol)
             db.session.add(user)
             db.session.commit()
             msg = '注册成功'
         return {'msg': msg}
+
+
+class AdminRole(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument()
+
+    def get(self):
+        roles = Role.query.all()
+        list_role = []
+        for role in roles:
+            list_role.append(role.to_dict())
+        return jsonify({'roles': list_role})

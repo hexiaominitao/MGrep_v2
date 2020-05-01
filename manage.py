@@ -39,6 +39,30 @@ def set_up():
     default_role.description = 'default'
     db.session.add(default_role)
 
+    rep_role = Role(name='rep')
+    rep_role.description = '报告组成员'
+    db.session.add(rep_role)
+
+    rep_admin = Role(name='rep_admin')
+    rep_admin.description = '报告组主管'
+    db.session.add(rep_admin)
+
+    med_role = Role(name='med')
+    med_role.description = '医学部成员'
+    db.session.add(med_role)
+
+    med_admin = Role(name='med_admin')
+    med_admin.description = '医学部主管'
+    db.session.add(med_admin)
+
+    sar_role = Role(name='sar')
+    sar_role.description = '收发成员'
+    db.session.add(sar_role)
+
+    sar_admin = Role(name='sar_admin')
+    sar_admin.description = '收发主管'
+    db.session.add(sar_admin)
+
     # default_role = Role(name='default') #添加权限 联系 ext
     # default_role.description = 'default'
     # db.session.add(default_role)

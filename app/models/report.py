@@ -13,7 +13,9 @@ from . import db
 class Report(db.Model):
     __tablename__ = 'report'
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    rep_code = db.Column(db.String(200), nullable=False)  # 系统内部报告编号 迈景编号+报告类型
+    run_name = db.Column(db.String(200)) # run_name
+    req_mg = db.Column(db.String(200)) # 迈景编号
+    report_item = db.Column(db.String(200)) # 报告模板类型
     stage = db.Column(db.String(200))  # 当前步骤
     report_user = db.Column(db.String(255))  # 操作人
     check_f = db.Column(db.String(255))  # 审核人
@@ -24,7 +26,9 @@ class Report(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id,
-            'rep_code': self.rep_code,
+            'run_name': self.run_name,
+            'req_mg': self.req_mg,
+            'report_item': self.report_item,
             'stage': self.stage,
             'report_user': self.report_user,
             'check_f': self.check_f,

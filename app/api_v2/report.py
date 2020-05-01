@@ -17,6 +17,7 @@ from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, di
 from app.libs.get_data import read_json, splitN
 
 
+
 class ReportStart(Resource):
     '''
     报告开始制作:承包
@@ -44,14 +45,17 @@ class ReportStart(Resource):
         list_rep = []
         all_rep = []
         for rep in reps.items:
+            print(rep.id)
             report_user = rep.report_user
             if report_user == user.username:
                 rep_dict = rep.to_dict()
-                rep_dict['mg_id'] = rep.samples[0].mg_id
+                rep_dict['mg_id'] = rep.sample_info_v.sample_id
+                rep_dict['report_item'] = rep.report_item
                 list_rep.append(rep_dict)
 
             rep_dict = rep.to_dict()
-            rep_dict['mg_id'] = rep.samples[0].mg_id
+            rep_dict['mg_id'] = rep.sample_info_v.sample_id
+            rep_dict['report_item'] = rep.report_item
             all_rep.append(rep_dict)
         if 'admin' in [role.name for role in user.roles]:
             list_rep = all_rep
@@ -181,7 +185,7 @@ class EditMutation(Resource):
         print(rep_id)
         report = Report.query.filter(Report.id == rep_id).first()
         if report.stage in ['突变审核', '突变注释', '生成报告', '制作完成']:  # todo 简化
-            sam = report.samples[0]
+            sam = report.sample_info_v
             list_m = []
             mutations = report.mutation
             if mutations:
@@ -190,9 +194,8 @@ class EditMutation(Resource):
                 first_check(mutation, list_m, list_c)
 
             dic_m['mutation'] = list_m
-            dic_m['mg_id'] = sam.mg_id
+            dic_m['mg_id'] = sam.sample_id
 
-            # print(dic_m)
         return jsonify(dic_m)
 
     def post(self):
@@ -203,16 +206,38 @@ class EditMutation(Resource):
 
         data = request.get_data()
         sams = (json.loads(data)['sams'])
+
+        okrs = OKR.query.all()
+        list_okr = []
+        for okr in okrs:
+            list_okr.append(okr.to_dict())
+        df = dict2df(list_okr)
+
+        drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
+
         if isinstance(sams, dict):
             sams = [sams]
         for sam in sams:
             id = sam.get('id')
             type = sam.get('type')
-            grade = sam.get('grade')
-            Mutation.query.filter(Mutation.id == id).update({
-                'status': '审核通过',
-                'grade': grade
-            })
+            # grade = sam.get('grade')
+            mutation = Mutation.query.filter(Mutation.id == id).first()
+            mutation.status = '审核通过'
+            mu = Mutation.query.filter(Mutation.id==id).first()
+            cancer = mu.mutation.report.sample_info_v.apply_info.cancer
+
+            grade = get_grade(sam, df, cancer, drug_effect)
+            dic_out = okr_create_n(sam, df, cancer, drug_effect)
+            drugs = mutation.drug
+            if drugs:
+                del_db(db, drugs)
+            if dic_out:
+                drug = get_drug(dic_out)
+                for row in drug:
+                    okr_drug = OkrDrug(drug=row.get('drug'), level=row.get('level'), drug_effect=row.get('drug_effect'))
+                    mutation.drug.append(okr_drug)
+            mutation.grade = grade
+
             db.session.commit()
         return {'msg': '审核通过！'}
 

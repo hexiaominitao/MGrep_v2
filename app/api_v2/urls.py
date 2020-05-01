@@ -36,11 +36,13 @@ my_api.add_resource(OkrAnnotate, '/data/okr/')
 my_api.add_resource(OkrResult, '/data/okrfile/')
 
 # admin
-from app.api_v2.admin import AdminSample, AdminTemplate, AdminUser
+from app.api_v2.admin import AdminSample, AdminTemplate, AdminUser, AdminRole
 
 my_api.add_resource(AdminSample, '/admin/sample/')
 my_api.add_resource(AdminTemplate, '/admin/template/')
 my_api.add_resource(AdminUser, '/admin/user/')
+my_api.add_resource(AdminRole, '/admin/role/')
+
 
 # 报告
 from app.api_v2.report import ReportStart, GetMutationList, ReportStage, EditMutation, \

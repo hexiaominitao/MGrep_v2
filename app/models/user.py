@@ -91,3 +91,11 @@ class Role(db.Model):
 
     def __repr__(self):
         return '<Role {}>'.format(self.name)
+
+    def to_dict(self):
+        my_dict = {
+            'id':self.id,
+            'name': self.name,
+            'description': self.description
+        }
+        return my_dict

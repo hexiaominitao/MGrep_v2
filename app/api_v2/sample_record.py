@@ -73,14 +73,16 @@ class SampleInfoRecord(Resource):
 
             rep_item_infos = apply.rep_item_infos
             dic_apply['seq_type'] = [i['name'] for i in get_list_dic(rep_item_infos)]
-            dic_apply['send_methods'] = get_list_dic(apply.send_methods)[0]
+            dic_apply['send_methods'] = get_list_dic(apply.send_methods)[0] if get_list_dic(apply.send_methods) else {
+                'the_way': '','to': '', 'phone_n': '', 'addr': ''
+            }
 
             def is_snoke_i(str_s):
-                if not str_s in ['', '无']:
+                if not str_s in ['', '无', None]:
                     return {'is_smoke': '有', 'smoke': str_s}
                 else:
                     return {'is_smoke': str_s, 'smoke': ''}
-
+            print(pat.smoke)
             dic_apply['smoke_info'] = is_snoke_i(pat.smoke)
             list_apply.append(dic_apply)
 

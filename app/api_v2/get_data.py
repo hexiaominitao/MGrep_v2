@@ -10,12 +10,12 @@ from sqlalchemy import and_
 from app.models import db
 from app.models.user import User
 from app.models.run_info import RunInfo, SeqInfo
-from app.models.sample_v import PatientInfoV, FamilyInfoV
-from app.models.sample_v import (SampleInfoV, ApplyInfo, TreatInfoV, PathologyInfo, Operation)
+from app.models.sample_v import (SampleInfoV, ApplyInfo, TreatInfoV, PathologyInfo, Operation, PatientInfoV, FamilyInfoV)
 from app.models.report import Report
 
 from app.libs.get_data import read_json
 from app.libs.ext import str2time, set_float
+from app.libs.report import save_reesult
 
 
 class GetAllSample(Resource):
@@ -63,29 +63,42 @@ class GetRunInfo(Resource):
         run_info['run'] = list_run
         return jsonify(run_info)
 
-    def post(self):
+    def post(self):  # 生成报告
         args = self.parser.parse_args()
         id = args.get('id')
+        token = request.headers.get('token')
+        user = User.verify_auth_token(token)
+        if not user:
+            return {'msg': '无访问权限'}, 401
+        name = user.username
         run = RunInfo.query.filter(RunInfo.id == id).first()
+        msgs = []
         for seq in run.seq_info:
-            apply = ApplyInfo.query.filter(ApplyInfo.req_mg==seq.sample_mg).first()
-            for sam in apply.sample_infos:
-                if seq.sample_name in sam.sample_id:
-                    sam.seq.append(seq)
-        return {'msg': '成功'}
+            if seq.status == 'upload':
+                apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
+                for sam in apply.sample_infos:
+                    if seq.sample_name in sam.sample_id:
+                        sam.seq.append(seq)
+                        msg = save_reesult(seq,name)
+                        msgs.append(msg)
+
+        return {'msg': ','.join(msgs)}
 
     def delete(self):
         args = self.parser.parse_args()
         id = args.get('id')
         run = RunInfo.query.filter(RunInfo.id == id).first()
         run_id = run.name
-        db.session.delete(run)
+
         for seq in run.seq_info:
             sam = seq.sample_info_v
-            sam.remove(sam)
+            if sam:
+               sam.seq.remove(seq)
+            run.seq_info.remove(seq)
             db.session.delete(seq)
 
-        # db.session.commit()
+        db.session.delete(run)
+        db.session.commit()
         return {'msg': '{}.删除完成'.format(run_id)}
 
 

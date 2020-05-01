@@ -14,38 +14,47 @@ class Mutation(db.Model):
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
     type = db.Column(db.String(200))
     gene = db.Column(db.String(200), nullable=False)  # 基因名称
-    mu_type = db.Column(db.String(50), nullable=False)  # 检测的突变类型
-    mu_name = db.Column(db.String(200), nullable=False)  # 变异全称
-    mu_af = db.Column(db.String(50), nullable=False)  # 丰度
-    mu_name_usual = db.Column(db.String(200), nullable=False)  # 临床突变常用名称
-    reads = db.Column(db.String(50), nullable=False)  # 支持序列数
+    transcript = db.Column(db.String(200))  # 转录本
+    exon = db.Column(db.String(50))  # 外显子
+    cHGVS = db.Column(db.String(200))  # 编码改变
+    pHGVS_3 = db.Column(db.String(200))  # 氨基酸改变
+    pHGVS_1 = db.Column(db.String(200))  # 氨基酸改变-简写
+    chr_start_end = db.Column(db.String(500))  # 基因座
+    function_types = db.Column(db.String(200))  # 功能影响
+    ID_v = db.Column(db.String(200))  # id
+    hotspot = db.Column(db.String(200))  # 是否hotspot
+    mu_af = db.Column(db.String(50))  # 丰度
+    depth = db.Column(db.String(200))  # 深度
     maf = db.Column(db.String(50), nullable=True)  # maf
-    exon = db.Column(db.String(50), nullable=False)  # 外显子
-    fu_type = db.Column(db.String(50), nullable=False)  # 功能影响
-    locus = db.Column(db.String(200), nullable=False)  # 位置
     grade = db.Column(db.String(200), nullable=True)  # 临床意义级别
     status = db.Column(db.String(200))  # 状态
     mutation_id = db.Column(db.Integer(), db.ForeignKey('mutations.id'))
     drug = db.relationship('OkrDrug', backref='mutation', lazy='dynamic')
 
-
     def to_dict(self):
-        return {
+        my_dict =  {
             'id': self.id,
+            'type': self.type,
             'gene': self.gene,
-            'mu_type': self.mu_type,
-            'mu_name': self.mu_name,
-            'mu_af': self.mu_af,
-            'mu_name_usual': self.mu_name_usual,
-            'reads': self.reads,
-            'maf': self.maf,
+            'transcript': self.transcript,
             'exon': self.exon,
-            'fu_type': self.fu_type,
-            'locus': self.locus,
+            'cHGVS': self.cHGVS,
+            'pHGVS_3': self.pHGVS_3,
+            'pHGVS_1': self.pHGVS_1,
+            'chr_start_end': self.chr_start_end,
+            'function_types': self.function_types,
+            'ID_v': self.ID_v,
+            'hotspot': self.hotspot,
+            'mu_af': self.mu_af,
             'grade': self.grade,
-            'status': self.status,
-            'type': self.type
+            'depth': self.depth,
+            'maf': self.maf,
+            'status': self.status
         }
+        for k, v in my_dict.items():
+            if not v:
+                my_dict[k] = ''
+        return my_dict
 
 
 class Chemotherapy(db.Model):

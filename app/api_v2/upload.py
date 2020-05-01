@@ -52,12 +52,27 @@ class SampleInfoVUpload(Resource):
         file = file_sam.path(filename)
         list_sam = excel_to_dict(file)
         for row in list_sam:
-            apply = ApplyInfo.query.filter(ApplyInfo.req_mg==row.get('申请单号')).first()
+            apply = ApplyInfo.query.filter(ApplyInfo.req_mg == row.get('申请单号')).first()
             if apply:
-                pat = apply.patient_info_v
-                if pat:
-                    for fam in pat.family_infos:
-                        pass
+                pass
+            else:
+                pat = PatientInfoV(name=row.get('患者姓名'), age=row.get('病人年龄'), gender=row.get('病人性别'), nation=row.get('民族')
+                                   , origo=row.get('籍贯'), contact=row.get('病人联系方式'), ID_number=row.get('病人身份证号码'),
+                                   address=row.get('病人地址'))
+                db.session.add(pat)
+                apply = ApplyInfo(mg_id=row.get('迈景编号'), req_mg=row.get('申请单号'), sales=row.get('销售代表'),
+                                  outpatient_id=row.get('门诊/住院号'), doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
+                                  room=row.get('科室'), cancer_d=row.get('病理诊断'),
+                                  pathological=row.get('病理诊断'), note=row.get('备注'))
+                db.session.add(apply)
+                pat.applys.append(apply)
+                sam = SampleInfoV(sample_id=row.get('迈景编号'),pnumber=row.get('病理号'),seq_type=row.get('项目类型')
+                                  ,sample_type=row.get('样本类型（报告用）'),mth=row.get('采样方式')
+                                  ,sample_count=row.get('数量'))
+                db.session.add(sam)
+                apply.sample_infos.append(sam)
+
+        db.session.commit()
         os.remove(file)
         return {'msg': '文件上传成功'}
 
@@ -118,7 +133,8 @@ class RunInfoUpload(Resource):
                                 seq = SeqInfo(sample_name=dict_val.get('迈景编号'), sample_mg=dict_val.get('申请单号'),
                                               item=dict_val.get('检测内容'), barcode=dict_val.get('Barcode编号'),
                                               note=dict_val.get('备注'), cancer=dict_val.get('肿瘤类型(报告用)'),
-                                              report_item=dict_val.get('报告模板'), sam_type=dict_val.get('样本类型'))
+                                              report_item=dict_val.get('报告模板'), sam_type=dict_val.get('样本类型'),
+                                              cell_percent=dict_val.get('肿瘤细胞占比'),status='upload')
                                 db.session.add(seq)
                                 run.seq_info.append(seq)
                             db.session.commit()
@@ -145,7 +161,7 @@ class RunInfoUpload(Resource):
                         run.seq_info.append(seq)
                     db.session.commit()
 
-            msg = '文件上传成功!'
+            msg = '上机信息上传成功!'
         except IOError:
             msg = '文件有问题,请检查后再上传!!!!!'
         os.remove(file)

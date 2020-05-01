@@ -2,7 +2,18 @@ import re, os
 
 import pandas as pd
 
-from app.libs.upload import df2dict
+from sqlalchemy import and_
+from flask import current_app
+
+from app.libs.upload import df2dict, df2list
+
+from app.models import db
+from app.models.record_config import CancerTypes
+from app.models.run_info import RunInfo, SeqInfo
+from app.models.sample_v import (SampleInfoV, ApplyInfo, TreatInfoV, PathologyInfo, Operation, PatientInfoV,
+                                 FamilyInfoV)
+from app.models.mutation import Mutation, Mutations
+from app.models.report import Report
 
 
 def df_to_dict(df):
@@ -52,7 +63,14 @@ def first_check(snvs, list_m, list_c=None):
                     dic_snv['drugs'] = l_drug
                     list_m.append(dic_snv)
             else:
-                list_m.append(snv.to_dict())
+                dic_snv = snv.to_dict()
+                drugs = snv.drug
+                l_drug = []
+                if drugs:
+                    for drug in drugs:
+                        l_drug.append(drug.to_dict())
+                dic_snv['drugs'] = l_drug
+                list_m.append(dic_snv)
     return None
 
 
@@ -195,14 +213,14 @@ def okr_create(df, disease, gene, mutation, drug_effect):
 
 def okr_create_n(dic_in, df, disease, drug_effect):
     type = dic_in['type']
-    if type == 'fusion':
+    if type == 'Fusion':
         mutation = 'fusion'
-    elif type == 'cnv':
+    elif type == 'CNV':
         mutation = 'amplification'
-    elif dic_in['mu_name_usual'] == '19号外显子缺失突变':
+    elif type == 'DEL' and (dic_in['exon'] == 'exon19'):
         mutation = 'exon 19 deletion'
     else:
-        mutation = dic_in['mu_name_usual'].split(' ')[1]
+        mutation = dic_in['pHGVS_1'].split('.')[1]
     gene = dic_in['gene']
     dic_out = okr_create(df, disease, gene, mutation, drug_effect)
     return dic_out
@@ -248,14 +266,14 @@ def grade_mutation(df, disease, gene, mutation, drug_effect):
 
 def get_grade(dic_in, df, disease, drug_effect):
     type = dic_in['type']
-    if type == 'fusion':
+    if type == 'Fusion':
         mutation = 'fusion'
-    elif type == 'cnv':
+    elif type == 'CNV':
         mutation = 'amplification'
-    elif dic_in['mu_name_usual'] == '19号外显子缺失突变':
+    elif type == 'DEL' and (dic_in['exon'] == 'exon19'):
         mutation = 'exon 19 deletion'
     else:
-        mutation = dic_in['mu_name_usual'].split(' ')[1]
+        mutation = dic_in['pHGVS_1'].split('.')[1]
     gene = dic_in['gene']
     grade = grade_mutation(df, disease, gene, mutation, drug_effect)
     return grade
@@ -311,3 +329,80 @@ def convert_str(row, rep):
     pat = re.compile('|'.join(rep.keys()))
     out = pat.sub(lambda n: rep[re.escape(n.group(0))], row)
     return out
+
+
+def save_reesult(seq, username):
+    run = seq.run_info
+    run_name = run.name
+    # print(run_name)
+    path_result = '/home/hemin/Desktop/信息录入/ir_result'
+    result_f = ''
+    msg = ''
+    dict_result = {}
+    for path_run in os.listdir(path_result):
+        if not run_name in path_run:
+            continue
+        for root, paths, files in os.walk(os.path.join(path_result, path_run)):
+            for file in files:
+                if seq.sample_name in file and file.endswith('.results.xls'):
+                    result_f = (os.path.join(root, file))
+    if result_f:
+        dfs = pd.read_excel(result_f, sheet_name=None, keep_default_na=False)
+
+        for name, df in dfs.items():
+            dict_result[name] = df2list(df)
+    else:
+        msg = '文件不存在'
+
+    list_mu = (dict_result.get('{}.filter'.format(seq.sample_name)))
+    report_code = '{}_{}'.format(seq.sample_mg, seq.report_item)
+    report = Report.query.filter(and_(Report.run_name == run_name,
+                                      Report.req_mg == seq.sample_mg,
+                                      Report.report_item == seq.report_item)).first()
+    if report:
+        if report.mutation:
+            mutations = report.mutation
+            print(mutations)
+            for mu in mutations.mutation:
+                print(mu.id)
+                mutations.mutation.remove(mu)
+                drugs = mu.drug
+                del_db(db, drugs)
+                db.session.delete(mu)
+            # report.mutation.remove(mutations)
+            db.session.delete(mutations)
+    else:
+        report = Report(run_name=run_name, req_mg=seq.sample_mg, report_item=seq.report_item)
+        # report.stage = '突变审核'
+        db.session.add(report)
+        db.session.commit()
+    mutations = Mutations()
+    # print(report.id)
+    report = Report.query.filter(and_(Report.run_name == run_name,
+                                      Report.req_mg == seq.sample_mg,
+                                      Report.report_item == seq.report_item)).first()
+    report.report_user = username
+    report.stage = '突变审核'
+    report.mutation = mutations
+    sam = seq.sample_info_v
+    apply = sam.apply_info
+    cnacer_t = CancerTypes.query.filter(CancerTypes.name==seq.cancer).first()
+    apply.cancer = cnacer_t.okr_name.title()
+    print(apply.cancer)
+    report.sample_info_v = sam
+    if list_mu:
+        for row in list_mu:
+            mutation = Mutation(type=row.get('变异类型'), gene=row.get('基因'), transcript=row.get('转录本'),
+                                exon=row.get('外显子'), cHGVS=row.get('编码改变'), pHGVS_3=row.get('氨基酸改变'),
+                                pHGVS_1=row.get('氨基酸改变-简写'), chr_start_end=row.get('基因座'),
+                                function_types=row.get('功能影响'), mu_af=row.get('变异丰度'),
+                                depth=row.get('深度'), ID_v=row.get('ID'), hotspot=row.get('Hotspot'))
+            mutations.mutation.append(mutation)
+        db.session.commit()
+        msg = '{} {}的结果保存成功'.format(run_name, seq.sample_name)
+    else:
+        if msg:
+            pass
+        else:
+            msg = '{} {}未检测到变异'.format(run_name, seq.sample_name)
+    return msg
