@@ -15,7 +15,7 @@ from app.models.report import Report
 
 from app.libs.get_data import read_json
 from app.libs.ext import str2time, set_float
-from app.libs.report import save_reesult
+from app.libs.report import save_reesult, get_qc_raw
 
 
 class GetAllSample(Resource):
@@ -222,3 +222,25 @@ class GetSeqInfo(Resource):
         errs = ';'.join(err)
 
         return {'msg': msg, 'errs': errs}
+
+
+class SeqQc(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('id',help='报告id')
+
+    def get(self):
+        argv = self.parser.parse_args()
+        rep_id = argv.get('id')
+        sam = Report.query.filter(Report.id==rep_id).first().sample_info_v
+        seq = SeqInfo.query.filter(SeqInfo.sample_name==sam.sample_id).first()
+        dic_out = (get_qc_raw(seq))
+        qc = dic_out.get('qc')
+        if qc:
+            qc_title = [{'title': k,'key': k, 'width': '100'} for k in qc[0].keys()]
+            dic_out['qc_title'] = qc_title
+        raw = dic_out.get('raw')
+        if raw:
+            dic_out['raw_title'] = [{'title': k,'key': k, 'width': '100'} for k in raw[0].keys()]
+        # print(dic_out['raw'])
+        return jsonify(dic_out)

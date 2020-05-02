@@ -177,8 +177,8 @@ def download1(id,item,note):
     dir_res = current_app.config['RES_REPORT']
     dir_report = os.path.join(dir_res, 'report')
     report = Report.query.filter(Report.id == id).first()
-    sam = report.samples[0]
-    mg_id =sam.mg_id
+    sam = report.sample_info_v
+    mg_id = sam.sample_id
     file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id,item))
     if os.path.exists(file):
         path_rep = os.path.join(os.getcwd(), dir_report)

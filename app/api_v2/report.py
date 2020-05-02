@@ -17,7 +17,6 @@ from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, di
 from app.libs.get_data import read_json, splitN
 
 
-
 class ReportStart(Resource):
     '''
     报告开始制作:承包
@@ -223,7 +222,7 @@ class EditMutation(Resource):
             # grade = sam.get('grade')
             mutation = Mutation.query.filter(Mutation.id == id).first()
             mutation.status = '审核通过'
-            mu = Mutation.query.filter(Mutation.id==id).first()
+            mu = Mutation.query.filter(Mutation.id == id).first()
             cancer = mu.mutation.report.sample_info_v.apply_info.cancer
 
             grade = get_grade(sam, df, cancer, drug_effect)
@@ -613,10 +612,11 @@ class ExportReport(Resource):
         rep_id = args.get('id')
         item = args.get('item')
         note = args.get('note')
+        dic_mu = {'CNV':'拷贝数变异'}
         dic_m = {}
         report = Report.query.filter(Report.id == rep_id).first()
-        sam = report.samples[0]
-        mg_id = sam.mg_id
+        sam = report.sample_info_v
+        mg_id = sam.sample_id
         list_m = []
 
         if note == '1':
@@ -627,17 +627,21 @@ class ExportReport(Resource):
 
         else:
             if report.stage in ['突变审核', '突变注释', '生成报告', '制作完成']:  # todo 简化
-                patient = sam.patient_info
+                apply = sam.apply_info
+                patient = apply.patient_info_v
                 mutations = report.mutation
-                family = patient.family_info[0]
+                family = patient.family_infos
                 if family:
-                    dic_m['fm'] = family.diseases
-                treats = sam.treat_info
+                    fam = ''
+                    for fa in family:
+                        fam_dic = fa.to_dict()
+                        fam += '{}{}'.format(fam_dic['relationship'], fam_dic['diseases'])
+                    dic_m['fm'] = fam
+                treats = patient.treat_infos
                 mdhistory = []
                 if treats:
                     for treat in treats:
-                        if treat.is_treat != '无':
-                            mdhistory.append(treat.name)
+                        mdhistory.append(treat.name)
                     mdhistory = [m for m in mdhistory if m]
                 if mdhistory:
                     mdhistory = '、'.join(mdhistory)
@@ -651,9 +655,10 @@ class ExportReport(Resource):
                     first_check(mutation, list_m, list_c)
 
                 dic_m['s'] = sam.to_dict()  # 样本信息
-                dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
+                dic_m['ap'] = sam.apply_info.to_dict()
+                # dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
                 dic_m['p'] = patient.to_dict()  # 病人信息
-                dic_m['sp']['cell_content'] = format(sam.pathology_info.cell_content, '.0%')
+                dic_m['cell_content'] = format(float(sam.seq[0].cell_percent), '.0%')
 
         for cc in config:
             if item == cc['item']:
@@ -669,6 +674,8 @@ class ExportReport(Resource):
                     m_type = row['检测的变异类型']
                     if list_m:
                         for mu in list_m:
+                            if mu['type'] == 'Fusion':
+                                mu['gene'] = mu['gene'].split('-')[-1]
                             if mu['gene'] == gene:
                                 drugs = []
                                 if mu['drugs']:
@@ -678,6 +685,17 @@ class ExportReport(Resource):
                                 else:
                                     drugs = ['没有']
                                 mu['okrs'] = drugs
+                                if mu['type'] == 'Fusion':
+                                    mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
+                                    mu['mu_name_usual'] = '{} fusion'.format(mu['gene'])
+                                elif mu['type'] == 'CNV':
+                                    mu['mu_name'] = '{}({})x{}'.format(mu['ID_v'], mu['chr_start_end'].split(':')[-1],
+                                                                       mu['mu_af'].split('/')[0])
+                                    mu['mu_name_usual'] = '{} amplification'.format(mu['gene'])
+                                else:
+                                    mu['mu_name'] = '{0}({1}):{2}({3})'.format(mu['transcript'], mu['gene'],
+                                                                               mu['cHGVS'], mu['pHGVS_1'])
+                                    mu['mu_name_usual'] = '{} {}'.format(mu['gene'], mu['pHGVS_1'].split('.')[-1])
                                 list_mutation.append(mu)
                                 row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
                                           'mu_name_usual': mu['mu_name_usual'], 'grade': mu['grade']}
@@ -700,12 +718,14 @@ class ExportReport(Resource):
                 dic_m['detail_mu'] = detail_mu  # 突变详情
                 # dic_m['list_m'] = list_m
 
-        temp_docx = os.path.join(path_docx, '12_v3.1.docx')
+        temp_docx = os.path.join(path_docx, '52_t.docx')
         file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id, item))
         if os.path.exists(file):
             os.remove(file)
 
-        # print(dic_m['mutation'])
+        # for k, v in dic_m.items():
+        #     print(k, '\n', v)
+        print(dic_m['mutation'])
         docx = DocxTemplate(temp_docx)
         docx.render(dic_m)
         docx.save(file)

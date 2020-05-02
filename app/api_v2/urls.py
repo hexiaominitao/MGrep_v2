@@ -23,11 +23,12 @@ my_api.add_resource(SampleInfoVUpload, '/upload/sample_record/') # 样本信息�
 my_api.add_resource(GeneralUpload, '/upload/general_upload/')  # 通用上传模块
 
 # 获取数据
-from app.api_v2.get_data import GetAllSample, GetRunInfo, GetSeqInfo
+from app.api_v2.get_data import GetAllSample, GetRunInfo, GetSeqInfo, SeqQc
 
 my_api.add_resource(GetAllSample, '/data/get_sample_info')  # 样本信息获取
 my_api.add_resource(GetRunInfo, '/data/get_run_info/')
 my_api.add_resource(GetSeqInfo, '/data/get_seq_info/')
+my_api.add_resource(SeqQc, '/data/seq_qc/')
 
 # okr
 from app.api_v2.okr import OkrAnnotate, OkrResult

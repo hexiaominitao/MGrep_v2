@@ -54,8 +54,8 @@ def first_check(snvs, list_m, list_c=None):
                 if snv.status in list_c:
                     drugs = snv.drug
                     dic_snv = snv.to_dict()
-                    if 'fu_type' not in dic_snv.keys():
-                        dic_snv['fu_type'] = dic_snv['mu_name_usual']
+                    # if 'fu_type' not in dic_snv.keys():
+                    #     dic_snv['fu_type'] = dic_snv['mu_name_usual']
                     l_drug = []
                     if drugs:
                         for drug in drugs:
@@ -217,8 +217,8 @@ def okr_create_n(dic_in, df, disease, drug_effect):
         mutation = 'fusion'
     elif type == 'CNV':
         mutation = 'amplification'
-    elif type == 'DEL' and (dic_in['exon'] == 'exon19'):
-        mutation = 'exon 19 deletion'
+    elif type == 'DEL':
+        mutation = 'exon {} deletion'.format(dic_in['exon'].strip('exon'))
     else:
         mutation = dic_in['pHGVS_1'].split('.')[1]
     gene = dic_in['gene']
@@ -268,10 +268,11 @@ def get_grade(dic_in, df, disease, drug_effect):
     type = dic_in['type']
     if type == 'Fusion':
         mutation = 'fusion'
+        dic_in['gene'] = dic_in['gene'].split('-')[-1]
     elif type == 'CNV':
         mutation = 'amplification'
-    elif type == 'DEL' and (dic_in['exon'] == 'exon19'):
-        mutation = 'exon 19 deletion'
+    elif type == 'DEL':
+        mutation = 'exon {} deletion'.format(dic_in['exon'].strip('exon'))
     else:
         mutation = dic_in['pHGVS_1'].split('.')[1]
     gene = dic_in['gene']
@@ -354,7 +355,7 @@ def save_reesult(seq, username):
     else:
         msg = '文件不存在'
 
-    list_mu = (dict_result.get('{}.filter'.format(seq.sample_name)))
+    list_mu = (dict_result.get('filter'))
     report_code = '{}_{}'.format(seq.sample_mg, seq.report_item)
     report = Report.query.filter(and_(Report.run_name == run_name,
                                       Report.req_mg == seq.sample_mg,
@@ -406,3 +407,30 @@ def save_reesult(seq, username):
         else:
             msg = '{} {}未检测到变异'.format(run_name, seq.sample_name)
     return msg
+
+def get_qc_raw(seq):
+    run = seq.run_info
+    run_name = run.name
+    # print(run_name)
+    path_result = '/home/hemin/Desktop/信息录入/ir_result'
+    result_f = ''
+    msg = ''
+    dict_result = {}
+    for path_run in os.listdir(path_result):
+        if not run_name in path_run:
+            continue
+        for root, paths, files in os.walk(os.path.join(path_result, path_run)):
+            for file in files:
+                if seq.sample_name in file and file.endswith('.results.xls'):
+                    result_f = (os.path.join(root, file))
+    if result_f:
+        dfs = pd.read_excel(result_f, sheet_name=None, keep_default_na=False)
+
+        for name, df in dfs.items():
+            dict_result[name] = df2list(df)
+    else:
+        msg = '文件不存在'
+    dic_out  = {'qc': dict_result.get('QC'),
+                'raw': dict_result.get('Mutation.raw')}
+
+    return dic_out
