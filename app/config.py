@@ -41,7 +41,7 @@ class Config(object):
 
 
 class ProdConfig(Config):
-    RESULT_DIR = '/data/Users/ziyi/Projects/IR_Analysis/'
+    RESULT_DIR = '/data/MGR/IR_Analysis/'
 
 
 class DevConfig(Config):
