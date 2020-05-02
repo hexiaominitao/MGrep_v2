@@ -3,5 +3,5 @@ from app import create_app
 
 app = create_app('app.config.ProdConfig')
 
-server = WSGIServer(('0.0.0.0',5000),app)
+server = WSGIServer(('0.0.0.0',5002),app)
 server.serve_forever()
