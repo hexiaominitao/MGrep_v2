@@ -401,13 +401,14 @@ def save_reesult(seq, username):
                                 depth=row.get('深度'), ID_v=row.get('ID'), hotspot=row.get('Hotspot'),
                                 okr_mu=row.get('OKR注释类型'), mu_type=row.get('报告类型'))
             mutations.mutation.append(mutation)
-        db.session.commit()
+
         msg = '{} {}的结果保存成功'.format(run_name, seq.sample_name)
     else:
         if msg:
             pass
         else:
             msg = '{} {}未检测到变异'.format(run_name, seq.sample_name)
+    db.session.commit()
     return msg
 
 
