@@ -62,13 +62,15 @@ class AdminUser(Resource):
         self.parser.add_argument('name', required=True)
         self.parser.add_argument('passwd', required=True)
         self.parser.add_argument('mail', required=True)
-        self.parser.add_argument('role',help='权限')
+        self.parser.add_argument('role', help='权限')
 
     def get(self):
         users = User.query.all()
         all_user = []
         for user in users:
-            all_user.append(user.to_dict())
+            user_dict = user.to_dict()
+            user_dict['roles'] = ','.join([k.name for k in user.roles])
+            all_user.append(user_dict)
         dic_user = {'users': all_user}
         return jsonify(dic_user)
 
@@ -78,15 +80,15 @@ class AdminUser(Resource):
         passwd = args.get('passwd')
         mail = args.get('mail')
         roles = args.get('role')
+        print(roles)
         if User.query.filter_by(username=name).first() is not None:
             msg = '用户已存在!!'
         else:
             user = User(username=name)
             user.mail = mail
             user.set_password(passwd)
-            for role in roles:
-                rol = Role.query.filter(Role.name==role).first()
-                user.roles.append(rol)
+            role = Role.query.filter(Role.name==roles).first()
+            user.roles.append(role)
             db.session.add(user)
             db.session.commit()
             msg = '注册成功'
@@ -94,10 +96,6 @@ class AdminUser(Resource):
 
 
 class AdminRole(Resource):
-    def __init__(self):
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument()
-
     def get(self):
         roles = Role.query.all()
         list_role = []
