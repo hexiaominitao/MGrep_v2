@@ -56,7 +56,8 @@ class SampleInfoVUpload(Resource):
             if apply:
                 pass
             else:
-                pat = PatientInfoV(name=row.get('患者姓名'), age=row.get('病人年龄'), gender=row.get('病人性别'), nation=row.get('民族')
+                pat = PatientInfoV(name=row.get('患者姓名'), age=row.get('病人年龄'), gender=row.get('病人性别'),
+                                   nation=row.get('民族')
                                    , origo=row.get('籍贯'), contact=row.get('病人联系方式'), ID_number=row.get('病人身份证号码'),
                                    address=row.get('病人地址'))
                 db.session.add(pat)
@@ -66,9 +67,9 @@ class SampleInfoVUpload(Resource):
                                   pathological=row.get('病理诊断'), note=row.get('备注'))
                 db.session.add(apply)
                 pat.applys.append(apply)
-                sam = SampleInfoV(sample_id=row.get('迈景编号'),pnumber=row.get('病理号'),seq_type=row.get('项目类型')
-                                  ,sample_type=row.get('样本类型（报告用）'),mth=row.get('采样方式')
-                                  ,sample_count=row.get('数量'))
+                sam = SampleInfoV(sample_id=row.get('迈景编号'), pnumber=row.get('病理号'), seq_type=row.get('项目类型')
+                                  , sample_type=row.get('样本类型（报告用）'), mth=row.get('采样方式')
+                                  , sample_count=row.get('数量'))
                 db.session.add(sam)
                 apply.sample_infos.append(sam)
 
@@ -134,7 +135,8 @@ class RunInfoUpload(Resource):
                                               item=dict_val.get('检测内容'), barcode=dict_val.get('Barcode编号'),
                                               note=dict_val.get('备注'), cancer=dict_val.get('肿瘤类型(报告用)'),
                                               report_item=dict_val.get('报告模板'), sam_type=dict_val.get('样本类型'),
-                                              cell_percent=dict_val.get('肿瘤细胞占比'),status='upload')
+                                              cell_percent=dict_val.get('肿瘤细胞占比'), status='upload',
+                                              gender=dict_val.get('性别'))
                                 db.session.add(seq)
                                 run.seq_info.append(seq)
                             db.session.commit()

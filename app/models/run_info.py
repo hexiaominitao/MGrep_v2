@@ -25,6 +25,7 @@ class SeqInfo(db.Model):
     sam_type = db.Column(db.String(255))  # 样本类型
     barcode = db.Column(db.String(255))  # Barcode编号
     cell_percent = db.Column(db.String(255)) # 肿瘤细胞比例
+    gender = db.Column(db.String(255)) # 性别
     note = db.Column(db.String(255))  # 备注
     cancer = db.Column(db.String(255))  # 报告用癌症类型
     report_item = db.Column(db.String(255))  # 报告模板类型
@@ -37,7 +38,7 @@ class SeqInfo(db.Model):
             'id': self.id, 'sample_name': self.sample_name,
             'sample_mg': self.sample_mg, 'item': self.item,
             'barcode': self.barcode, 'note': self.note,
-            'status': self.status, 'cancer': self.cancer,
+            'status': self.status, 'cancer': self.cancer,'gender':self.gender,
             'report_item': self.report_item, 'cell_percent':self.cell_percent,
             'sam_type': self.sam_type
         }
