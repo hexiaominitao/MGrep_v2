@@ -41,11 +41,13 @@ class Config(object):
 
 
 class ProdConfig(Config):
-    pass
+    RESULT_DIR = '/data/Users/ziyi/Projects/IR_Analysis/'
 
 
 class DevConfig(Config):
     DEBUG = True
+    RESULT_DIR = '/home/hemin/Desktop/信息录入/ir_result'
+
 
 
 class TestConfig(Config):

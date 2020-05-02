@@ -25,6 +25,8 @@ class Mutation(db.Model):
     hotspot = db.Column(db.String(200))  # 是否hotspot
     mu_af = db.Column(db.String(50))  # 丰度
     depth = db.Column(db.String(200))  # 深度
+    okr_mu = db.Column(db.String(200)) # OKR注释类型
+    mu_type =db.Column(db.String(200)) # 报告类型
     maf = db.Column(db.String(50), nullable=True)  # maf
     grade = db.Column(db.String(200), nullable=True)  # 临床意义级别
     status = db.Column(db.String(200))  # 状态
@@ -48,6 +50,8 @@ class Mutation(db.Model):
             'mu_af': self.mu_af,
             'grade': self.grade,
             'depth': self.depth,
+            'okr_mu':self.okr_mu,
+            'mu_type': self.mu_type,
             'maf': self.maf,
             'status': self.status
         }

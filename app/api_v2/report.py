@@ -674,9 +674,11 @@ class ExportReport(Resource):
                     m_type = row['检测的变异类型']
                     if list_m:
                         for mu in list_m:
-                            if mu['type'] == 'Fusion':
+                            if mu['mu_type'] == '融合':
                                 mu['gene'] = mu['gene'].split('-')[-1]
-                            if mu['gene'] == gene:
+                            if mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
+                                mu['gene'] = 'MET'
+                            if mu['gene'] == gene and mu['mu_type'] in m_type:
                                 drugs = []
                                 if mu['drugs']:
                                     for drug in mu['drugs']:
@@ -685,13 +687,16 @@ class ExportReport(Resource):
                                 else:
                                     drugs = ['没有']
                                 mu['okrs'] = drugs
-                                if mu['type'] == 'Fusion':
+                                if mu['mu_type'] == '融合':
                                     mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
                                     mu['mu_name_usual'] = '{} fusion'.format(mu['gene'])
-                                elif mu['type'] == 'CNV':
+                                elif mu['mu_type'] == '拷贝数变异':
                                     mu['mu_name'] = '{}({})x{}'.format(mu['ID_v'], mu['chr_start_end'].split(':')[-1],
                                                                        mu['mu_af'].split('/')[0])
                                     mu['mu_name_usual'] = '{} amplification'.format(mu['gene'])
+                                elif mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
+                                    mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
+                                    mu['mu_name_usual'] = '{} exon 14 skipping'.format(mu['gene'])
                                 else:
                                     mu['mu_name'] = '{0}({1}):{2}({3})'.format(mu['transcript'], mu['gene'],
                                                                                mu['cHGVS'], mu['pHGVS_1'])

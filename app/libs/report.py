@@ -212,15 +212,11 @@ def okr_create(df, disease, gene, mutation, drug_effect):
 
 
 def okr_create_n(dic_in, df, disease, drug_effect):
-    type = dic_in['type']
-    if type == 'Fusion':
-        mutation = 'fusion'
-    elif type == 'CNV':
-        mutation = 'amplification'
-    elif type == 'DEL':
-        mutation = 'exon {} deletion'.format(dic_in['exon'].strip('exon'))
-    else:
-        mutation = dic_in['pHGVS_1'].split('.')[1]
+    mutation = dic_in['okr_mu']
+    if mutation == 'exon 14 skipping':
+        dic_in['gene'] = 'MET'
+    elif mutation == 'fusion':
+        dic_in['gene'] = dic_in['gene'].split('-')[-1]
     gene = dic_in['gene']
     dic_out = okr_create(df, disease, gene, mutation, drug_effect)
     return dic_out
@@ -265,16 +261,21 @@ def grade_mutation(df, disease, gene, mutation, drug_effect):
 
 
 def get_grade(dic_in, df, disease, drug_effect):
-    type = dic_in['type']
-    if type == 'Fusion':
-        mutation = 'fusion'
+    # type = dic_in['type']
+    # if type == 'Fusion':
+    #     mutation = 'fusion'
+    #     dic_in['gene'] = dic_in['gene'].split('-')[-1]
+    # elif type == 'CNV':
+    #     mutation = 'amplification'
+    # elif type == 'DEL':
+    #     mutation = 'exon {} deletion'.format(dic_in['exon'].strip('exon'))
+    # else:
+    #     mutation = dic_in['pHGVS_1'].split('.')[1]
+    mutation = dic_in['okr_mu']
+    if mutation == 'exon 14 skipping':
+        dic_in['gene'] = 'MET'
+    elif mutation == 'fusion':
         dic_in['gene'] = dic_in['gene'].split('-')[-1]
-    elif type == 'CNV':
-        mutation = 'amplification'
-    elif type == 'DEL':
-        mutation = 'exon {} deletion'.format(dic_in['exon'].strip('exon'))
-    else:
-        mutation = dic_in['pHGVS_1'].split('.')[1]
     gene = dic_in['gene']
     grade = grade_mutation(df, disease, gene, mutation, drug_effect)
     return grade
@@ -336,7 +337,7 @@ def save_reesult(seq, username):
     run = seq.run_info
     run_name = run.name
     # print(run_name)
-    path_result = '/home/hemin/Desktop/信息录入/ir_result'
+    path_result = current_app.config['RESULT_DIR']
     result_f = ''
     msg = ''
     dict_result = {}
@@ -387,7 +388,7 @@ def save_reesult(seq, username):
     report.mutation = mutations
     sam = seq.sample_info_v
     apply = sam.apply_info
-    cnacer_t = CancerTypes.query.filter(CancerTypes.name==seq.cancer).first()
+    cnacer_t = CancerTypes.query.filter(CancerTypes.name == seq.cancer).first()
     apply.cancer = cnacer_t.okr_name.title()
     print(apply.cancer)
     report.sample_info_v = sam
@@ -397,7 +398,8 @@ def save_reesult(seq, username):
                                 exon=row.get('外显子'), cHGVS=row.get('编码改变'), pHGVS_3=row.get('氨基酸改变'),
                                 pHGVS_1=row.get('氨基酸改变-简写'), chr_start_end=row.get('基因座'),
                                 function_types=row.get('功能影响'), mu_af=row.get('变异丰度'),
-                                depth=row.get('深度'), ID_v=row.get('ID'), hotspot=row.get('Hotspot'))
+                                depth=row.get('深度'), ID_v=row.get('ID'), hotspot=row.get('Hotspot'),
+                                okr_mu=row.get('OKR注释类型'), mu_type=row.get('报告类型'))
             mutations.mutation.append(mutation)
         db.session.commit()
         msg = '{} {}的结果保存成功'.format(run_name, seq.sample_name)
@@ -408,11 +410,12 @@ def save_reesult(seq, username):
             msg = '{} {}未检测到变异'.format(run_name, seq.sample_name)
     return msg
 
+
 def get_qc_raw(seq):
     run = seq.run_info
     run_name = run.name
     # print(run_name)
-    path_result = '/home/hemin/Desktop/信息录入/ir_result'
+    path_result = current_app.config['RESULT_DIR']
     result_f = ''
     msg = ''
     dict_result = {}
@@ -430,7 +433,7 @@ def get_qc_raw(seq):
             dict_result[name] = df2list(df)
     else:
         msg = '文件不存在'
-    dic_out  = {'qc': dict_result.get('QC'),
-                'raw': dict_result.get('Mutation.raw')}
+    dic_out = {'qc': dict_result.get('QC'),
+               'raw': dict_result.get('Mutation.raw')}
 
     return dic_out
