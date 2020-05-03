@@ -674,8 +674,10 @@ class ExportReport(Resource):
             dic_m['ap'] = sam.apply_info.to_dict()
             # dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
             dic_m['p'] = patient.to_dict()  # 病人信息
+            for seq in sam.seq:
+                print(seq.id)
             cell_p = sam.seq[0].cell_percent
-            dic_m['cell_content'] = cell_p if '%' in cell_p else format(float(cell_p), '.0%')
+            dic_m['cell_content'] = cell_p if ('%' in cell_p and cell_p) else format(float(cell_p), '.0%')
 
             for cc in config:
                 if item == cc['item']:
