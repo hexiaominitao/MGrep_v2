@@ -82,7 +82,7 @@ class GetRunInfo(Resource):
                         sam.seq.append(seq)
                         msg = save_reesult(seq,name)
                         msgs.append(msg)
-            elif seq.status == '生成':
+            elif seq.status == '结果已保存':
                 msgs.append('样本{}结果已经保存'.format(seq.sample_name))
             else:
                 msgs.append('样本{}未分析完成'.format(seq.sample_name))

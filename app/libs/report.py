@@ -404,13 +404,15 @@ def save_reesult(seq, username):
             mutations.mutation.append(mutation)
 
         msg = '{} {}的结果保存成功'.format(run_name, seq.sample_name)
+        db.session.commit()
     else:
         if msg:
             pass
         else:
             msg = '{} {}未检测到变异'.format(run_name, seq.sample_name)
+            db.session.commit()
     seq.status = '结果已保存'
-    db.session.commit()
+
     return msg
 
 
