@@ -63,11 +63,11 @@ class SampleInfoVUpload(Resource):
                 db.session.add(pat)
                 apply = ApplyInfo(mg_id=row.get('迈景编号'), req_mg=row.get('申请单号'), sales=row.get('销售代表'),
                                   outpatient_id=row.get('门诊/住院号'), doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
-                                  room=row.get('科室'), cancer_d=row.get('病理诊断'),
+                                  room=row.get('科室'), cancer_d=row.get('病理诊断'), seq_type=row.get('项目类型'),
                                   pathological=row.get('病理诊断'), note=row.get('备注'))
                 db.session.add(apply)
                 pat.applys.append(apply)
-                sam = SampleInfoV(sample_id=row.get('迈景编号'), pnumber=row.get('病理号'), seq_type=row.get('项目类型')
+                sam = SampleInfoV(sample_id=row.get('迈景编号'), pnumber=row.get('病理号')
                                   , sample_type=row.get('样本类型（报告用）'), mth=row.get('采样方式')
                                   , sample_count=row.get('数量'))
                 db.session.add(sam)
@@ -135,7 +135,7 @@ class RunInfoUpload(Resource):
                                               item=dict_val.get('检测内容'), barcode=dict_val.get('Barcode编号'),
                                               note=dict_val.get('备注'), cancer=dict_val.get('肿瘤类型(报告用)'),
                                               report_item=dict_val.get('报告模板'), sam_type=dict_val.get('样本类型'),
-                                              cell_percent=dict_val.get('肿瘤细胞占比'), status='upload',
+                                              cell_percent=dict_val.get('肿瘤细胞占比'), status='准备分析',
                                               gender=dict_val.get('性别'))
                                 db.session.add(seq)
                                 run.seq_info.append(seq)

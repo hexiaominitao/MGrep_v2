@@ -150,6 +150,7 @@ class ReportStage(Resource):
             report = Report.query.filter(Report.id == rep_id).update({
                 'stage': stage
             })
+            print(stage)
             db.session.commit()
         if stage == '重新制作':
             report = Report.query.filter(Report.id == rep_id).first()
@@ -192,6 +193,26 @@ class EditMutation(Resource):
                 list_c = None  # todo 简化
                 first_check(mutation, list_m, list_c)
 
+            dic_m['mu_title'] = [{'type': 'selection','width': '60','align': 'center'},
+                                 {'title': '状态','width': '100','key': 'status'},
+                                 {'title': '变异类型', 'key': 'type', 'width': '100'},
+                                 {'title': '基因', 'key': 'gene', 'width': '100'},
+                                 {'title': '转录本', 'key': 'transcript', 'width': '100'},
+                                 {'title': '外显子', 'key': 'exon', 'width': '100'},
+                                 {'title': '编码改变', 'key': 'cHGVS', 'width': '100'},
+                                 {'title': '氨基酸改变', 'key': 'pHGVS_3', 'width': '100'},
+                                 {'title': '氨基酸改变-简写', 'key': 'pHGVS_1', 'width': '100'},
+                                 {'title': '基因座', 'key': 'chr_start_end', 'width': '100'},
+                                 {'title': '功能影响', 'key': 'function_types', 'width': '100'},
+                                 {'title': 'ID', 'key': 'ID_v', 'width': '100'},
+                                 {'title': 'Hotspot', 'key': 'hotspot', 'width': '100'},
+                                 {'title': '变异丰度', 'key': 'mu_af', 'width': '100'},
+                                 {'title': '深度', 'key': 'depth', 'width': '100'},
+                                 {'title': 'OKR注释类型', 'key': 'okr_mu', 'width': '100'},
+                                 {'title': '报告类型', 'key': 'mu_type', 'width': '100'},
+                                 {'title': '临床意义级别', 'slot': 'grade', 'width': '120'},
+                                 {'title': '操作', 'slot': 'action', 'width': '120'}
+                                 ]
             dic_m['mutation'] = list_m
             dic_m['mg_id'] = sam.sample_id
 
@@ -617,126 +638,126 @@ class ExportReport(Resource):
         report = Report.query.filter(Report.id == rep_id).first()
         sam = report.sample_info_v
         mg_id = sam.sample_id
+        req_mg = sam.apply_info.req_mg
         list_m = []
+        print(report.stage)
 
-        if note == '1':
-            patient = sam.patient_info
+        if report.stage in ['生成报告', '制作完成']:  # todo 简化
+            apply = sam.apply_info
+            patient = apply.patient_info_v
+            mutations = report.mutation
+            family = patient.family_infos
+            if family:
+                fam = ''
+                for fa in family:
+                    fam_dic = fa.to_dict()
+                    fam += '{}{}'.format(fam_dic['relationship'], fam_dic['diseases'])
+                dic_m['fm'] = fam
+            treats = patient.treat_infos
+            mdhistory = []
+            if treats:
+                for treat in treats:
+                    mdhistory.append(treat.name)
+                mdhistory = [m for m in mdhistory if m]
+            if mdhistory:
+                mdhistory = '、'.join(mdhistory)
+            else:
+                mdhistory = ''
+            dic_m['mdhistory'] = mdhistory
+
+            if mutations:
+                mutation = mutations.mutation
+                list_c = ['审核通过']  # todo 简化
+                first_check(mutation, list_m, list_c)
+
             dic_m['s'] = sam.to_dict()  # 样本信息
-            dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
+            dic_m['ap'] = sam.apply_info.to_dict()
+            # dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
             dic_m['p'] = patient.to_dict()  # 病人信息
+            cell_p = sam.seq[0].cell_percent
+            dic_m['cell_content'] = cell_p if '%' in cell_p else format(float(cell_p), '.0%')
 
-        else:
-            if report.stage in ['突变审核', '突变注释', '生成报告', '制作完成']:  # todo 简化
-                apply = sam.apply_info
-                patient = apply.patient_info_v
-                mutations = report.mutation
-                family = patient.family_infos
-                if family:
-                    fam = ''
-                    for fa in family:
-                        fam_dic = fa.to_dict()
-                        fam += '{}{}'.format(fam_dic['relationship'], fam_dic['diseases'])
-                    dic_m['fm'] = fam
-                treats = patient.treat_infos
-                mdhistory = []
-                if treats:
-                    for treat in treats:
-                        mdhistory.append(treat.name)
-                    mdhistory = [m for m in mdhistory if m]
-                if mdhistory:
-                    mdhistory = '、'.join(mdhistory)
-                else:
-                    mdhistory = ''
-                dic_m['mdhistory'] = mdhistory
+            for cc in config:
+                if item == cc['item']:
+                    rep_item = get_rep_item(cc['item'])
+                    dic_m['c'] = {'item': rep_item, '检测内容': cc['检测内容'],
+                                  '检测方法': cc['检测方法']}  # 报告配置文件
+                    list_mutation = []
+                    detail_mu = []
 
-                if mutations:
-                    mutation = mutations.mutation
-                    list_c = ['审核通过']  # todo 简化
-                    first_check(mutation, list_m, list_c)
-
-                dic_m['s'] = sam.to_dict()  # 样本信息
-                dic_m['ap'] = sam.apply_info.to_dict()
-                # dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
-                dic_m['p'] = patient.to_dict()  # 病人信息
-                cell_p = sam.seq[0].cell_percent
-                dic_m['cell_content'] =cell_p if '%' in cell_p else format(float(cell_p), '.0%')
-
-        for cc in config:
-            if item == cc['item']:
-                rep_item = get_rep_item(cc['item'])
-                dic_m['c'] = {'item': rep_item, '检测内容': cc['检测内容'],
-                              '检测方法': cc['检测方法']}  # 报告配置文件
-                list_mutation = []
-                detail_mu = []
-
-                for row in cc['结果详情']:
-                    gene = row['基因']
-                    r_mutation = []
-                    m_type = row['检测的变异类型']
-                    if list_m:
-                        for mu in list_m:
-                            if mu['mu_type'] == '融合':
-                                mu['gene'] = mu['gene'].split('-')[-1]
-                            if mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
-                                mu['gene'] = 'MET'
-                            if mu['gene'] == gene and mu['mu_type'] in m_type:
-                                drugs = []
-                                if mu['drugs']:
-                                    for drug in mu['drugs']:
-                                        drugs.append('{}({}:{})'.format(drug.get('drug'),
-                                                                        drug.get('drug_effect'), drug.get('level')))
-                                else:
-                                    drugs = ['没有']
-                                mu['okrs'] = drugs
+                    for row in cc['结果详情']:
+                        gene = row['基因']
+                        r_mutation = []
+                        m_type = row['检测的变异类型']
+                        if list_m:
+                            for mu in list_m:
                                 if mu['mu_type'] == '融合':
-                                    mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
-                                    mu['mu_name_usual'] = '{} fusion'.format(mu['gene'])
-                                elif mu['mu_type'] == '拷贝数变异':
-                                    mu['mu_name'] = '{}({})x{}'.format(mu['ID_v'], mu['chr_start_end'].split(':')[-1],
-                                                                       mu['mu_af'].split('/')[0])
-                                    mu['mu_name_usual'] = '{} amplification'.format(mu['gene'])
-                                elif mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
-                                    mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
-                                    mu['mu_name_usual'] = '{} exon 14 skipping'.format(mu['gene'])
-                                else:
-                                    mu['mu_name'] = '{0}({1}):{2}({3})'.format(mu['transcript'], mu['gene'],
-                                                                               mu['cHGVS'], mu['pHGVS_1'])
-                                    mu['mu_name_usual'] = '{} {}'.format(mu['gene'], mu['pHGVS_1'].split('.')[-1])
-                                list_mutation.append(mu)
-                                row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
-                                          'mu_name_usual': mu['mu_name_usual'], 'grade': mu['grade']}
-                                r_mutation.append(row_ir)
-                        if r_mutation:
-                            pass
+                                    mu['gene'] = mu['gene'].split('-')[-1]
+                                if mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
+                                    mu['gene'] = 'MET'
+                                if mu['gene'] == gene and mu['mu_type'] in m_type:
+                                    drugs = []
+                                    if mu['drugs']:
+                                        for drug in mu['drugs']:
+                                            drugs.append('{}({}:{})'.format(drug.get('drug'),
+                                                                            drug.get('drug_effect'), drug.get('level')))
+                                    else:
+                                        drugs = ['没有']
+                                    mu['okrs'] = drugs
+                                    if mu['mu_type'] == '融合':
+                                        mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
+                                        mu['mu_name_usual'] = '{} fusion'.format(mu['gene'])
+                                    elif mu['mu_type'] == '拷贝数变异':
+                                        mu['mu_name'] = '{}({})x{}'.format(mu['ID_v'],
+                                                                           mu['chr_start_end'].split(':')[-1],
+                                                                           mu['mu_af'].split('/')[0])
+                                        mu['mu_name_usual'] = '{} amplification'.format(mu['gene'])
+                                    elif mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
+                                        mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
+                                        mu['mu_name_usual'] = '{} exon 14 skipping'.format(mu['gene'])
+                                    else:
+                                        mu['mu_name'] = '{0}({1}):{2}({3})'.format(mu['transcript'], mu['gene'],
+                                                                                   mu['cHGVS'], mu['pHGVS_1'])
+                                        mu['mu_name_usual'] = '{} {}'.format(mu['gene'], mu['pHGVS_1'].split('.')[-1])
+                                    list_mutation.append(mu)
+                                    row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
+                                              'mu_name_usual': mu['mu_name_usual'], 'grade': mu['grade']}
+                                    r_mutation.append(row_ir)
+                            if r_mutation:
+                                pass
+                            else:
+                                r_mutation = [{'result': '未检出', 'mu_af': '',
+                                               'mu_name_usual': '', 'grade': ''}]
+                            rep_mutation = {'gene': gene, 'm_type': m_type, 'result': r_mutation}
+                            detail_mu.append(rep_mutation)
                         else:
+                            list_mutation = []
                             r_mutation = [{'result': '未检出', 'mu_af': '',
                                            'mu_name_usual': '', 'grade': ''}]
-                        rep_mutation = {'gene': gene, 'm_type': m_type, 'result': r_mutation}
-                        detail_mu.append(rep_mutation)
-                    else:
-                        list_mutation = []
-                        r_mutation = [{'result': '未检出', 'mu_af': '',
-                                       'mu_name_usual': '', 'grade': ''}]
-                        rep_mutation = {'gene': gene, 'm_type': m_type, 'result': r_mutation}
-                        detail_mu.append(rep_mutation)
+                            rep_mutation = {'gene': gene, 'm_type': m_type, 'result': r_mutation}
+                            detail_mu.append(rep_mutation)
 
-                dic_m['mutation'] = list_mutation  # 突变信息
-                dic_m['detail_mu'] = detail_mu  # 突变详情
-                # dic_m['list_m'] = list_m
+                    dic_m['mutation'] = list_mutation  # 突变信息
+                    dic_m['detail_mu'] = detail_mu  # 突变详情
+                    # dic_m['list_m'] = list_m
 
-        temp_docx = os.path.join(path_docx, '52_t.docx')
-        file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id, item))
-        if os.path.exists(file):
-            os.remove(file)
+            temp_docx = os.path.join(path_docx, '52_t.docx')
+            file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id, item))
+            if os.path.exists(file):
+                os.remove(file)
 
-        # for k, v in dic_m.items():
-        #     print(k, '\n', v)
-        print(dic_m['mutation'])
-        docx = DocxTemplate(temp_docx)
-        docx.render(dic_m)
-        docx.save(file)
+            # for k, v in dic_m.items():
+            #     print(k, '\n', v)
+            print(dic_m['mutation'])
+            docx = DocxTemplate(temp_docx)
+            docx.render(dic_m)
+            docx.save(file)
+            report.stage = '制作完成'
+            msg = '申请单号为: {} 迈景编号为：{} 的报告成功生成'.format(req_mg,mg_id)
+        else:
+            msg = '申请单号为: {} 迈景编号为：{} 的报告变异未审核，请审核'.format(req_mg,mg_id)
 
-        return {'msg': '报告成功生成！！'}
+        return {'msg': msg}
 
         # return send_from_directory(os.path.join(os.getcwd(), path_rep), '迈景基因检测报告_{}.pdf'.format(req_mg),
         #                            as_attachment=True)

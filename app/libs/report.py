@@ -409,6 +409,7 @@ def save_reesult(seq, username):
             pass
         else:
             msg = '{} {}未检测到变异'.format(run_name, seq.sample_name)
+    seq.status = '结果已保存'
     db.session.commit()
     return msg
 
@@ -435,7 +436,7 @@ def get_qc_raw(seq):
             dict_result[name] = df2list(df)
     else:
         msg = '文件不存在'
-    dic_out = {'qc': dict_result.get('QC'),
+    dic_out = {'qc': dict_result.get('QC'),'filter': dict_result.get('filter'),
                'raw': dict_result.get('Mutation.raw')}
 
     return dic_out

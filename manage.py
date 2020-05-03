@@ -68,10 +68,23 @@ def set_up():
     # db.session.add(default_role)
 
     admin = User(username='admin')
+    admin.mail='admin@admin.com'
     admin.set_password("hm714012636")
     admin.roles.append(super_admin)
     admin.roles.append(admin_role)
     admin.roles.append(default_role)
+
+    report = User(username='报告')
+    report.mail='report@maijinggene.com'
+    report.set_password('123456')
+    report.roles.append(rep_role)
+    db.session.add(report)
+    xiaomai = User(username='小迈')
+    xiaomai.set_password('123456')
+    xiaomai.mail='xiaomai@maijinggene.com'
+    xiaomai.roles.append(sar_role)
+    db.session.add(xiaomai)
+
     db.session.add(admin)
     db.session.commit()
     # if Role.query.filter(Role.name == 'admin').first():

@@ -74,15 +74,20 @@ class GetRunInfo(Resource):
         run = RunInfo.query.filter(RunInfo.id == id).first()
         msgs = []
         for seq in run.seq_info:
-            if seq.status == 'upload':
+            if seq.status == '分析完成':
                 apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
                 for sam in apply.sample_infos:
                     if seq.sample_name in sam.sample_id:
                         sam.seq.append(seq)
                         msg = save_reesult(seq,name)
                         msgs.append(msg)
+            elif seq.status == '生成':
+                msgs.append('样本{}结果已经保存'.format(seq.sample_name))
+            else:
+                msgs.append('样本{}未分析完成'.format(seq.sample_name))
 
         return {'msg': ','.join(msgs)}
+
 
     def delete(self):
         args = self.parser.parse_args()
@@ -146,13 +151,17 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
-            if seq.status == 'done':
+            if seq.status == '分析完成':
                 apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
                 for sam in apply.sample_infos:
                     if seq.sample_name in sam.sample_id:
                         sam.seq.append(seq)
                         msg = save_reesult(seq,name)
                         msgs.append(msg)
+            elif seq.status == '结果已保存':
+                msgs.append('样本{}结果已经保存'.format(seq.sample_name))
+            else:
+                msgs.append('样本{}未分析完成'.format(seq.sample_name))
             print(seq_id)
         #     sample = sam.get('sample_name')
         #     for row in samples:
@@ -233,6 +242,21 @@ class GetSeqInfo(Resource):
 
         return {'msg': ','.join(msgs)}
 
+    def put(self):
+        token = request.headers.get('token')  # 权限
+        user = User.verify_auth_token(token)
+        if not user:
+            return {'msg': '无访问权限'}, 401
+
+        data = request.get_data()
+        sams = (json.loads(data)['sams'])
+        for sam in sams:
+            seq_id = sam.get('id')
+            seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
+            seq.status = '分析完成'
+        db.session.commit()
+        return {'msg': '开始重新分析'}
+
 
 class SeqQc(Resource):
     def __init__(self):
@@ -249,8 +273,13 @@ class SeqQc(Resource):
         if qc:
             qc_title = [{'title': k,'key': k, 'width': '100'} for k in qc[0].keys()]
             dic_out['qc_title'] = qc_title
+
+        filter = dic_out.get('filter')
+        if filter:
+            dic_out['filter_title'] = [{'title': k,'key': k, 'width': '100'} for k in filter[0].keys()]
         raw = dic_out.get('raw')
         if raw:
             dic_out['raw_title'] = [{'title': k,'key': k, 'width': '100'} for k in raw[0].keys()]
-        # print(dic_out['raw'])
+        for row in dic_out['filter_title']:
+            print("{},".format(row))
         return jsonify(dic_out)
