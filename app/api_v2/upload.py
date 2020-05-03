@@ -103,6 +103,10 @@ class RunInfoUpload(Resource):
                 for name, df in df_seq:
                     if name:
                         print(df)
+                        title_df = [v for v in df.columns]
+                        if '肿瘤类型(报告用)' in title_df and '报告模板' in title_df:
+                            continue
+                        erro.append('上机信息未包含“肿瘤类型(报告用)”或“报告模板”')
                         dict_run = df2dict(df)
                         for dict_val in dict_run.values():
                             run = RunInfo.query.filter(RunInfo.name == name).first()
@@ -114,7 +118,10 @@ class RunInfoUpload(Resource):
                                               end_T=time_set(dict_val.get('结束时间')))
 
                                 db.session.add(run)
-                                db.session.commit()
+                                if erro:
+                                    pass
+                                else:
+                                    db.session.commit()
                             barcode = dict_val.get('Barcode编号').split('/')
                             sam_type = dict_val.get('样本类型').split('/')
 
@@ -139,7 +146,10 @@ class RunInfoUpload(Resource):
                                               gender=dict_val.get('性别'))
                                 db.session.add(seq)
                                 run.seq_info.append(seq)
-                            db.session.commit()
+                            if erro:
+                                pass
+                            else:
+                                db.session.commit()
             else:
                 dict_run = excel2dict(file)
                 for dict_val in dict_run.values():
