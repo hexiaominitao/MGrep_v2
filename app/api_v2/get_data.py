@@ -40,7 +40,7 @@ class GetRunInfo(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('page', type=int, help='页码')
-        self.parser.add_argument('per_page', type=int, help='每页数量')
+        self.parser.add_argument('page_per', type=int, help='每页数量')
         self.parser.add_argument('id', help='样本id')
         # self.parser.add_argument('token', type=str, required=True, help='用户认证')
 
@@ -52,7 +52,8 @@ class GetRunInfo(Resource):
         if not user:
             return {'msg': '无访问权限'}, 401
         page = args.get('page')
-        per_page = args.get('per_page')
+        per_page = args.get('page_per')
+        # print(per_page)
         all_run = RunInfo.query.all()
         run_info['total'] = len(all_run)
         runs = RunInfo.query.order_by(RunInfo.start_T.desc()). \

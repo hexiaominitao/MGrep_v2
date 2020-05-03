@@ -65,7 +65,8 @@ my_api.add_resource(TemplateItem, '/config/template_item/')
 
 # 样本录入
 
-from app.api_v2.sample_record import SampleInfoRecord, SalesHospitalType
+from app.api_v2.sample_record import SampleInfoRecord, SalesHospitalType, SampleInfoSearch
 
 my_api.add_resource(SampleInfoRecord, '/sample_record/')
 my_api.add_resource(SalesHospitalType, '/sample_record_config/')
+my_api.add_resource(SampleInfoSearch, '/sample_record/search/')

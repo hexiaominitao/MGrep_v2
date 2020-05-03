@@ -6,12 +6,27 @@ from sqlalchemy import and_
 
 from app.models import db
 from app.models.user import User
-from app.models.record_config import  SalesInfo, HospitalInfo, \
+from app.models.record_config import SalesInfo, HospitalInfo, \
     SampleType, SeqItems, CancerTypes
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem
-from app.libs.ext import get_local_time, get_utc_time
+from app.libs.ext import get_local_time, get_utc_time, get_sample
 from app.libs.report import del_db
+
+
+class SampleInfoSearch(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('apply_id', type=int, help='申请单id')
+
+    def get(self):
+        args = self.parser.parse_args()
+        apply_id = args.get('apply_id')
+        print(apply_id)
+        apply = ApplyInfo.query.filter(ApplyInfo.id==apply_id).first()
+        list_sample = get_sample([apply])
+        print(list_sample)
+        return jsonify({'sample': list_sample})
 
 
 class SampleInfoRecord(Resource):
@@ -19,12 +34,12 @@ class SampleInfoRecord(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('page', type=int, help='页码')
         self.parser.add_argument('page_per', type=int, help='每页数量')
+        # self.parser.add_argument('apply_id', type=int, help='申请单id')
 
     def get(self):
         args = self.parser.parse_args()
         page = args.get('page')
         per_page = args.get('page_per')
-        print(per_page)
 
         token = request.headers.get('token')
         user = User.verify_auth_token(token)
@@ -36,69 +51,11 @@ class SampleInfoRecord(Resource):
         list_apply = []
         total = len(ApplyInfo.query.all())
 
-        def get_sample(applys):
-            list_apply = []
-            for apply in applys:
-                sams = apply.sample_infos
-
-                def get_list_dic(sams):
-                    list_sam = []
-                    if sams:
-                        for sam in sams:
-                            dic_sam = sam.to_dict()
-                            list_sam.append(dic_sam)
-                    return list_sam
-
-                dic_apply = apply.to_dict()
-                dic_apply['samplinfos'] = get_list_dic(sams)
-                # print(get_list_dic(sams))
-                pat = apply.patient_info_v
-                if '岁' in pat.age:
-                    dic_apply['age_v'] = '岁'
-                    dic_apply['age'] = pat.age.strip('岁')
-                elif '个月' in pat.age:
-                    dic_apply['age_v'] = '个月'
-                    dic_apply['age'] = pat.age.strip('个月')
-                else:
-                    dic_apply['age_v'] = '岁'
-                    dic_apply['age'] = ''
-                dic_apply['patient_info'] = pat.to_dict()
-                # print([i.name for i in pat.treat_infos])
-
-                dic_apply['family_info'] = get_list_dic(pat.family_infos) if get_list_dic(pat.family_infos) else [{
-                    'relationship': '',
-                    'age': '',
-                    'diseases': ''
-                }]
-
-                treat_info = get_list_dic(pat.treat_infos)
-                dic_apply['treat_info'] = treat_info if treat_info else [{
-                    'item': '', 'name': '', 'treat_date': '', 'effect': ''
-                }]
-
-                rep_item_infos = apply.rep_item_infos
-                dic_apply['rep_item'] = [i['name'] for i in get_list_dic(rep_item_infos)]
-                dic_apply['send_methods'] = get_list_dic(apply.send_methods)[0] if get_list_dic(
-                    apply.send_methods) else {
-                    'the_way': '', 'to': '', 'phone_n': '', 'addr': ''
-                }
-
-                def is_snoke_i(str_s):
-                    if not str_s in ['', '无']:
-                        return {'is_smoke': '有', 'smoke': str_s}
-                    else:
-                        return {'is_smoke': str_s, 'smoke': ''}
-
-                dic_apply['smoke_info'] = is_snoke_i(pat.smoke)
-                list_apply.append(dic_apply)
-            return list_apply
-
         list_apply = get_sample(applys.items)
-        list_all = get_sample(ApplyInfo.query.all())
+        list_all = [{'mg_id': apply.mg_id, 'req_mg': apply.req_mg, 'id': apply.id} for apply in ApplyInfo.query.all()]
 
         # print(list_apply)
         return jsonify({'sample': list_apply, 'all_sample': list_all, 'total': total, 'test': {'name': 'hah'}})
-
 
     def post(self):
         data = request.get_data()
@@ -151,7 +108,8 @@ class SampleInfoRecord(Resource):
                 apply = ApplyInfo(req_mg=req_mg, mg_id=mg_id, pi_name=sam['pi_name'], sales=sale.name,
                                   outpatient_id=sam['outpatient_id'], doctor=sam['doctor'], hosptial=sam['hosptial'],
                                   room=sam['room'], cancer_d=sam['cancer_d'], original=sam['original'],
-                                  metastasis=sam['metastasis'], pathological=sam['pathological'],seq_type=sam['seq_type'],
+                                  metastasis=sam['metastasis'], pathological=sam['pathological'],
+                                  seq_type=sam['seq_type'],
                                   pathological_date=get_local_time(sam['pathological_date']), note=sam['note'])
                 db.session.add(apply)
                 pat.applys.append(apply)
@@ -209,7 +167,7 @@ class SampleInfoRecord(Resource):
                 'room': sam['room'], 'cancer_d': sam['cancer_d'], 'original': sam['original'],
                 'metastasis': sam['metastasis'], 'pathological': sam['pathological'],
                 'pathological_date': get_local_time(sam['pathological_date']),
-                'note': sam['note'],'seq_type': sam['seq_type']
+                'note': sam['note'], 'seq_type': sam['seq_type']
             })
 
             smoke = sam['smoke_info']['smoke'] if sam['smoke_info']['smoke'] else sam['smoke_info']['is_smoke']
@@ -293,9 +251,9 @@ class SampleInfoRecord(Resource):
         sams = (json.loads(data)['samples'])
         for sam in sams:
             apply = ApplyInfo.query.filter(ApplyInfo.id == sam['id']).first()
-            del_db(db,apply.send_methods)
-            del_db(db,apply.rep_item_infos)
-            del_db(db,apply.sample_infos)
+            del_db(db, apply.send_methods)
+            del_db(db, apply.rep_item_infos)
+            del_db(db, apply.sample_infos)
             pat = apply.patient_info_v
             del_db(db, apply.sample_infos)
             del_db(db, pat.family_infos)
@@ -305,8 +263,6 @@ class SampleInfoRecord(Resource):
             db.session.delete(pat)
             db.session.commit()
         return {'msg': '删除成功'}
-
-
 
 
 class SalesHospitalType(Resource):
