@@ -146,7 +146,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
-            if seq.status == 'upload':
+            if seq.status == 'done':
                 apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
                 for sam in apply.sample_infos:
                     if seq.sample_name in sam.sample_id:
