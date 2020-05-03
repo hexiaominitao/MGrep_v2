@@ -272,11 +272,12 @@ def get_grade(dic_in, df, disease, drug_effect):
     # else:
     #     mutation = dic_in['pHGVS_1'].split('.')[1]
     mutation = dic_in['okr_mu']
-    if mutation == 'exon 14 skipping':
+    if mutation == 'exon 14 skipping' and 'MET' in dic_in['gene']:
         dic_in['gene'] = 'MET'
     elif mutation == 'fusion':
         dic_in['gene'] = dic_in['gene'].split('-')[-1]
     gene = dic_in['gene']
+    print(gene,mutation)
     grade = grade_mutation(df, disease, gene, mutation, drug_effect)
     return grade
 
