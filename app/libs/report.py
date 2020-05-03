@@ -355,7 +355,7 @@ def save_reesult(seq, username):
             dict_result[name] = df2list(df)
     else:
         msg = '文件不存在'
-
+    print(result_f)
     list_mu = (dict_result.get('filter'))
     report_code = '{}_{}'.format(seq.sample_mg, seq.report_item)
     report = Report.query.filter(and_(Report.run_name == run_name,
