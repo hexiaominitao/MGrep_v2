@@ -675,7 +675,7 @@ class ExportReport(Resource):
             # dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
             dic_m['p'] = patient.to_dict()  # 病人信息
             print([k.sample_name for k in sam.seq])
-            cell_p = sam.patient_info.cell_content
+            cell_p = sam.pathology_info.cell_content
             dic_m['cell_content'] = cell_p if ('%' in cell_p and cell_p) else format(float(cell_p), '.0%')
 
             for cc in config:
