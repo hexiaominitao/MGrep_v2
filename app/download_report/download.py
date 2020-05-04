@@ -1,11 +1,16 @@
 import os
 from os import path
+import pandas as pd
 from docxtpl import DocxTemplate, InlineImage
+from datetime import timedelta
 
 from app.models.report import Report
+from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
+    SendMethodV, SampleInfoV, ReportItem
 
-from app.libs.report import first_check, get_rep_item, set_gene_list
+from app.libs.report import first_check, get_rep_item, set_gene_list,dict2df
 from app.libs.get_data import read_json, splitN
+from app.libs.ext import str2time
 
 from flask import (render_template, Blueprint, make_response, send_from_directory, current_app)
 
@@ -183,9 +188,10 @@ def download1(id,item,note):
     if os.path.exists(file):
         path_rep = os.path.join(os.getcwd(), dir_report)
         # return send_from_directory(path_rep, '{}_{}.docx'.format(mg_id,item), as_attachment=True)
-        response = make_response(
-        send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True))
-        return response
+        # response = make_response(
+        # send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True))
+        # return response
+        return send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True)
 
 
 @home.route('/api/download_okr/<filename>/')
@@ -198,3 +204,77 @@ def download_ork(filename):
         response = make_response(
             send_from_directory(path_rep, '{}.xlsx'.format(filename), as_attachment=True))
         return response
+
+@home.route('/api/export/sampleinfo/<start>_<end>/')
+def export_sample_info(start,end):
+    dir_res = current_app.config['RES_REPORT']
+    path_excel = os.path.join(os.getcwd(),dir_res)
+    if start and end:
+        start = (str2time(start))
+        end = str2time(end)
+        applys = ApplyInfo.query.filter(ApplyInfo.submit_time.between(start,end+timedelta(days=1))).all()
+
+
+    else:
+        applys = ApplyInfo.query.all()
+    list_sam = []
+    for apply in applys:
+        dic_app = apply.to_dict()
+        dic_app.pop('id')
+        print(apply.mg_id)
+        pat = apply.patient_info_v
+        dic_pat = pat.to_dict()
+        dic_pat.pop('id')
+
+        dic_t = {'t_name': [], 't_start': [], 't_end': [], 't_effect': []}
+        dic_r = {'r_name': [], 'r_start': [], 'r_end': [], 'r_effect': []}
+        dic_c = {'c_name': [], 'c_start': [], 'c_end': [], 'c_effect': []}
+
+        for treat in pat.treat_infos:
+            if treat:
+                if treat.item == '靶向治疗':
+                    dic_t['t_name'].append(treat.name)
+                    dic_t['t_start'].append(treat.star_time)
+                    dic_t['t_end'].append(treat.end_time)
+                    dic_t['t_effect'].append(treat.effect)
+                if treat.item == '化疗治疗':
+                    dic_c['c_name'].append(treat.name)
+                    dic_c['c_start'].append(treat.star_time)
+                    dic_c['c_end'].append(treat.end_time)
+                    dic_c['c_effect'].append(treat.effect)
+                if treat.item == '放疗治疗':
+                    dic_r['r_name'].append(treat.name)
+                    dic_r['r_start'].append(treat.star_time)
+                    dic_r['r_end'].append(treat.end_time)
+                    dic_r['r_effect'].append(treat.effect)
+        dic_pat.update(dic_t)
+        dic_pat.update(dic_r)
+        dic_pat.update(dic_c)
+        dic_fam = {'family': []}
+        for fam in pat.family_infos:
+            if fam:
+                dic_fam['family'].append('{}{}{}'.format(fam.relationship, fam.age, fam.diseases))
+        dic_pat.update(dic_fam)
+
+        dic_send = {'the_way': [], 'to': [], 'phone_n': [], 'addr': []}
+
+        for send in apply.send_methods:
+            if send:
+                dic_send['the_way'].append(send.the_way)
+                dic_send['to'].append(send.to)
+                dic_send['phone_n'].append(send.phone_n)
+                dic_send['addr'].append(send.addr)
+
+        dic_app['rep_items'] = '、'.join([v.name for v in apply.rep_item_infos])
+        dic_app.update(dic_send)
+        dic_pat.update(dic_app)
+
+        for sam in apply.sample_infos:
+            if sam:
+                dic_sam = sam.to_dict()
+                dic_sam.pop('id')
+                dic_sam.update(dic_pat)
+                list_sam.append(dic_sam)
+    df = dict2df(list_sam)
+    df.to_excel(os.path.join(path_excel, '{}_{}样本信息.xlsx'.format(start, end)), index=False)
+    return send_from_directory(path_excel,'{}_{}样本信息.xlsx'.format(start,end), as_attachment=True,cache_timeout=10)

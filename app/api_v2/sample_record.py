@@ -46,7 +46,7 @@ class SampleInfoRecord(Resource):
         if not user:
             return {'msg': '无访问权限'}, 401
 
-        applys = ApplyInfo.query.order_by(ApplyInfo.id.desc()). \
+        applys = ApplyInfo.query.order_by(ApplyInfo.submit_time.asc()). \
             paginate(page=page, per_page=per_page, error_out=False)
         list_apply = []
         total = len(ApplyInfo.query.all())
@@ -226,10 +226,17 @@ class SampleInfoRecord(Resource):
                                               sample_count=sample['counts'], note=sample['note'])
                     db.session.add(sample_info)
                     apply.sample_infos.append(sample_info)
-            SendMethodV.query.filter(SendMethodV.id == sam['send_methods']['id']).update({
-                'the_way': sam['send_methods']['the_way'], 'to': sam['send_methods']['to'],
-                'phone_n': sam['send_methods']['phone_n'], 'addr': sam['send_methods']['addr'],
-            })
+            if sam['send_methods'].get('id'):
+                SendMethodV.query.filter(SendMethodV.id == sam['send_methods']['id']).update({
+                    'the_way': sam['send_methods']['the_way'], 'to': sam['send_methods']['to'],
+                    'phone_n': sam['send_methods']['phone_n'], 'addr': sam['send_methods']['addr'],
+                })
+            else:
+                send_m = sam['send_methods']
+                send = SendMethodV(the_way=send_m['the_way'], to=send_m['to'],
+                                   phone_n=send_m['phone_n'], addr=send_m['addr'])
+                db.session.add(send)
+                apply.send_methods.append(send)
             for item in apply.rep_item_infos:
                 db.session.delete(item)
             for item in sam['rep_item']:
@@ -249,20 +256,31 @@ class SampleInfoRecord(Resource):
     def delete(self):
         data = request.get_data()
         sams = (json.loads(data)['samples'])
+        msgs = []
         for sam in sams:
+            report = ''
             apply = ApplyInfo.query.filter(ApplyInfo.id == sam['id']).first()
-            del_db(db, apply.send_methods)
-            del_db(db, apply.rep_item_infos)
-            del_db(db, apply.sample_infos)
-            pat = apply.patient_info_v
-            del_db(db, apply.sample_infos)
-            del_db(db, pat.family_infos)
-            del_db(db, pat.treat_infos)
-            pat.applys.remove(apply)
-            db.session.delete(apply)
-            db.session.delete(pat)
-            db.session.commit()
-        return {'msg': '删除成功'}
+            for sam in apply.sample_infos:
+                if sam:
+                    report = sam.report
+            if report:
+                msg = '申请单号为{}的信息报告需要，无法删除！！'.format(apply.req_mg)
+                msgs.append(msg)
+            else:
+                del_db(db, apply.send_methods)
+                del_db(db, apply.rep_item_infos)
+                del_db(db, apply.sample_infos)
+                pat = apply.patient_info_v
+                del_db(db, apply.sample_infos)
+                del_db(db, pat.family_infos)
+                del_db(db, pat.treat_infos)
+                pat.applys.remove(apply)
+                db.session.delete(apply)
+                db.session.delete(pat)
+                db.session.commit()
+                msg = '申请单号为{}的信息删除成功'.format(apply.req_mg)
+                msgs.append(msg)
+        return {'msg': ','.join(msgs)}
 
 
 class SalesHospitalType(Resource):

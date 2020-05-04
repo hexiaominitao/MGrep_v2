@@ -99,7 +99,8 @@ class GetRunInfo(Resource):
         for seq in run.seq_info:
             sam = seq.sample_info_v
             if sam:
-               sam.seq.remove(seq)
+                report = sam.report
+                sam.seq.remove(seq)
             run.seq_info.remove(seq)
             db.session.delete(seq)
 
@@ -107,6 +108,20 @@ class GetRunInfo(Resource):
         db.session.commit()
         return {'msg': '{}.删除完成'.format(run_id)}
 
+    def put(self):
+        token = request.headers.get('token')  # 权限
+        user = User.verify_auth_token(token)
+        if not user:
+            return {'msg': '无访问权限'}, 401
+
+        data = request.get_data()
+        sams = (json.loads(data)['sams'])
+        for sam in sams:
+            seq_id = sam.get('id')
+            print(sam)
+            SeqInfo.query.filter(SeqInfo.id==seq_id).update(sam)
+        db.session.commit()
+        return {'msg': '保存成功'}
 
 class GetSeqInfo(Resource):
     def __init__(self):
@@ -130,6 +145,21 @@ class GetSeqInfo(Resource):
         for seq in run.seq_info:
             list_seq.append(seq.to_dict())
         run_info['seq'] = list_seq
+        run_info['seq_title'] = [
+            {'type': 'selection','width': '50','align': 'center'},
+            {'title': '操作', 'slot': 'action', 'width': '200'},
+            {'title': '状态', 'key': 'status', 'width': '150'},
+            {'title': '迈景编号', 'key': 'sample_name', 'width': '150'},
+            {'title': '申请单号','key': 'sample_mg', 'width': '150'},
+            {'title': '检测内容', 'key': 'item', 'width': '150'},
+            {'title': '性别', 'key': 'gender', 'width': '150'},
+            {'title': '样本类型', 'key': 'sam_type', 'width': '150'},
+            {'title': '肿瘤细胞占比', 'key': 'cell_percent', 'width': '150'},
+            {'title': 'Barcode编号', 'key': 'barcode', 'width': '150'},
+            {'title': '肿瘤类型(报告用)', 'key': 'cancer', 'width': '150'},
+            {'title': '报告模板', 'key': 'report_item', 'width': '150'},
+            {'title': '备注', 'key': 'note', 'width': '150'}
+        ]
         return jsonify(run_info)
 
     #  样本信未保存至数据库 todo：将所有样本信息保存到数据库
@@ -157,6 +187,9 @@ class GetSeqInfo(Resource):
                 for sam in apply.sample_infos:
                     if seq.sample_name in sam.sample_id:
                         sam.seq.append(seq)
+                        pathology = PathologyInfo(cell_content=seq.cell_percent)
+                        db.session.add(pathology)
+                        sam.pathology_info = pathology
                         msg = save_reesult(seq,name)
                         msgs.append(msg)
             elif seq.status == '结果已保存':
@@ -254,7 +287,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
-            seq.status = '重新分析'
+            seq.status = '分析完成'
         db.session.commit()
         return {'msg': '开始重新分析'}
 

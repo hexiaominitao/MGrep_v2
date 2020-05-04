@@ -104,9 +104,8 @@ class RunInfoUpload(Resource):
                     if name:
                         print(df)
                         title_df = [v for v in df.columns]
-                        if '肿瘤类型(报告用)' in title_df and '报告模板' in title_df:
-                            continue
-                        erro.append('上机信息未包含“肿瘤类型(报告用)”或“报告模板”')
+                        if '肿瘤类型(报告用)' not in title_df and '报告模板' not in title_df:
+                            erro.append('上机信息未包含“肿瘤类型(报告用)”或“报告模板”')
                         dict_run = df2dict(df)
                         for dict_val in dict_run.values():
                             run = RunInfo.query.filter(RunInfo.name == name).first()

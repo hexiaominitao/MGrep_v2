@@ -111,3 +111,8 @@ def get_sample(applys):
         dic_apply['smoke_info'] = is_snoke_i(pat.smoke)
         list_apply.append(dic_apply)
     return list_apply
+
+
+def str2time(str):
+    time = datetime.datetime.strptime(str, "%Y.%m.%d")
+    return time

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from . import db
 from app.libs.ext import get_utc_time
 
@@ -97,6 +99,8 @@ class ApplyInfo(db.Model):
     seq_type = db.Column(db.String(50), nullable=True)  # 项目类型
     pathological = db.Column(db.String(500), nullable=True)  # 病理诊断
     pathological_date = db.Column(db.Date(), nullable=True)  # 病理诊断日期
+    submit_time = db.Column(db.DateTime, default=datetime.now()) # 保存时间
+
     note = db.Column(db.String(1000))  # 备注
 
     patient_info_id = db.Column(db.Integer(), db.ForeignKey('patient_info_v.id'))  # 患者信息
@@ -219,7 +223,7 @@ class PathologyInfo(db.Model):
         return dict
 
 
-from datetime import datetime
+
 
 
 class Operation(db.Model):
