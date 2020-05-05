@@ -12,7 +12,7 @@ from app.libs.report import first_check, get_rep_item, set_gene_list, dict2df
 from app.libs.get_data import read_json, splitN
 from app.libs.ext import str2time
 
-from flask import (render_template, Blueprint, make_response, send_from_directory, current_app)
+from flask import (render_template, Blueprint, make_response, send_from_directory, current_app,send_file)
 
 home = Blueprint('home', __name__)
 
@@ -181,6 +181,7 @@ def download(id, item, note):
 def download1(id, item, note):
     dir_res = current_app.config['RES_REPORT']
     dir_report = os.path.join(dir_res, 'report')
+    print(dir_report)
     report = Report.query.filter(Report.id == id).first()
     sam = report.sample_info_v
     mg_id = sam.sample_id
@@ -189,7 +190,8 @@ def download1(id, item, note):
         path_rep = os.path.join(os.getcwd(), dir_report)
         # return send_from_directory(path_rep, '{}_{}.docx'.format(mg_id, item), as_attachment=True)
         response = make_response(
-            send_from_directory(path_rep, '{}_{}.docx'.format(mg_id, item), as_attachment=True, cache_timeout=10))
+            send_from_directory(path_rep, '{}_{}.docx'.format(mg_id, item), as_attachment=True, cache_timeout=5))
+            # send_file(file, as_attachment=True, cache_timeout=10))
         return response
         # return send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True)
 

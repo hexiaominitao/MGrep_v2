@@ -682,6 +682,8 @@ class ExportReport(Resource):
                 cell_p = float(cell_p)
                 if cell_p < 1:
                     cell_p = format(cell_p, '.0%')
+                else:
+                    cell_p = format(cell_p/100, '.0%')
             except:
                 pass
             print(cell_p)
