@@ -683,7 +683,8 @@ class ExportReport(Resource):
                 if '%' in cell_p:
                     cell_c= cell_p
                 else:
-                    cell_c = format(float(cell_p),'.0%')
+                    cell_c = format(float(cell_p)/100,'.0%')
+            print(cell_c)
             dic_m['cell_content'] = cell_c
 
             for cc in config:
