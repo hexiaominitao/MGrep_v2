@@ -401,7 +401,7 @@ def save_reesult(seq, username):
                                 function_types=row.get('功能影响'), mu_af=row.get('变异丰度'),
                                 depth=row.get('深度'), ID_v=row.get('ID'), hotspot=row.get('Hotspot'),
                                 okr_mu=row.get('OKR注释类型'), mu_type=row.get('报告类型'))
-            mutations.mu分析完成tation.append(mutation)
+            mutations.mutation.append(mutation)
 
         msg = '{} {}的结果保存成功'.format(run_name, seq.sample_name)
         seq.status = '结果已保存'
