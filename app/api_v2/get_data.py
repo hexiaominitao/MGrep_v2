@@ -287,7 +287,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
-            seq.status = '分析完成'
+            seq.status = '重新分析'
         db.session.commit()
         return {'msg': '开始重新分析'}
 
@@ -307,13 +307,7 @@ class SeqQc(Resource):
         if qc:
             qc_title = [{'title': k,'key': k, 'width': '100'} for k in qc[0].keys()]
             dic_out['qc_title'] = qc_title
-
-        filter = dic_out.get('filter')
-        if filter:
-            dic_out['filter_title'] = [{'title': k,'key': k, 'width': '100'} for k in filter[0].keys()]
         raw = dic_out.get('raw')
         if raw:
             dic_out['raw_title'] = [{'title': k,'key': k, 'width': '100'} for k in raw[0].keys()]
-        for row in dic_out['filter_title']:
-            print("{},".format(row))
         return jsonify(dic_out)
