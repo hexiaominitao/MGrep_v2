@@ -116,3 +116,7 @@ def get_sample(applys):
 def str2time(str):
     time = datetime.datetime.strptime(str, "%Y.%m.%d")
     return time
+
+def set_time_now():
+    now = datetime.datetime.now()
+    return datetime.datetime.strftime(now,"%Y.%m.%d")

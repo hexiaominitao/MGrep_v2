@@ -147,10 +147,10 @@ def get_mutation_parent():
     dic_p = {}
     for k, p in df_p[['kids', 'parents']].values:
         if k in dic_p.keys():
-            dic_p[k].append(p)
+            dic_p[k].add(p)
         else:
             if p:
-                dic_p[k] = [p]
+                dic_p[k] = {p}
             else:
                 dic_p[k] = ''
     return dic_p
@@ -163,15 +163,19 @@ def get_parent_variant(mutation, dic_mu, par_l):
     :param par_l: 所有有关系的突变
     :return: par_l
     '''
-    par = dic_mu.get(mutation)
-    for k in dic_mu.keys():
-        if mutation in k:
-            par = dic_mu.get(k)
+    # par = dic_mu.get(mutation)
+    # print(dic_mu['RAS amplification'])
+    # print(par)
+    if mutation in dic_mu.keys():
+        par = dic_mu.get(mutation)
+    else:
+        par = {}
 
     if par:
         # par_l.append(mutation)
         for mu in par:
             par_l.append(mu)
+            # break
             get_parent_variant(mu, dic_mu, par_l)
     return par_l
 
@@ -350,7 +354,7 @@ def save_reesult(seq, username):
                 if seq.sample_name in file and file.endswith('.results.xls'):
                     result_f = (os.path.join(root, file))
     if result_f:
-        dfs = pd.read_excel(result_f, sheet_name=None, keep_default_na=False)
+        dfs = pd.read_excel(result_f, sheet_name=None, keep_default_na=False,engine='xlrd')
 
         for name, df in dfs.items():
             dict_result[name] = df2list(df)
@@ -395,10 +399,20 @@ def save_reesult(seq, username):
     report.sample_info_v = sam
     if list_mu:
         for row in list_mu:
+            af = row.get('变异丰度')
+            try:
+                af = float(af)
+                if af < 1:
+                    af = format(af,'.2%')
+            except:
+                pass
+            print(af)
+
+
             mutation = Mutation(type=row.get('变异类型'), gene=row.get('基因'), transcript=row.get('转录本'),
                                 exon=row.get('外显子'), cHGVS=row.get('编码改变'), pHGVS_3=row.get('氨基酸改变'),
                                 pHGVS_1=row.get('氨基酸改变-简写'), chr_start_end=row.get('基因座'),
-                                function_types=row.get('功能影响'), mu_af=row.get('变异丰度'),
+                                function_types=row.get('功能影响'), mu_af=af,
                                 depth=row.get('深度'), ID_v=row.get('ID'), hotspot=row.get('Hotspot'),
                                 okr_mu=row.get('OKR注释类型'), mu_type=row.get('报告类型'))
             mutations.mutation.append(mutation)

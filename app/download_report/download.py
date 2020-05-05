@@ -8,7 +8,7 @@ from app.models.report import Report
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem
 
-from app.libs.report import first_check, get_rep_item, set_gene_list,dict2df
+from app.libs.report import first_check, get_rep_item, set_gene_list, dict2df
 from app.libs.get_data import read_json, splitN
 from app.libs.ext import str2time
 
@@ -172,47 +172,49 @@ def download(id, item, note):
         docx.render(dic_m)
         docx.save(file)
 
-    path_rep = os.path.join(os.getcwd(),dir_report)
+    path_rep = os.path.join(os.getcwd(), dir_report)
     return send_from_directory(path_rep, '{}.docx'.format(item), as_attachment=True)
     # return file
 
 
 @home.route('/api/download/<id>_<item>_<note>/')
-def download1(id,item,note):
+def download1(id, item, note):
     dir_res = current_app.config['RES_REPORT']
     dir_report = os.path.join(dir_res, 'report')
     report = Report.query.filter(Report.id == id).first()
     sam = report.sample_info_v
     mg_id = sam.sample_id
-    file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id,item))
+    file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id, item))
     if os.path.exists(file):
         path_rep = os.path.join(os.getcwd(), dir_report)
-        return send_from_directory(path_rep, '{}_{}.docx'.format(mg_id,item), as_attachment=True)
+        # return send_from_directory(path_rep, '{}_{}.docx'.format(mg_id, item), as_attachment=True)
         response = make_response(
-        send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True, cache_timeout=10))
+            send_from_directory(path_rep, '{}_{}.docx'.format(mg_id, item), as_attachment=True, cache_timeout=10))
         return response
         # return send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True)
 
+@home.route('/api/download/')
 
 @home.route('/api/download_okr/<filename>/')
 def download_ork(filename):
     dir_res = current_app.config['RES_REPORT']
     path_res = os.path.join(dir_res, 'okr')
-    file = os.path.join(path_res,'{}.xlsx'.format(filename))
+    file = os.path.join(path_res, '{}.xlsx'.format(filename))
     if file:
         path_rep = os.path.join(os.getcwd(), path_res)
         response = make_response(
-            send_from_directory(path_rep, '{}.xlsx'.format(filename), as_attachment=True,cache_timeout=10))
+            send_from_directory(path_rep, '{}.xlsx'.format(filename), as_attachment=True, cache_timeout=10))
         return response
 
+
 @home.route('/api/export/sampleinfo/<start>_<end>/')
-def export_sample_info(start,end):
+def export_sample_info(start, end):
     dir_res = current_app.config['RES_REPORT']
-    path_excel = os.path.join(os.getcwd(),dir_res)
+    path_excel = os.path.join(os.getcwd(), dir_res)
     if start and end:
         start = (str2time(start))
         end = str2time(end)
-        applys = ApplyInfo.query.filter(ApplyInfo.submit_time.between(start,end+timedelta(days=1))).all()
+        applys = ApplyInfo.query.filter(ApplyInfo.submit_time.between(start, end + timedelta(days=1))).all()
 
 
     else:
@@ -277,4 +279,4 @@ def export_sample_info(start,end):
                 list_sam.append(dic_sam)
     df = dict2df(list_sam)
     df.to_excel(os.path.join(path_excel, '{}_{}样本信息.xlsx'.format(start, end)), index=False)
-    return send_from_directory(path_excel,'{}_{}样本信息.xlsx'.format(start,end), as_attachment=True,cache_timeout=10)
+    return send_from_directory(path_excel, '{}_{}样本信息.xlsx'.format(start, end), as_attachment=True, cache_timeout=10)

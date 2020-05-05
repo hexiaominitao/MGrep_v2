@@ -14,6 +14,7 @@ from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
     get_grade, get_drug, okr_create_n
+from app.libs.ext import set_time_now
 from app.libs.get_data import read_json, splitN
 
 
@@ -677,15 +678,15 @@ class ExportReport(Resource):
             print([k.sample_name for k in sam.seq])
             cell_p = sam.pathology_info.cell_content
             print(cell_p)
-            if isinstance(cell_p,float):
-                cell_c = format((cell_p),'.0%')
-            else:
-                if '%' in cell_p:
-                    cell_c= cell_p
-                else:
-                    cell_c = format(float(cell_p)/100,'.0%')
-            print(cell_c)
-            dic_m['cell_content'] = cell_c
+            try:
+                cell_p = float(cell_p)
+                if cell_p < 1:
+                    cell_p = format(cell_p, '.0%')
+            except:
+                pass
+            print(cell_p)
+            dic_m['cell_content'] = cell_p
+            dic_m['date'] = set_time_now()
 
             for cc in config:
                 if item == cc['item']:
@@ -758,7 +759,7 @@ class ExportReport(Resource):
 
             # for k, v in dic_m.items():
             #     print(k, '\n', v)
-            print(dic_m['mutation'])
+            # print(dic_m['mutation'])
             docx = DocxTemplate(temp_docx)
             docx.render(dic_m)
             docx.save(file)
