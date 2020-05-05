@@ -135,6 +135,7 @@ class RunInfoUpload(Resource):
 
                             seq = SeqInfo.query.filter(SeqInfo.sample_name == dict_val.get('迈景编号')).first()
                             if seq:
+                                erro.append('样本{}信息已存在'.format(dict_val.get('迈景编号')))
                                 pass
                             else:
                                 seq = SeqInfo(sample_name=dict_val.get('迈景编号'), sample_mg=dict_val.get('申请单号'),

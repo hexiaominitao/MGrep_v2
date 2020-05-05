@@ -762,6 +762,7 @@ class ExportReport(Resource):
             docx.render(dic_m)
             docx.save(file)
             report.stage = '制作完成'
+            db.session.commit()
             msg = '申请单号为: {} 迈景编号为：{} 的报告成功生成'.format(req_mg,mg_id)
         else:
             msg = '申请单号为: {} 迈景编号为：{} 的报告变异未审核，请审核'.format(req_mg,mg_id)
