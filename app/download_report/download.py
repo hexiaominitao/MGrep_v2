@@ -2,7 +2,7 @@ import os
 from os import path
 import pandas as pd
 from docxtpl import DocxTemplate, InlineImage
-from datetime import timedelta
+from datetime import timedelta,datetime
 
 from app.models.report import Report
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
@@ -10,7 +10,7 @@ from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, dict2df
 from app.libs.get_data import read_json, splitN
-from app.libs.ext import str2time
+from app.libs.ext import str2time,archive_file,set_time_now
 
 from flask import (render_template, Blueprint, make_response, send_from_directory, current_app,send_file)
 
@@ -195,7 +195,28 @@ def download1(id, item, note):
         return response
         # return send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True)
 
-@home.route('/api/download/')
+@home.route('/api/download/all/<list_rep>/')
+def download_all(list_rep):
+    dir_res = current_app.config['RES_REPORT']
+    dir_report = os.path.join(dir_res, 'report')
+    list_f = []
+    for row in list_rep.strip(',').split(','):
+        ss = row.split('_')
+        item = ss[-1]
+        report = Report.query.filter(Report.id == ss[0]).first()
+        sam = report.sample_info_v
+        mg_id = sam.sample_id
+        file = os.path.join('{}_{}.docx'.format(mg_id, item))
+        if file:
+            list_f.append(file)
+    print(list_f)
+    now = datetime.strftime(datetime.now(),"%Y_%m_%d_%H_%M_%S")
+    file_zip = '报告_{}.zip'.format(now)
+    memoryzip = archive_file(dir_report,list_f)
+    path_rep = os.path.join(os.getcwd(), dir_report)
+    response = make_response(
+        send_file(memoryzip,attachment_filename=file_zip, as_attachment=True, cache_timeout=5))
+    return response
 
 @home.route('/api/download_okr/<filename>/')
 def download_ork(filename):

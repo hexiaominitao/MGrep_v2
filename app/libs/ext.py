@@ -1,4 +1,6 @@
 import os, datetime, time
+import zipfile, shutil
+from io import BytesIO
 
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -120,3 +122,28 @@ def str2time(str):
 def set_time_now():
     now = datetime.datetime.now()
     return datetime.datetime.strftime(now,"%Y.%m.%d")
+
+
+# def archive_file(path_report, filename):
+#     '''
+#     :param path_report: 报告输出文件夹
+#     :param filename: 迈景编号
+#     :return:
+#     '''
+#
+#     path_wk = os.getcwd()
+#     with zipfile.ZipFile('{}/{}.zip'.format(path_report, filename), 'w') as myzip:
+#         os.chdir(path_report)
+#         for arc_root, arc_dir, arc_file in os.walk(filename):
+#             for file in arc_file:
+#                 myzip.write(os.path.join(arc_root, file), file)
+#     os.chdir(path_wk)
+
+def archive_file(dir,files):
+    memory_zip = BytesIO()
+    with zipfile.ZipFile(memory_zip,'w',zipfile.ZIP_DEFLATED) as zf:
+        for file in files:
+            with open(os.path.join(dir,file),'rb')as fp:
+                zf.writestr(file,fp.read())
+    memory_zip.seek(0)
+    return memory_zip
