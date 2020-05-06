@@ -260,6 +260,7 @@ class EditMutation(Resource):
             dic_out = md_create(df_md,sam,cancer)
             if dic_out:
                 grades = [row.get('grade') for row in dic_out.values()]
+                print(grades)
                 for i in ['IA', 'IB', 'IIA', 'IIB']:
                     if i in grades:
                         grade = i
