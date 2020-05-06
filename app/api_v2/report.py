@@ -242,6 +242,7 @@ class EditMutation(Resource):
         list_md = []
         for md in md_okr.okr:
             list_md.append(md.to_dict())
+        print(list_md)
         df_md = dict2df(list_md)
 
         drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
