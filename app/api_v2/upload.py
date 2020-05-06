@@ -241,24 +241,18 @@ class OKRUpload(Resource):
         okr_version = filename.split('_')[0]
         clinic = ClinicInterpretation.query.filter(ClinicInterpretation.okr_version == okr_version).first()
         if clinic:
-            pass
+            del_db(db, clinic.okr)
+            db.session.commit()
         else:
             clinic = ClinicInterpretation(okr_version=okr_version)
             for okr_dic in list_okr:
-                okr = OKR.query.filter(
-                    and_(OKR.disease == okr_dic.get('disease'), OKR.gene_name == okr_dic.get('gene_name'),
-                         OKR.protein_alteration == okr_dic.get('protein_alteration'), OKR.drug == okr_dic.get('drug'),
-                         OKR.drug_effect == okr_dic.get('drug_effect'), OKR.evidence == okr_dic.get('evidence'),
-                         OKR.evidence_level == okr_dic.get('evidence_level'))).first()
-                if okr:
-                    pass
-                else:
-                    okr = OKR(disease=okr_dic.get('disease'), gene_name=okr_dic.get('gene_name'),
-                              protein_alteration=okr_dic.get('protein_alteration'), drug=okr_dic.get('drug'),
-                              drug_effect=okr_dic.get('drug_effect'), evidence=okr_dic.get('evidence'),
-                              evidence_level=okr_dic.get('evidence_level'),grade=okr_dic.get('grade'))
-                    db.session.add(okr)
+                okr = OKR(disease=okr_dic.get('disease'), gene_name=okr_dic.get('gene_name'),
+                          protein_alteration=okr_dic.get('protein_alteration'), drug=okr_dic.get('drug'),
+                          drug_effect=okr_dic.get('drug_effect'), evidence=okr_dic.get('evidence'),
+                          evidence_level=okr_dic.get('evidence_level'), grade=okr_dic.get('grade'))
+                db.session.add(okr)
                 clinic.okr.append(okr)
+
             db.session.commit()
 
         os.remove(file)
