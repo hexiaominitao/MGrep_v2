@@ -68,20 +68,20 @@ def set_up():
     # db.session.add(default_role)
 
     admin = User(username='admin')
-    admin.mail='admin@admin.com'
+    admin.mail = 'admin@admin.com'
     admin.set_password("hm714012636")
     admin.roles.append(super_admin)
     admin.roles.append(admin_role)
     admin.roles.append(default_role)
 
     report = User(username='报告')
-    report.mail='report@maijinggene.com'
+    report.mail = 'report@maijinggene.com'
     report.set_password('123456')
     report.roles.append(rep_role)
     db.session.add(report)
     xiaomai = User(username='小迈')
     xiaomai.set_password('123456')
-    xiaomai.mail='xiaomai@maijinggene.com'
+    xiaomai.mail = 'xiaomai@maijinggene.com'
     xiaomai.roles.append(sar_role)
     db.session.add(xiaomai)
 
@@ -96,7 +96,8 @@ def set_up():
     dir_pre_report = current_app.config['PRE_REPORT']
     dir_report = current_app.config['RES_REPORT']
     dir_upload = current_app.config['UPLOADED_FILESAM_DEST']
-    for dir in [dir_static, dir_pre_report, dir_report, dir_upload]:
+    dir_pdf = current_app.config['UPLOADED_FILEPDF_DEST']
+    for dir in [dir_static, dir_pre_report, dir_report, dir_upload, dir_pdf]:
         if not os.path.exists(dir):
             os.mkdir(dir)
 

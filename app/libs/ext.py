@@ -13,6 +13,7 @@ principal = Principal()
 
 file_sam = UploadSet('filesam', DOCUMENTS)
 file_okr = UploadSet('fileokr', ('tsv','json','xls','xlsx','zip'))
+file_pdf = UploadSet('filepdf', ('pdf',))
 
 
 def str2time(string):
@@ -124,20 +125,20 @@ def set_time_now():
     return datetime.datetime.strftime(now,"%Y.%m.%d")
 
 
-# def archive_file(path_report, filename):
-#     '''
-#     :param path_report: 报告输出文件夹
-#     :param filename: 迈景编号
-#     :return:
-#     '''
-#
-#     path_wk = os.getcwd()
-#     with zipfile.ZipFile('{}/{}.zip'.format(path_report, filename), 'w') as myzip:
-#         os.chdir(path_report)
-#         for arc_root, arc_dir, arc_file in os.walk(filename):
-#             for file in arc_file:
-#                 myzip.write(os.path.join(arc_root, file), file)
-#     os.chdir(path_wk)
+def archive_path(path_report):
+    '''
+    :param path_report: 报告输出文件夹
+    :return:
+    '''
+
+    memory_zip = BytesIO()
+    with zipfile.ZipFile(memory_zip, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for arc_root, arc_dir, arc_file in os.walk(path_report):
+            for file in arc_file:
+                with open(os.path.join(arc_root, file), 'rb')as fp:
+                    zf.writestr(file, fp.read())
+    memory_zip.seek(0)
+    return memory_zip
 
 def archive_file(dir,files):
     memory_zip = BytesIO()

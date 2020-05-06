@@ -190,7 +190,7 @@ class GetSeqInfo(Resource):
                         pathology = PathologyInfo(cell_content=seq.cell_percent)
                         db.session.add(pathology)
                         sam.pathology_info = pathology
-                        msg = save_reesult(seq,name)
+                        msg = save_reesult(seq,name,sam)
                         msgs.append(msg)
             elif seq.status == '结果已保存':
                 msgs.append('样本{}结果已经保存'.format(seq.sample_name))
@@ -287,7 +287,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
-            seq.status = '重新分析'
+            seq.status = '分析完成'
         db.session.commit()
         return {'msg': '开始重新分析'}
 

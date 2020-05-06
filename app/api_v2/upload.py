@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 
 from flask_restful import (reqparse, Resource, request)
 from flask import (current_app)
@@ -16,7 +17,7 @@ from app.models.record_config import SalesInfo, HospitalInfo, SampleType, \
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem, PathologyInfo, Operation
 
-from app.libs.ext import file_sam, file_okr
+from app.libs.ext import file_sam, file_okr, file_pdf
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
     tsv_to_list, file_2_dict, m_excel2list
 from app.libs.report import del_db
@@ -269,21 +270,23 @@ class IrUpload(Resource):
         pass
 
     def post(self):
-        path_wk = current_app.config['COUNT_DEST']
         dir_res = current_app.config['RES_REPORT']
+        dir_report = os.path.join(dir_res, 'report')
 
-        for file in request.files.getlist('file'):
-            file_okr.save(file)
+        filename = file_pdf.save(request.files['file'])
+        file = file_pdf.path(filename)
 
         rep_id = request.form['name']
         report = Report.query.filter(Report.id == rep_id).first()
-        sample = report.samples[0]
-        rep_mg = sample.req_mg
-        mg_id = sample.mg_id
-
-        dir_rep = os.path.join(dir_res, rep_mg)
-
-        save_mutation(path_wk, dir_rep, mg_id, rep_mg)
+        sam = report.sample_info_v
+        mg_id = sam.sample_id
+        req_mg = sam.apply_info.req_mg
+        dir_report_mg = os.path.join(dir_report, mg_id)
+        if not os.path.exists(dir_report_mg):
+            os.mkdir(dir_report_mg)
+        shutil.copy2(os.path.join(os.getcwd(),file),dir_report_mg)
+        print(dir_report_mg)
+        os.remove(file)
         return {'msg': '保存完成'}
 
 

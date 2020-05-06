@@ -1,4 +1,5 @@
 import os, json
+from docx2pdf import convert
 
 from docxtpl import DocxTemplate, InlineImage
 
@@ -755,7 +756,11 @@ class ExportReport(Resource):
                     # dic_m['list_m'] = list_m
 
             temp_docx = os.path.join(path_docx, '52_t.docx')
-            file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id, item))
+            dir_report_mg = os.path.join(dir_report,mg_id)
+            if not os.path.exists(dir_report_mg):
+                os.mkdir(dir_report_mg)
+            file = os.path.join(dir_report_mg, '{}_{}.docx'.format(mg_id, item))
+            # file_pdf = os.path.join(dir_report_mg, '{}_{}.pdf'.format(mg_id, item))
             if os.path.exists(file):
                 os.remove(file)
 
@@ -765,6 +770,9 @@ class ExportReport(Resource):
             docx = DocxTemplate(temp_docx)
             docx.render(dic_m)
             docx.save(file)
+            os.system('libreoffice --convert-to pdf --outdir {} {}'.
+                      format(os.path.join(os.getcwd(),dir_report_mg),file))
+
             report.stage = '制作完成'
             db.session.commit()
             msg = '申请单号为: {} 迈景编号为：{} 的报告成功生成'.format(req_mg,mg_id)

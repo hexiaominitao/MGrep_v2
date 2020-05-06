@@ -1,4 +1,4 @@
-import re, os
+import re, os, shutil
 
 import pandas as pd
 
@@ -147,10 +147,10 @@ def get_mutation_parent():
     dic_p = {}
     for k, p in df_p[['kids', 'parents']].values:
         if k in dic_p.keys():
-            dic_p[k].append(p)
+            dic_p[k].add(p)
         else:
             if p:
-                dic_p[k]=[p]
+                dic_p[k]= {p}
             else:
                 dic_p[k] = ''
     return dic_p
@@ -163,20 +163,26 @@ def get_parent_variant(mutation, dic_mu, par_l):
     :param par_l: 所有有关系的突变
     :return: par_l
     '''
-    # par = dic_mu.get(mutation)
+    par = dic_mu.get(mutation)
+    for k in dic_mu.keys():
+        if k.startswith(mutation):
+            par = dic_mu.get(k)
     # print(dic_mu['RAS amplification'])
     # print(par)
-    if mutation in dic_mu.keys():
-        par = dic_mu.get(mutation)
-    else:
-        par = {}
-
+    # if mutation in dic_mu.keys():
+    #     par = dic_mu.get(mutation)
+    # else:
+    #     par = {}
+    # for k in dic_mu.keys():
+    #     if k.startswith(mutation):
+    #         par = dic_mu.get(mutation)
     if par:
         # par_l.append(mutation)
         for mu in par:
             par_l.append(mu)
             # break
             get_parent_variant(mu, dic_mu, par_l)
+    print(par_l)
     return par_l
 
 
@@ -338,11 +344,18 @@ def convert_str(row, rep):
     return out
 
 
-def save_reesult(seq, username):
+def save_reesult(seq, username,sam):
     run = seq.run_info
     run_name = run.name
     # print(run_name)
     path_result = current_app.config['RESULT_DIR']
+    dir_res = current_app.config['RES_REPORT']
+    dir_report = os.path.join(dir_res, 'report')
+    mg_id = sam.sample_id
+    req_mg = sam.apply_info.req_mg
+    dir_report_mg = os.path.join(dir_report, mg_id)
+    if not os.path.exists(dir_report_mg):
+        os.mkdir(dir_report_mg)
     result_f = ''
     msg = ''
     dict_result = {}
@@ -353,6 +366,9 @@ def save_reesult(seq, username):
             for file in files:
                 if seq.sample_name in file and file.endswith('.results.xls'):
                     result_f = (os.path.join(root, file))
+                    shutil.copy2(os.path.join(root, file), dir_report_mg)
+                if 'cn_results.png' in file:
+                    shutil.copy2(os.path.join(root, file), dir_report_mg)
     if result_f:
         dfs = pd.read_excel(result_f, sheet_name=None, keep_default_na=False,engine='xlrd')
 

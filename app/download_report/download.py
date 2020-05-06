@@ -10,7 +10,7 @@ from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, dict2df
 from app.libs.get_data import read_json, splitN
-from app.libs.ext import str2time,archive_file,set_time_now
+from app.libs.ext import str2time,archive_file,set_time_now,archive_path
 
 from flask import (render_template, Blueprint, make_response, send_from_directory, current_app,send_file)
 
@@ -185,15 +185,18 @@ def download1(id, item, note):
     report = Report.query.filter(Report.id == id).first()
     sam = report.sample_info_v
     mg_id = sam.sample_id
-    file = os.path.join(dir_report, '{}_{}.docx'.format(mg_id, item))
-    if os.path.exists(file):
-        path_rep = os.path.join(os.getcwd(), dir_report)
-        # return send_from_directory(path_rep, '{}_{}.docx'.format(mg_id, item), as_attachment=True)
-        response = make_response(
-            send_from_directory(path_rep, '{}_{}.docx'.format(mg_id, item), as_attachment=True, cache_timeout=5))
-            # send_file(file, as_attachment=True, cache_timeout=10))
-        return response
-        # return send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True)
+    req_mg = sam.apply_info.req_mg
+    dir_report_mg = os.path.join(dir_report, mg_id)
+    now = datetime.strftime(datetime.now(), "%Y_%m_%d_%H_%M_%S")
+    file_zip = '{}_{}_{}.zip'.format(req_mg,mg_id,now)
+
+    memoryzip = archive_path(dir_report_mg)
+
+    response = make_response(
+        send_file(memoryzip, attachment_filename=file_zip, as_attachment=True, cache_timeout=5))
+    return response
+    # return send_from_directory(path_rep,  '{}_{}.docx'.format(mg_id,item), as_attachment=True)
+
 
 @home.route('/api/download/all/<list_rep>/')
 def download_all(list_rep):
@@ -206,9 +209,8 @@ def download_all(list_rep):
         report = Report.query.filter(Report.id == ss[0]).first()
         sam = report.sample_info_v
         mg_id = sam.sample_id
-        file = os.path.join('{}_{}.docx'.format(mg_id, item))
-        if os.path.exists(os.path.join(dir_report,file)):
-            list_f.append(file)
+        for file in os.listdir(os.path.join(dir_report,mg_id)):
+            list_f.append(os.path.join(mg_id,file))
     print(list_f)
     now = datetime.strftime(datetime.now(),"%Y_%m_%d_%H_%M_%S")
     file_zip = '报告_{}.zip'.format(now)
