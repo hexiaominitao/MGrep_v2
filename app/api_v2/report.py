@@ -259,7 +259,11 @@ class EditMutation(Resource):
 
             dic_out = md_create(df_md,sam,cancer)
             if dic_out:
-                grade = [row.get('grade') for row in dic_out.values()][0]
+                grades = [row.get('grade') for row in dic_out.values()]
+                for i in ['IA', 'IB', 'IIA', 'IIB']:
+                    if i in grades:
+                        grade = i
+                        break
             else:
                 grade = get_grade(sam, df, cancer, drug_effect)
                 dic_out = okr_create_n(sam, df, cancer, drug_effect)
