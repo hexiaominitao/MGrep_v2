@@ -770,8 +770,8 @@ class ExportReport(Resource):
             docx = DocxTemplate(temp_docx)
             docx.render(dic_m)
             docx.save(file)
-            os.system('libreoffice --convert-to pdf --outdir {} {}'.
-                      format(os.path.join(os.getcwd(),dir_report_mg),file))
+            # os.system('libreoffice --convert-to pdf --outdir {} {}'.
+            #           format(os.path.join(os.getcwd(),dir_report_mg),file))
 
             report.stage = '制作完成'
             db.session.commit()
