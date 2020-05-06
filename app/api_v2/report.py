@@ -233,17 +233,19 @@ class EditMutation(Resource):
         for cl in clinicInterpretation:
             if 'md' in cl.okr_version:
                 md_okr = cl
+                list_md = []
+                for md in md_okr.okr:
+                    list_md.append(md.to_dict())
+                df_md = dict2df(list_md)
+                print(len(list_md))
             if 'okr' in cl.okr_version:
                 okr = cl
-        list_okr = []
-        for okr in okr.okr:
-            list_okr.append(okr.to_dict())
-        df = dict2df(list_okr)
-        list_md = []
-        for md in md_okr.okr:
-            list_md.append(md.to_dict())
-        print(list_md)
-        df_md = dict2df(list_md)
+                list_okr = []
+                for okr in okr.okr:
+                    list_okr.append(okr.to_dict())
+                df = dict2df(list_okr)
+
+
 
         drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
 

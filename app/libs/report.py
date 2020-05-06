@@ -196,7 +196,6 @@ def get_parent_variant(mutation, dic_mu, par_l):
             par_l.append(mu)
             # break
             get_parent_variant(mu, dic_mu, par_l)
-    print(par_l)
     return par_l
 
 
