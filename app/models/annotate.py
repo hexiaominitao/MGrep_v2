@@ -77,6 +77,7 @@ class OKR(db.Model):
     drug_effect = db.Column(db.String(200))
     evidence = db.Column(db.String(5000))  # 证据
     evidence_level = db.Column(db.String(200))  # 证据等级
+    grade = db.Column(db.String(200))  #突变等级
     clinic_interpretation_id = db.Column(db.Integer(), db.ForeignKey('clinic_interpretation.id'))  # OK版本
 
     def to_dict(self):
@@ -88,6 +89,7 @@ class OKR(db.Model):
             'drug': self.drug,
             'drug_effect': self.drug_effect,
             'evidence': self.evidence,
+            'grade': self.grade,
             'evidence_level': self.evidence_level
         }
 

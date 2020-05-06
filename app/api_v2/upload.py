@@ -256,7 +256,7 @@ class OKRUpload(Resource):
                     okr = OKR(disease=okr_dic.get('disease'), gene_name=okr_dic.get('gene_name'),
                               protein_alteration=okr_dic.get('protein_alteration'), drug=okr_dic.get('drug'),
                               drug_effect=okr_dic.get('drug_effect'), evidence=okr_dic.get('evidence'),
-                              evidence_level=okr_dic.get('evidence_level'))
+                              evidence_level=okr_dic.get('evidence_level'),grade=okr_dic.get('grade'))
                     db.session.add(okr)
                 clinic.okr.append(okr)
             db.session.commit()

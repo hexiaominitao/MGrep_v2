@@ -12,7 +12,7 @@ login_magager = LoginManager()
 principal = Principal()
 
 file_sam = UploadSet('filesam', DOCUMENTS)
-file_okr = UploadSet('fileokr', ('tsv','json','xls','xlsx','zip'))
+file_okr = UploadSet('fileokr', ('tsv','json','xls','xlsx','zip','csv'))
 file_pdf = UploadSet('filepdf', ('pdf',))
 
 

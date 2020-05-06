@@ -11,10 +11,10 @@ from app.models import db
 from app.models.user import User
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations
-from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug
+from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug,ClinicInterpretation
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
-    get_grade, get_drug, okr_create_n
+    get_grade, get_drug, okr_create_n, md_create
 from app.libs.ext import set_time_now
 from app.libs.get_data import read_json, splitN
 
@@ -229,11 +229,20 @@ class EditMutation(Resource):
         data = request.get_data()
         sams = (json.loads(data)['sams'])
 
-        okrs = OKR.query.all()
+        clinicInterpretation = ClinicInterpretation.query.all()
+        for cl in clinicInterpretation:
+            if 'md' in cl.okr_version:
+                md_okr = cl
+            if 'okr' in cl.okr_version:
+                okr = cl
         list_okr = []
-        for okr in okrs:
+        for okr in okr.okr:
             list_okr.append(okr.to_dict())
         df = dict2df(list_okr)
+        list_md = []
+        for md in md_okr.okr:
+            list_md.append(md.to_dict())
+        df_md = dict2df(list_md)
 
         drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
 
@@ -248,8 +257,14 @@ class EditMutation(Resource):
             mu = Mutation.query.filter(Mutation.id == id).first()
             cancer = mu.mutation.report.sample_info_v.apply_info.cancer
 
-            grade = get_grade(sam, df, cancer, drug_effect)
-            dic_out = okr_create_n(sam, df, cancer, drug_effect)
+            dic_out = md_create(df_md,sam,cancer)
+            if dic_out:
+                grade = [row.get('grade') for row in dic_out.values()][0]
+            else:
+                grade = get_grade(sam, df, cancer, drug_effect)
+                dic_out = okr_create_n(sam, df, cancer, drug_effect)
+
+
             drugs = mutation.drug
             if drugs:
                 del_db(db, drugs)

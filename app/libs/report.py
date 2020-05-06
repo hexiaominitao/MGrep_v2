@@ -107,6 +107,20 @@ def dict2df(list_dic):
     return df
 
 
+def md_create(df,dic_in,disease):
+    mutation = dic_in['okr_mu']
+    if mutation == 'exon 14 skipping':
+        dic_in['gene'] = 'MET'
+    elif mutation == 'fusion':
+        dic_in['gene'] = dic_in['gene'].split('-')[-1]
+    gene = dic_in['gene']
+    df_mutation = df[df['disease'].str.contains(disease) &
+                     df['gene_name'].str.contains(gene) & (df['protein_alteration'] == mutation)]
+
+    dic_out = df2dict(df_mutation)
+
+    return dic_out
+
 def get_okr(df, disease, gene, mutation, drug_effect, grade=None):
     levels = ['NCCN', 'Clinical + III', 'Clinical + II/III', 'Clinical + II', 'Clinical + I/II', 'Clinical + I']
     if grade:
@@ -219,6 +233,8 @@ def okr_create(df, disease, gene, mutation, drug_effect):
     else:
         dic_out = ''
     return dic_out
+
+
 
 
 def okr_create_n(dic_in, df, disease, drug_effect):
