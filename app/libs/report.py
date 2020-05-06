@@ -147,10 +147,10 @@ def get_mutation_parent():
     dic_p = {}
     for k, p in df_p[['kids', 'parents']].values:
         if k in dic_p.keys():
-            dic_p[k].add(p)
+            dic_p[k].append(p)
         else:
             if p:
-                dic_p[k] = {p}
+                dic_p[k]=[p]
             else:
                 dic_p[k] = ''
     return dic_p
