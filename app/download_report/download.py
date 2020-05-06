@@ -207,7 +207,7 @@ def download_all(list_rep):
         sam = report.sample_info_v
         mg_id = sam.sample_id
         file = os.path.join('{}_{}.docx'.format(mg_id, item))
-        if os.path.exists(file):
+        if os.path.exists(os.path.join(dir_report,file)):
             list_f.append(file)
     print(list_f)
     now = datetime.strftime(datetime.now(),"%Y_%m_%d_%H_%M_%S")
