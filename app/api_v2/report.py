@@ -451,7 +451,7 @@ class DownloadOkr(Resource):
         res_f = get_result_file(seq,'.OKR.vcf')
         print(res_f)
         vcf_f = os.path.join(os.getcwd(),dir_report_mg,'{}.okr.vcf'.format(mg_id))
-        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.csv'.format(mg_id))
+        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.tsv'.format(mg_id))
         get_okr_vcf(res_f,list_mu,vcf_f)
         # print(vcf_f,cancer,okr_f)
         create_reports_using_report_file(vcf_f,cancer,okr_f)
@@ -704,7 +704,59 @@ class ExportReport(Resource):
         mg_id = sam.sample_id
         req_mg = sam.apply_info.req_mg
         list_m = []
-        print(report.stage)
+        # okr
+        dir_report_mg = os.path.join(dir_report, mg_id)
+        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.tsv'.format(mg_id))
+        all = fileokr_to_dict(okr_f)
+        mutation = set()
+        dic_m = all.get('临床上显著生物标志物')
+        list_okr = []
+        if dic_m:
+            dic_mu = dic_m.get('临床上显著生物标志物')
+            if dic_mu:
+                for row in dic_mu:
+                    mutation.add(row.get('基因组改变'))
+
+        def get_summary(dic_in, key, mutation):
+            list_okr = []
+            if dic_in:
+                dic_okr = dic_in.get(key)
+                if dic_okr:
+                    if mutation:
+                        for mu in mutation:
+                            list_mu = []
+                            for row in dic_okr:
+                                if mu == row.get('基因组改变'):
+                                    list_mu.append(row)
+                            list_okr.append({'mutation': mu, 'okr': list_mu})
+            return list_okr
+
+        def get_okr(dic_in, key, mutation):
+            list_okr = []
+            if dic_in:
+                dic_okr = dic_in.get(key)
+                if dic_okr:
+                    if mutation:
+                        for mu in mutation:
+                            list_mu = []
+                            for row in dic_okr.get('therapy'):
+                                if mu == row.get('基因组改变'):
+                                    list_mu.append(row)
+                            if list_mu:
+                                list_okr.append({'mutation': mu, 'okr': list_mu})
+            return list_okr
+
+        dic_therapy = all.get('相关疗法详情')
+        dic_sign = get_summary(dic_m, '临床上显著生物标志物', mutation)
+        dic_summary = get_summary(all.get('基因变异相应靶向治疗方案'), '基因变异相应靶向治疗方案', mutation)
+        dic_fda = get_okr(dic_therapy, '目前来自FDA 靶向药物信息', mutation)
+        dic_clincal = get_okr(dic_therapy, '目前来自Clinical Trials 靶向药物信息', mutation)
+        dic_nccn = get_okr(dic_therapy, '目前来自NCCN 靶向药物信息', mutation)
+        dic_render = {'okr_clincal': dic_clincal, 'okr_fda': dic_fda, 'okr_sign':
+            dic_sign, 'okr_summary': dic_summary, 'okr_nccn': dic_nccn}
+
+        dic_m.update(dic_render)
+
 
         if report.stage in ['生成报告', '制作完成']:  # todo 简化
             apply = sam.apply_info
@@ -817,58 +869,8 @@ class ExportReport(Resource):
                     dic_m['detail_mu'] = detail_mu  # 突变详情
                     # dic_m['list_m'] = list_m
 
-            # okr
-            dir_report_mg = os.path.join(dir_report, mg_id)
-            okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.csv'.format(mg_id))
-            all = fileokr_to_dict(okr_f)
-            mutation = set()
-            dic_m = all.get('临床上显著生物标志物')
-            list_okr = []
-            if dic_m:
-                dic_mu = dic_m.get('临床上显著生物标志物')
-                if dic_mu:
-                    for row in dic_mu:
-                        mutation.add(row.get('基因组改变'))
 
-            def get_summary(dic_in, key, mutation):
-                list_okr = []
-                if dic_in:
-                    dic_okr = dic_in.get(key)
-                    if dic_okr:
-                        if mutation:
-                            for mu in mutation:
-                                list_mu = []
-                                for row in dic_okr:
-                                    if mu == row.get('基因组改变'):
-                                        list_mu.append(row)
-                                list_okr.append({'mutation': mu, 'okr': list_mu})
-                return list_okr
-
-            def get_okr(dic_in, key, mutation):
-                list_okr = []
-                if dic_in:
-                    dic_okr = dic_in.get(key)
-                    if dic_okr:
-                        if mutation:
-                            for mu in mutation:
-                                list_mu = []
-                                for row in dic_okr.get('therapy'):
-                                    if mu == row.get('基因组改变'):
-                                        list_mu.append(row)
-                                if list_mu:
-                                    list_okr.append({'mutation': mu, 'okr': list_mu})
-                return list_okr
-
-            dic_therapy = all.get('相关疗法详情')
-            dic_sign = get_summary(dic_m, '临床上显著生物标志物', mutation)
-            dic_summary = get_summary(all.get('基因变异相应靶向治疗方案'), '基因变异相应靶向治疗方案', mutation)
-            dic_fda = get_okr(dic_therapy, '目前来自FDA 靶向药物信息', mutation)
-            dic_clincal = get_okr(dic_therapy, '目前来自Clinical Trials 靶向药物信息', mutation)
-            dic_nccn = get_okr(dic_therapy, '目前来自NCCN 靶向药物信息', mutation)
-            dic_render = {'okr_clincal': dic_clincal, 'okr_fda': dic_fda, 'okr_sign':
-                dic_sign, 'okr_summary': dic_summary, 'okr_nccn': dic_nccn}
-
-            dic_m.update(dic_render)
+            print(dic_m.keys())
 
             temp_docx = os.path.join(path_docx, '52_t.docx')
 
