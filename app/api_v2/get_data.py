@@ -184,15 +184,18 @@ class GetSeqInfo(Resource):
             seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
             if seq.status == '分析完成':
                 apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
-                for sam in apply.sample_infos:
-                    if seq.sample_name in sam.sample_id:
-                        sam.seq.append(seq)
-                        print(seq.cell_percent)
-                        pathology = PathologyInfo(cell_content=seq.cell_percent)
-                        db.session.add(pathology)
-                        sam.pathology_info = pathology
-                        msg = save_reesult(seq,name,sam)
-                        msgs.append(msg)
+                if apply:
+                    for sam in apply.sample_infos:
+                        if seq.sample_name in sam.sample_id:
+                            sam.seq.append(seq)
+                            print(seq.cell_percent)
+                            pathology = PathologyInfo(cell_content=seq.cell_percent)
+                            db.session.add(pathology)
+                            sam.pathology_info = pathology
+                            msg = save_reesult(seq, name, sam)
+                            msgs.append(msg)
+                else:
+                    msgs.append('样本{} 的样本信息未录入，请到样本信息登记处录入'.format(seq.sample_name))
             elif seq.status == '结果已保存':
                 msgs.append('样本{}结果已经保存'.format(seq.sample_name))
             else:

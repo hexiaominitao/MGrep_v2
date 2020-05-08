@@ -1,4 +1,6 @@
 import csv, os
+import json
+import requests
 
 from flata import Flata
 from flata.storages import JSONStorage
@@ -114,3 +116,40 @@ def fileokr_to_dict(okr_file):
 
     dict_okr = okr(file_content)
     return dict_okr
+
+
+import os
+
+BASE_URL = 'localhost:8088/api/okr'
+USER = 'cjhconfig'
+PASSWORD = '123456'
+
+
+
+def make_service_request(func, endpoint, data=None, files=None, headers=None):
+    url = 'http://{0}:{1}@{2}/{3}'.format(USER, PASSWORD, BASE_URL, endpoint)
+    return func(url, data=data, files=files, headers=headers)
+
+
+def post(endpoint, data=None, files=None, headers=None):
+    return make_service_request(requests.post, endpoint, data, files, headers)
+
+
+def create_reports_using_report_file(vcf_file,cancer, out_file):
+    REPORT_OPTIONS = {'filterPresetID': 100,
+                      'reportTemplateID': 106,
+                      'reportFormat': 'TXT',
+                      'useGrayscale': False,
+                      'cancerType': cancer,
+                      'fields': [{'name': 'Sample ID', 'value': '12345'}]}
+    request_data = {'options': json.dumps(REPORT_OPTIONS)}
+    files = {'file': (vcf_file, open(vcf_file))}
+    response = post('report/file', data=request_data, files=files)
+    out = open(out_file, 'wb')
+    out.write(response.content)
+
+
+if __name__ == '__main__':
+    VCF_file = './test.vcf'
+    out_file = './test.txt'
+    create_reports_using_report_file(VCF_file, out_file)
