@@ -868,11 +868,7 @@ class ExportReport(Resource):
             dic_render = {'okr_clincal': dic_clincal, 'okr_fda': dic_fda, 'okr_sign':
                 dic_sign, 'okr_summary': dic_summary, 'okr_nccn': dic_nccn}
 
-            dic_mu['okr_clincal'] = dic_clincal
-            dic_mu['okr_fda'] = dic_fda
-            dic_mu['okr_sign'] = dic_sign
-            dic_mu['okr_summary'] = dic_summary
-            dic_mu['okr_nccn'] = dic_nccn
+            dic_m.update(dic_render)
 
             temp_docx = os.path.join(path_docx, '52_t.docx')
 
