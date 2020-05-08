@@ -14,7 +14,7 @@ from app.models.mutation import Mutation, Mutations
 from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug,ClinicInterpretation
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
-    get_grade, get_drug, okr_create_n, md_create
+    get_grade, get_drug, okr_create_n, md_create,get_okr_vcf,get_result_file, get_okr
 from app.libs.ext import set_time_now
 from app.libs.get_data import read_json, splitN
 
@@ -421,6 +421,44 @@ class AnnotateMutation(Resource):
         return {'msg': '添加完成'}
 
 
+class DownloadOkr(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('id', type=int, help='报告id')
+
+    def post(self):
+        token = request.headers.get('token')  # 权限
+        user = User.verify_auth_token(token)
+        if not user:
+            return {'msg': '无访问权限'}, 401
+
+        args = self.parser.parse_args()
+        rep_id = args.get('id')
+        dir_res = current_app.config['RES_REPORT']
+        dir_report = os.path.join(dir_res, 'report')
+        report = Report.query.filter(Report.id == rep_id).first()
+        seq = report.sample_info_v.seq[0]
+        sam = report.sample_info_v
+        cancer = sam.apply_info.cancer
+        mg_id = sam.sample_id
+        req_mg = sam.apply_info.req_mg
+        mutation = report.mutation
+        dir_report_mg = os.path.join(dir_report, mg_id)
+        list_mu = []
+        for mu in mutation.mutation:
+            list_mu.append(mu.to_dict())
+        res_f = get_result_file(seq,'.OKR.vcf')
+        print(res_f)
+        vcf_f = os.path.join(os.getcwd(),dir_report_mg,'{}.okr.vcf'.format(mg_id))
+        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.csv'.format(mg_id))
+        get_okr_vcf(res_f,list_mu,vcf_f)
+        # print(vcf_f,cancer,okr_f)
+        get_okr(vcf_f,cancer,okr_f)
+        return {'msg':'hello'}
+
+
+
+
 class AnnotateCheck(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
@@ -510,7 +548,7 @@ class AnnotateCheck(Resource):
 #                 patient = sam.patient_info
 #                 mutation = report.mutation
 #                 if mutation:
-#                     snvs = mutation.snv
+ #                     snvs = mutation.snv
 #                     cnvs = mutation.cnv
 #                     fusions = mutation.fusion
 #                     list_c = ['二审通过']

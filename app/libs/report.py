@@ -1,4 +1,4 @@
-import re, os, shutil
+import re, os, shutil, csv
 
 import pandas as pd
 
@@ -107,7 +107,7 @@ def dict2df(list_dic):
     return df
 
 
-def md_create(df,dic_in,disease):
+def md_create(df, dic_in, disease):
     mutation = dic_in['okr_mu']
     if mutation == 'exon 14 skipping':
         dic_in['gene'] = 'MET'
@@ -120,6 +120,7 @@ def md_create(df,dic_in,disease):
     dic_out = df2dict(df_mutation)
 
     return dic_out
+
 
 def get_okr(df, disease, gene, mutation, drug_effect, grade=None):
     levels = ['NCCN', 'Clinical + III', 'Clinical + II/III', 'Clinical + II', 'Clinical + I/II', 'Clinical + I']
@@ -164,7 +165,7 @@ def get_mutation_parent():
             dic_p[k].add(p)
         else:
             if p:
-                dic_p[k]= {p}
+                dic_p[k] = {p}
             else:
                 dic_p[k] = ''
     return dic_p
@@ -234,8 +235,6 @@ def okr_create(df, disease, gene, mutation, drug_effect):
     return dic_out
 
 
-
-
 def okr_create_n(dic_in, df, disease, drug_effect):
     mutation = dic_in['okr_mu']
     if mutation == 'exon 14 skipping':
@@ -302,7 +301,7 @@ def get_grade(dic_in, df, disease, drug_effect):
     elif mutation == 'fusion':
         dic_in['gene'] = dic_in['gene'].split('-')[-1]
     gene = dic_in['gene']
-    print(gene,mutation)
+    print(gene, mutation)
     grade = grade_mutation(df, disease, gene, mutation, drug_effect)
     return grade
 
@@ -359,7 +358,7 @@ def convert_str(row, rep):
     return out
 
 
-def save_reesult(seq, username,sam):
+def save_reesult(seq, username, sam):
     run = seq.run_info
     run_name = run.name
     # print(run_name)
@@ -385,7 +384,7 @@ def save_reesult(seq, username,sam):
                 if 'cn_results.png' in file:
                     shutil.copy2(os.path.join(root, file), dir_report_mg)
     if result_f:
-        dfs = pd.read_excel(result_f, sheet_name=None, keep_default_na=False,engine='xlrd')
+        dfs = pd.read_excel(result_f, sheet_name=None, keep_default_na=False, engine='xlrd')
 
         for name, df in dfs.items():
             dict_result[name] = df2list(df)
@@ -434,11 +433,10 @@ def save_reesult(seq, username,sam):
             try:
                 af = float(af)
                 if af < 1:
-                    af = format(af,'.2%')
+                    af = format(af, '.2%')
             except:
                 pass
             print(af)
-
 
             mutation = Mutation(type=row.get('变异类型'), gene=row.get('基因'), transcript=row.get('转录本'),
                                 exon=row.get('外显子'), cHGVS=row.get('编码改变'), pHGVS_3=row.get('氨基酸改变'),
@@ -458,7 +456,6 @@ def save_reesult(seq, username,sam):
             msg = '{} {}未检测到变异'.format(run_name, seq.sample_name)
             seq.status = '结果已保存'
             db.session.commit()
-
 
     return msg
 
@@ -485,7 +482,58 @@ def get_qc_raw(seq):
             dict_result[name] = df2list(df)
     else:
         msg = '文件不存在'
-    dic_out = {'qc': dict_result.get('QC'),'filter': dict_result.get('filter'),
+    dic_out = {'qc': dict_result.get('QC'), 'filter': dict_result.get('filter'),
                'raw': dict_result.get('Mutation.raw')}
 
     return dic_out
+
+
+def get_result_file(seq, key):
+    run = seq.run_info
+    run_name = run.name
+    # print(run_name)
+    path_result = current_app.config['RESULT_DIR']
+    result_f = ''
+    msg = ''
+    dict_result = {}
+    for path_run in os.listdir(path_result):
+        if not run_name in path_run:
+            continue
+        for root, paths, files in os.walk(os.path.join(path_result, path_run)):
+            for file in files:
+                if seq.sample_name in file and file.endswith(key):
+                    result_f = (os.path.join(root, file))
+    return result_f
+
+
+def get_okr_vcf(result_file, list_mu, vcf_file):
+    if result_file and list_mu:
+        filter_mu = set()
+        for row in list_mu:
+            if row['type'] in ['SNV', 'INS', 'DEL', 'COMPLEX']:
+                filter_mu.add('{}:{}'.format(row['gene'], row['cHGVS']))
+            elif row['type'] == 'CNV':
+                filter_mu.add(row['gene'])
+            else:
+                filter_mu.add(row['exon'])
+        list_w = []
+        with open(result_file, 'r')as f_r:
+            f = csv.reader(f_r, delimiter='\t')
+            for row in f:
+                if row[0].startswith('#'):
+                    list_w.append(row)
+                    continue
+                if row[2] in filter_mu:
+                    list_w.append(row)
+        f_r.close()
+        with open(vcf_file, 'w')as f_w:
+            for row in list_w:
+                f_w.write('\t'.join(row) + '\n')
+
+
+def get_okr(vcf_f,cancer,okr_f):
+    os.system('curl --user cjhconfig:123456 '
+              '--request POST --location "http://192.168.1.103:8088/api/okr/report/file" '
+              '-F file=@%s -F options="\"filterPresetID\":100,\"reportTemplateID\":106,'
+              '\"useGrayscale\":false,\"reportFormat\":\"TXT\",\"cancerType\":\"%s\",\"'
+              'fields\":[{\"name\":\"test\",\"value\":\"test\"}]}" > %s' % (vcf_f,cancer,okr_f))

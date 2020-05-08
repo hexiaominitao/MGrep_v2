@@ -205,7 +205,7 @@ class PathologyInfo(db.Model):
     pathology = db.Column(db.String(500), nullable=True)  # 病理审核
     view = db.Column(db.String(500), nullable=True)  # 镜下所见
     cell_count = db.Column(db.String(50), nullable=True)  # 样本内细胞数量
-    cell_content = db.Column(db.Float(), nullable=True)  # 细胞含量
+    cell_content = db.Column(db.String(500), nullable=True)  # 细胞含量
     spical_note = db.Column(db.String(500), nullable=True)  # 特殊说明
     sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))
 

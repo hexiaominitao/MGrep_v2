@@ -187,6 +187,7 @@ class GetSeqInfo(Resource):
                 for sam in apply.sample_infos:
                     if seq.sample_name in sam.sample_id:
                         sam.seq.append(seq)
+                        print(seq.cell_percent)
                         pathology = PathologyInfo(cell_content=seq.cell_percent)
                         db.session.add(pathology)
                         sam.pathology_info = pathology
@@ -287,7 +288,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
-            seq.status = '重新分析'
+            seq.status = '分析完成'
         db.session.commit()
         return {'msg': '开始重新分析'}
 
