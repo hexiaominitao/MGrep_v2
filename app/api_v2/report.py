@@ -818,8 +818,9 @@ class ExportReport(Resource):
                     # dic_m['list_m'] = list_m
 
             # okr
-            vcf_f = ''
-            all = fileokr_to_dict(vcf_f)
+            dir_report_mg = os.path.join(dir_report, mg_id)
+            okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.csv'.format(mg_id))
+            all = fileokr_to_dict(okr_f)
             mutation = set()
             dic_m = all.get('临床上显著生物标志物')
             list_okr = []
@@ -871,7 +872,7 @@ class ExportReport(Resource):
                 dic_mu[k] = v
 
             temp_docx = os.path.join(path_docx, '52_t.docx')
-            dir_report_mg = os.path.join(dir_report,mg_id)
+
             if not os.path.exists(dir_report_mg):
                 os.mkdir(dir_report_mg)
             file = os.path.join(dir_report_mg, '{}_{}.docx'.format(mg_id, item))
