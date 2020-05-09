@@ -846,7 +846,7 @@ class ExportReport(Resource):
                                             drugs.append('{}({}:{})'.format(drug.get('drug'),
                                                                             drug.get('drug_effect'), drug.get('level')))
                                     else:
-                                        drugs = ['暂时没有']
+                                        drugs = ['暂无']
                                     mu['okrs'] = drugs
                                     if mu['mu_type'] == '融合':
                                         mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
