@@ -859,6 +859,9 @@ class ExportReport(Resource):
                                     elif mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
                                         mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
                                         mu['mu_name_usual'] = '{} exon 14 skipping'.format(mu['gene'])
+                                    elif mu['okr_mu'] == 'vIII' and 'EGFR' in mu['gene']:
+                                        mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
+                                        mu['mu_name_usual'] = '{} vIII'.format(mu['gene'])
                                     else:
                                         mu['mu_name'] = '{0}({1}):{2}({3})'.format(mu['transcript'], mu['gene'],
                                                                                    mu['cHGVS'], mu['pHGVS_1'])
