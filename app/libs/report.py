@@ -433,10 +433,9 @@ def save_reesult(seq, username, sam):
             try:
                 af = float(af)
                 if af < 1:
-                    af = format(af, '.2%')
+                    af = format(af, '.1%')
             except:
                 pass
-            print(af)
 
             mutation = Mutation(type=row.get('变异类型'), gene=row.get('基因'), transcript=row.get('转录本'),
                                 exon=row.get('外显子'), cHGVS=row.get('编码改变'), pHGVS_3=row.get('氨基酸改变'),
