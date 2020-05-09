@@ -837,6 +837,8 @@ class ExportReport(Resource):
                                     mu['gene'] = mu['gene'].split('-')[-1]
                                 if mu['okr_mu'] == 'exon 14 skipping' and 'MET' in mu['gene']:
                                     mu['gene'] = 'MET'
+                                if mu['okr_mu'] == 'vIII' and 'EGFR' in mu['gene']:
+                                    mu['gene'] = 'EGFR'
                                 if mu['gene'] == gene and mu['mu_type'] in m_type:
                                     drugs = []
                                     if mu['drugs']:
@@ -844,7 +846,7 @@ class ExportReport(Resource):
                                             drugs.append('{}({}:{})'.format(drug.get('drug'),
                                                                             drug.get('drug_effect'), drug.get('level')))
                                     else:
-                                        drugs = ['没有']
+                                        drugs = ['暂时没有']
                                     mu['okrs'] = drugs
                                     if mu['mu_type'] == '融合':
                                         mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
