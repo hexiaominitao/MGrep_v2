@@ -14,7 +14,7 @@ from app.models.mutation import Mutation, Mutations
 from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug,ClinicInterpretation
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
-    get_grade, get_drug, okr_create_n, md_create,get_okr_vcf,get_result_file, get_okr
+    get_grade, get_drug, okr_create_n, md_create,get_okr_vcf,get_result_file
 from app.libs.ext import set_time_now
 from app.libs.okr_ext import fileokr_to_dict,create_reports_using_report_file, is_okr
 from app.libs.get_data import read_json, splitN
@@ -464,7 +464,7 @@ class DownloadOkr(Resource):
         get_okr_vcf(res_f,list_mu,vcf_f)
         # print(vcf_f,cancer,okr_f)
         create_reports_using_report_file(vcf_f,cancer,okr_f)
-        return {'msg':'下载成功'}
+        return {'msg':'okr下载成功'}
 
 
 

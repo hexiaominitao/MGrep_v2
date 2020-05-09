@@ -532,9 +532,3 @@ def get_okr_vcf(result_file, list_mu, vcf_file):
             f_w.write('\t'.join(row) + '\n')
 
 
-def get_okr(vcf_f,cancer,okr_f):
-    os.system('curl --user cjhconfig:123456 '
-              '--request POST --location "http://192.168.1.103:8088/api/okr/report/file" '
-              '-F file=@%s -F options="\"filterPresetID\":100,\"reportTemplateID\":106,'
-              '\"useGrayscale\":false,\"reportFormat\":\"TXT\",\"cancerType\":\"%s\",\"'
-              'fields\":[{\"name\":\"test\",\"value\":\"test\"}]}" > %s' % (vcf_f,cancer,okr_f))
