@@ -238,15 +238,6 @@ class EditMutation(Resource):
                 for md in md_okr.okr:
                     list_md.append(md.to_dict())
                 df_md = dict2df(list_md)
-                print(len(list_md))
-            if 'okr' in cl.okr_version:
-                okr = cl
-                list_okr = []
-                for okr in okr.okr:
-                    list_okr.append(okr.to_dict())
-                df = dict2df(list_okr)
-
-
 
         drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
 
@@ -262,6 +253,7 @@ class EditMutation(Resource):
             cancer = mu.mutation.report.sample_info_v.apply_info.cancer
 
             dic_out = md_create(df_md,sam,cancer)
+            grade = ''
             if dic_out:
                 grades = [row.get('grade') for row in dic_out.values()]
                 print(grades)
@@ -269,9 +261,7 @@ class EditMutation(Resource):
                     if i in grades:
                         grade = i
                         break
-            else:
-                grade = get_grade(sam, df, cancer, drug_effect)
-                dic_out = okr_create_n(sam, df, cancer, drug_effect)
+
 
 
             drugs = mutation.drug
@@ -846,7 +836,7 @@ class ExportReport(Resource):
                                             drugs.append('{}({}:{})'.format(drug.get('drug'),
                                                                             drug.get('drug_effect'), drug.get('level')))
                                     else:
-                                        drugs = ['暂时没有']
+                                        drugs = ['']
                                     mu['okrs'] = drugs
                                     if mu['mu_type'] == '融合':
                                         mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
