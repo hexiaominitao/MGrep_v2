@@ -507,8 +507,8 @@ def get_result_file(seq, key):
 
 
 def get_okr_vcf(result_file, list_mu, vcf_file):
-    if result_file and list_mu:
-        filter_mu = set()
+    filter_mu = set()
+    if list_mu:
         for row in list_mu:
             if row['type'] in ['SNV', 'INS', 'DEL', 'COMPLEX']:
                 filter_mu.add('{}:{}'.format(row['gene'], row['cHGVS']))
@@ -516,19 +516,20 @@ def get_okr_vcf(result_file, list_mu, vcf_file):
                 filter_mu.add(row['gene'])
             else:
                 filter_mu.add(row['exon'])
-        list_w = []
-        with open(result_file, 'r')as f_r:
-            f = csv.reader(f_r, delimiter='\t')
-            for row in f:
-                if row[0].startswith('#'):
-                    list_w.append(row)
-                    continue
+    list_w = []
+    with open(result_file, 'r')as f_r:
+        f = csv.reader(f_r, delimiter='\t')
+        for row in f:
+            if row[0].startswith('#'):
+                list_w.append(row)
+                continue
+            if filter_mu:
                 if row[2] in filter_mu:
                     list_w.append(row)
-        f_r.close()
-        with open(vcf_file, 'w')as f_w:
-            for row in list_w:
-                f_w.write('\t'.join(row) + '\n')
+    f_r.close()
+    with open(vcf_file, 'w')as f_w:
+        for row in list_w:
+            f_w.write('\t'.join(row) + '\n')
 
 
 def get_okr(vcf_f,cancer,okr_f):

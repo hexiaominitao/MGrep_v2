@@ -16,7 +16,7 @@ from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug,ClinicInter
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
     get_grade, get_drug, okr_create_n, md_create,get_okr_vcf,get_result_file, get_okr
 from app.libs.ext import set_time_now
-from app.libs.okr_ext import fileokr_to_dict,create_reports_using_report_file
+from app.libs.okr_ext import fileokr_to_dict,create_reports_using_report_file, is_okr
 from app.libs.get_data import read_json, splitN
 
 
@@ -447,15 +447,24 @@ class DownloadOkr(Resource):
         dir_report_mg = os.path.join(dir_report, mg_id)
         list_mu = []
         for mu in mutation.mutation:
-            list_mu.append(mu.to_dict())
+            print(mu.grade)
+            if  mu.grade in ['I类','IA','IB']:
+                pass
+            else:
+                list_mu.append(mu.to_dict())
+        print(list_mu)
         res_f = get_result_file(seq,'.OKR.vcf')
         print(res_f)
         vcf_f = os.path.join(os.getcwd(),dir_report_mg,'{}.okr.vcf'.format(mg_id))
+
         okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.tsv'.format(mg_id))
+        if os.path.exists(okr_f):
+            os.remove(okr_f)
+
         get_okr_vcf(res_f,list_mu,vcf_f)
         # print(vcf_f,cancer,okr_f)
         create_reports_using_report_file(vcf_f,cancer,okr_f)
-        return {'msg':'hello'}
+        return {'msg':'下载成功'}
 
 
 
@@ -707,55 +716,60 @@ class ExportReport(Resource):
         # okr
         dir_report_mg = os.path.join(dir_report, mg_id)
         okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.tsv'.format(mg_id))
-        all = fileokr_to_dict(okr_f)
-        mutation = set()
-        dic_m = all.get('临床上显著生物标志物')
-        list_okr = []
-        if dic_m:
-            dic_mu = dic_m.get('临床上显著生物标志物')
-            if dic_mu:
-                for row in dic_mu:
-                    mutation.add(row.get('基因组改变'))
-
-        def get_summary(dic_in, key, mutation):
+        okr = is_okr(okr_f,'本样本中未发现有临床意义的生物标志物')
+        if okr:
+            all = fileokr_to_dict(okr_f)
+            mutation = set()
+            dic_m = all.get('临床上显著生物标志物')
             list_okr = []
-            if dic_in:
-                dic_okr = dic_in.get(key)
-                if dic_okr:
-                    if mutation:
-                        for mu in mutation:
-                            list_mu = []
-                            for row in dic_okr:
-                                if mu == row.get('基因组改变'):
-                                    list_mu.append(row)
-                            list_okr.append({'mutation': mu, 'okr': list_mu})
-            return list_okr
+            if dic_m:
+                dic_mu = dic_m.get('临床上显著生物标志物')
+                if dic_mu:
+                    for row in dic_mu:
+                        mutation.add(row.get('基因组改变'))
 
-        def get_okr(dic_in, key, mutation):
-            list_okr = []
-            if dic_in:
-                dic_okr = dic_in.get(key)
-                if dic_okr:
-                    if mutation:
-                        for mu in mutation:
-                            list_mu = []
-                            for row in dic_okr.get('therapy'):
-                                if mu == row.get('基因组改变'):
-                                    list_mu.append(row)
-                            if list_mu:
+            def get_summary(dic_in, key, mutation):
+                list_okr = []
+                if dic_in:
+                    dic_okr = dic_in.get(key)
+                    if dic_okr:
+                        if mutation:
+                            for mu in mutation:
+                                list_mu = []
+                                for row in dic_okr:
+                                    if mu == row.get('基因组改变'):
+                                        list_mu.append(row)
                                 list_okr.append({'mutation': mu, 'okr': list_mu})
-            return list_okr
+                return list_okr
 
-        dic_therapy = all.get('相关疗法详情')
-        dic_sign = get_summary(dic_m, '临床上显著生物标志物', mutation)
-        dic_summary = get_summary(all.get('基因变异相应靶向治疗方案'), '基因变异相应靶向治疗方案', mutation)
-        dic_fda = get_okr(dic_therapy, '目前来自FDA 靶向药物信息', mutation)
-        dic_clincal = get_okr(dic_therapy, '目前来自Clinical Trials 靶向药物信息', mutation)
-        dic_nccn = get_okr(dic_therapy, '目前来自NCCN 靶向药物信息', mutation)
-        dic_render = {'okr_clincal': dic_clincal, 'okr_fda': dic_fda, 'okr_sign':
-            dic_sign, 'okr_summary': dic_summary, 'okr_nccn': dic_nccn}
+            def get_okr(dic_in, key, mutation):
+                list_okr = []
+                if dic_in:
+                    dic_okr = dic_in.get(key)
+                    if dic_okr:
+                        if mutation:
+                            for mu in mutation:
+                                list_mu = []
+                                for row in dic_okr.get('therapy'):
+                                    if mu == row.get('基因组改变'):
+                                        list_mu.append(row)
+                                if list_mu:
+                                    list_okr.append({'mutation': mu, 'okr': list_mu})
+                return list_okr
 
-        dic_m.update(dic_render)
+            dic_therapy = all.get('相关疗法详情')
+            dic_sign = get_summary(dic_m, '临床上显著生物标志物', mutation)
+            dic_summary = get_summary(all.get('基因变异相应靶向治疗方案'), '基因变异相应靶向治疗方案', mutation)
+            dic_fda = get_okr(dic_therapy, '目前来自FDA 靶向药物信息', mutation)
+            dic_clincal = get_okr(dic_therapy, '目前来自Clinical Trials 靶向药物信息', mutation)
+            dic_nccn = get_okr(dic_therapy, '目前来自NCCN 靶向药物信息', mutation)
+            dic_render = {'okr_clincal': dic_clincal, 'okr_fda': dic_fda, 'okr_sign':
+                dic_sign, 'okr_summary': dic_summary, 'okr_nccn': dic_nccn}
+            dic_m.update(dic_render)
+            dic_m['okr'] = 1
+        else:
+            dic_m['okr'] = 0
+
 
 
         if report.stage in ['生成报告', '制作完成']:  # todo 简化

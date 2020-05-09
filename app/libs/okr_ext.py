@@ -97,11 +97,12 @@ def okr(all):
                 dic_re[dic_index[sort_index[i]]] = all[sort_index[i] + 1: sort_index[i + 1] - 1]
             else:
                 dic_re[dic_index[sort_index[i]]] = all[sort_index[i] + 1: -1]
-    dic_re['相关疗法详情'] = therapy_dict(dic_re.get('相关疗法详情'))
-    dic_re['临床上显著生物标志物'] = okr_list2dic(dic_re, '临床上显著生物标志物')
-    dic_re['基因变异相应靶向治疗方案'] = okr_list2dic(dic_re, '基因变异相应靶向治疗方案')
-    dic_re['版本'] = all[-1][0]
-    dic_re['样本癌症类型'] = all[1][1]
+    if dic_re:
+        dic_re['相关疗法详情'] = therapy_dict(dic_re.get('相关疗法详情'))
+        dic_re['临床上显著生物标志物'] = okr_list2dic(dic_re, '临床上显著生物标志物')
+        dic_re['基因变异相应靶向治疗方案'] = okr_list2dic(dic_re, '基因变异相应靶向治疗方案')
+        dic_re['版本'] = all[-1][0]
+        dic_re['样本癌症类型'] = all[1][1]
 
     return dic_re
 
@@ -120,7 +121,7 @@ def fileokr_to_dict(okr_file):
 
 import os
 
-BASE_URL = 'localhost:8088/api/okr'
+BASE_URL = '192.168.1.103:8088/api/okr'
 USER = 'cjhconfig'
 PASSWORD = '123456'
 
@@ -147,6 +148,19 @@ def create_reports_using_report_file(vcf_file,cancer, out_file):
     response = post('report/file', data=request_data, files=files)
     out = open(out_file, 'wb')
     out.write(response.content)
+
+
+def is_okr(okr_f,k):
+    with open(okr_f,'r')as f:
+        fc = csv.reader(f,delimiter='\t')
+        list_f = []
+        for row in fc:
+            if row:
+                list_f.append(row[0])
+    if k in list_f:
+        return 0
+    else:
+        return 1
 
 
 if __name__ == '__main__':
