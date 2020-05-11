@@ -865,9 +865,13 @@ class ExportReport(Resource):
                                         mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
                                         mu['mu_name_usual'] = '{} vIII'.format(mu['gene'])
                                     else:
-                                        mu['mu_name'] = '{0}({1}):{2}({3})'.format(mu['transcript'], mu['gene'],
-                                                                                   mu['cHGVS'], mu['pHGVS_1'])
-                                        mu['mu_name_usual'] = '{} {}'.format(mu['gene'], mu['pHGVS_1'].split('.')[-1])
+                                        mu['mu_name'] = '{0}({1}):{2} ({3})'.format(mu['transcript'], mu['gene'],
+                                                                                   mu['cHGVS'], mu['pHGVS_3'])
+                                        if mu['okr_mu'] == 'mutation':
+                                            mu['mu_name_usual'] = '{} {}'.format(mu['gene'],
+                                                                                 mu['pHGVS_1'].split('.')[-1])
+                                        else:
+                                            mu['mu_name_usual'] = '{} {}'.format(mu['gene'],mu['okr_mu'])
                                     list_mutation.append(mu)
                                     row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
                                               'mu_name_usual': mu['mu_name_usual'], 'grade': mu['grade']}
