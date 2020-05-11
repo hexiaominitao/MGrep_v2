@@ -14,7 +14,7 @@ from app.models.mutation import Mutation, Mutations
 from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug,ClinicInterpretation
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
-    get_grade, get_drug, okr_create_n, md_create,get_okr_vcf,get_result_file
+    get_grade, get_drug, okr_create_n, md_create,get_okr_vcf,get_result_file,get_clincl
 from app.libs.ext import set_time_now
 from app.libs.okr_ext import fileokr_to_dict,create_reports_using_report_file, is_okr
 from app.libs.get_data import read_json, splitN
@@ -231,20 +231,13 @@ class EditMutation(Resource):
         sams = (json.loads(data)['sams'])
 
         clinicInterpretation = ClinicInterpretation.query.all()
-        for cl in clinicInterpretation:
-            if 'md' in cl.okr_version:
-                md_okr = cl
-                list_md = []
-                for md in md_okr.okr:
-                    list_md.append(md.to_dict())
-                df_md = dict2df(list_md)
-                print(len(list_md))
-            if 'okr' in cl.okr_version:
-                okr = cl
-                list_okr = []
-                for okr in okr.okr:
-                    list_okr.append(okr.to_dict())
-                df = dict2df(list_okr)
+        okrs = OKR.query.all()
+        list_md = []
+        for okr in okrs:
+            list_md.append(okr.to_dict())
+        df_md = dict2df(list_md)
+
+
 
 
 
@@ -266,14 +259,10 @@ class EditMutation(Resource):
             if dic_out:
                 grades = [row.get('grade') for row in dic_out.values()]
                 print(grades)
-                for i in ['IA', 'IB', 'IIA', 'IIB']:
+                for i in ['II', 'I']:
                     if i in grades:
                         grade = i
                         break
-            else:
-                grade = get_grade(sam, df, cancer, drug_effect)
-                dic_out = okr_create_n(sam, df, cancer, drug_effect)
-
 
             drugs = mutation.drug
             if drugs:
@@ -448,8 +437,7 @@ class DownloadOkr(Resource):
         dir_report_mg = os.path.join(dir_report, mg_id)
         list_mu = []
         for mu in mutation.mutation:
-            print(mu.grade)
-            if  mu.grade in ['I类','IA','IB']:
+            if mu.grade in ['I']:
                 pass
             else:
                 list_mu.append(mu.to_dict())
@@ -465,6 +453,7 @@ class DownloadOkr(Resource):
         get_okr_vcf(res_f,list_mu,vcf_f)
         # print(vcf_f,cancer,okr_f)
         create_reports_using_report_file(vcf_f,cancer,okr_f)
+
         return {'msg':'okr下载成功'}
 
 
@@ -771,8 +760,6 @@ class ExportReport(Resource):
         else:
             dic_m['okr'] = 0
 
-
-
         if report.stage in ['生成报告', '制作完成']:  # todo 简化
             apply = sam.apply_info
             patient = apply.patient_info_v
@@ -841,15 +828,7 @@ class ExportReport(Resource):
                                 if mu['okr_mu'] == 'vIII' and 'EGFR' in mu['gene']:
                                     mu['gene'] = 'EGFR'
                                 if mu['gene'] == gene and mu['mu_type'] in m_type:
-                                    drugs = []
-                                    if mu['drugs']:
-                                        for drug in mu['drugs']:
-                                            drugs.append('{}({}:{})'.format(drug.get('drug'),
-                                                                            drug.get('drug_effect'), drug.get('level')))
-                                    else:
-                                        drugs = ['暂无']
 
-                                    mu['okrs'] = drugs
                                     if mu['mu_type'] == '融合':
                                         mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])
                                         mu['mu_name_usual'] = '{} fusion'.format(mu['gene'])
@@ -872,6 +851,25 @@ class ExportReport(Resource):
                                                                                  mu['pHGVS_1'].split('.')[-1])
                                         else:
                                             mu['mu_name_usual'] = '{} {}'.format(mu['gene'],mu['okr_mu'])
+
+                                    drugs = []
+                                    # print(dic_m['okr'].items())
+                                    if dic_m.get('okr_summary'):
+                                        list_drug = get_clincl(dic_m['okr_summary'])
+                                        for row in list_drug:
+                                            if mu['mu_name_usual'] in row['mutation']:
+                                                mu['drugs'] = row['okr']
+                                                mu['grade'] = 'II'
+                                    if mu['drugs']:
+                                        for drug in mu['drugs']:
+                                            drugs.append('{}({}:{})'.format(drug.get('drug'),
+                                                                            drug.get('drug_effect'), drug.get('level')))
+                                    else:
+                                        drugs = ['暂无']
+                                        mu['grade'] = 'III'
+
+                                    mu['okrs'] = drugs
+
                                     list_mutation.append(mu)
                                     row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
                                               'mu_name_usual': mu['mu_name_usual'], 'grade': mu['grade']}

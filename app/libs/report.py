@@ -533,3 +533,24 @@ def get_okr_vcf(result_file, list_mu, vcf_file):
             f_w.write('\t'.join(row) + '\n')
 
 
+def get6row(list_okr):
+    list_out = []
+    for level in ['VI', 'III', 'II', 'I']:
+        for row in list_okr:
+            if row['grade'] == level:
+                list_out.append(row)
+    list_out = ((list_out, list_out[:5])[len(list_out) > 6])
+    return list_out
+
+def get_clincl(dic_summary):
+    list_okrs = []
+    for row in dic_summary:
+        list_okr = []
+        for okr in row['okr']:
+            if okr.get('Clinical Trials') != '无证据' and okr.get('Clinical Trials') != '禁忌症':
+                okr['drug_effect'] = '敏感'
+                list_okr.append(
+                    {'drug': okr.get('相应治疗'), 'level': 'Clinical + {}'.format(okr.get('分期')),
+                     'drug_effect': okr['drug_effect'], 'grade': okr.get('分期')})
+        list_okrs.append({'mutation': row['mutation'], 'okr': get6row(list_okr)})
+    return list_okrs
