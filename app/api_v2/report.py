@@ -262,6 +262,7 @@ class EditMutation(Resource):
             cancer = mu.mutation.report.sample_info_v.apply_info.cancer
 
             dic_out = md_create(df_md,sam,cancer)
+            grade = ''
             if dic_out:
                 grades = [row.get('grade') for row in dic_out.values()]
                 print(grades)
@@ -847,6 +848,7 @@ class ExportReport(Resource):
                                                                             drug.get('drug_effect'), drug.get('level')))
                                     else:
                                         drugs = ['暂无']
+
                                     mu['okrs'] = drugs
                                     if mu['mu_type'] == '融合':
                                         mu['mu_name'] = '{0} {1}'.format(mu['chr_start_end'], mu['exon'])

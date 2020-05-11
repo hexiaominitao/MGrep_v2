@@ -109,8 +109,10 @@ def dict2df(list_dic):
 
 def md_create(df, dic_in, disease):
     mutation = dic_in['okr_mu']
-    if mutation == 'exon 14 skipping':
+    if mutation == 'exon 14 skipping' and 'MET' in dic_in['gene']:
         dic_in['gene'] = 'MET'
+    elif mutation == 'vIII' and 'EGFR' in dic_in['gene']:
+        dic_in['gene'] = 'EGFR'
     elif mutation == 'fusion':
         dic_in['gene'] = dic_in['gene'].split('-')[-1]
     gene = dic_in['gene']
