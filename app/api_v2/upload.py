@@ -267,14 +267,15 @@ class IrUpload(Resource):
         dir_res = current_app.config['RES_REPORT']
         dir_report = os.path.join(dir_res, 'report')
 
-        filename = file_pdf.save(request.files['file'])
-        file = file_pdf.path(filename)
-
         rep_id = request.form['name']
         report = Report.query.filter(Report.id == rep_id).first()
         sam = report.sample_info_v
+        report.auto_okr = 'No'
+        db.session.commit()
         mg_id = sam.sample_id
-        req_mg = sam.apply_info.req_mg
+        filename = file_pdf.save(request.files['file'], name='{}.okr.tsv'.format(mg_id))
+        file = file_pdf.path(filename)
+
         dir_report_mg = os.path.join(dir_report, mg_id)
         if not os.path.exists(dir_report_mg):
             os.mkdir(dir_report_mg)

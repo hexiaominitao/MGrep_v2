@@ -11,12 +11,12 @@ from app.models import db
 from app.models.user import User
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations
-from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug,ClinicInterpretation
+from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug, ClinicInterpretation
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
-    get_grade, get_drug, okr_create_n, md_create,get_okr_vcf,get_result_file,get_clincl
+    get_grade, get_drug, okr_create_n, md_create, get_okr_vcf, get_result_file, get_clincl
 from app.libs.ext import set_time_now
-from app.libs.okr_ext import fileokr_to_dict,create_reports_using_report_file, is_okr
+from app.libs.okr_ext import fileokr_to_dict, create_reports_using_report_file, is_okr
 from app.libs.get_data import read_json, splitN
 
 
@@ -196,8 +196,8 @@ class EditMutation(Resource):
                 list_c = None  # todo 简化
                 first_check(mutation, list_m, list_c)
 
-            dic_m['mu_title'] = [{'type': 'selection','width': '60','align': 'center'},
-                                 {'title': '状态','width': '100','key': 'status'},
+            dic_m['mu_title'] = [{'type': 'selection', 'width': '60', 'align': 'center'},
+                                 {'title': '状态', 'width': '100', 'key': 'status'},
                                  {'title': '变异类型', 'key': 'type', 'width': '100'},
                                  {'title': '基因', 'key': 'gene', 'width': '100'},
                                  {'title': '转录本', 'key': 'transcript', 'width': '100'},
@@ -237,10 +237,6 @@ class EditMutation(Resource):
             list_md.append(okr.to_dict())
         df_md = dict2df(list_md)
 
-
-
-
-
         drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
 
         if isinstance(sams, dict):
@@ -254,7 +250,7 @@ class EditMutation(Resource):
             mu = Mutation.query.filter(Mutation.id == id).first()
             cancer = mu.mutation.report.sample_info_v.apply_info.cancer
 
-            dic_out = md_create(df_md,sam,cancer)
+            dic_out = md_create(df_md, sam, cancer)
             grade = ''
             if dic_out:
                 grades = [row.get('grade') for row in dic_out.values()]
@@ -443,21 +439,22 @@ class DownloadOkr(Resource):
                 else:
                     list_mu.append(mu.to_dict())
         print(list_mu)
-        res_f = get_result_file(seq,'.OKR.vcf')
+        okr_auto = ''
+        if report.auto_okr == 'No':
+            okr_auto = 'auto'
+        res_f = get_result_file(seq, '.OKR.vcf')
         print(res_f)
-        vcf_f = os.path.join(os.getcwd(),dir_report_mg,'{}.okr.vcf'.format(mg_id))
+        vcf_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.vcf'.format(mg_id))
 
-        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.tsv'.format(mg_id))
+        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}{}.okr.tsv'.format(mg_id,okr_auto))
         if os.path.exists(okr_f):
             os.remove(okr_f)
 
-        get_okr_vcf(res_f,list_mu,vcf_f)
+        get_okr_vcf(res_f, list_mu, vcf_f)
         # print(vcf_f,cancer,okr_f)
-        create_reports_using_report_file(vcf_f,cancer,okr_f)
+        create_reports_using_report_file(vcf_f, cancer, okr_f)
 
-        return {'msg':'okr下载成功'}
-
-
+        return {'msg': '{} okr已经保存'.format(mg_id)}
 
 
 class AnnotateCheck(Resource):
@@ -549,7 +546,7 @@ class AnnotateCheck(Resource):
 #                 patient = sam.patient_info
 #                 mutation = report.mutation
 #                 if mutation:
- #                     snvs = mutation.snv
+#                     snvs = mutation.snv
 #                     cnvs = mutation.cnv
 #                     fusions = mutation.fusion
 #                     list_c = ['二审通过']
@@ -666,7 +663,7 @@ class ExportReport(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('id', type=int, help='报告id')
         self.parser.add_argument('item', type=str, help='报告模板')
-        self.parser.add_argument('note', type=str, help='未检测到')
+        self.parser.add_argument('note', type=str, help='下载okr')
 
     def post(self):
         token = request.headers.get('token')  # 权限
@@ -697,7 +694,12 @@ class ExportReport(Resource):
         rep_id = args.get('id')
         item = args.get('item')
         note = args.get('note')
-        dic_mu = {'CNV':'拷贝数变异'}
+
+        if note == '1':
+            okr_auto = 'auto'
+        else:
+            okr_auto = ''
+        dic_mu = {'CNV': '拷贝数变异'}
         dic_m = {}
         report = Report.query.filter(Report.id == rep_id).first()
         sam = report.sample_info_v
@@ -706,8 +708,8 @@ class ExportReport(Resource):
         list_m = []
         # okr
         dir_report_mg = os.path.join(dir_report, mg_id)
-        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.tsv'.format(mg_id))
-        okr = is_okr(okr_f,'本样本中未发现有临床意义的生物标志物')
+        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}{}.okr.tsv'.format(mg_id,okr_auto))
+        okr = is_okr(okr_f, '本样本中未发现有临床意义的生物标志物')
         if okr:
             all = fileokr_to_dict(okr_f)
             mutation = set()
@@ -801,7 +803,7 @@ class ExportReport(Resource):
                 if cell_p < 1:
                     cell_p = format(cell_p, '.0%')
                 else:
-                    cell_p = format(cell_p/100, '.0%')
+                    cell_p = format(cell_p / 100, '.0%')
             except:
                 pass
             print(cell_p)
@@ -846,12 +848,12 @@ class ExportReport(Resource):
                                         mu['mu_name_usual'] = '{} vIII'.format(mu['gene'])
                                     else:
                                         mu['mu_name'] = '{0}({1}):{2} ({3})'.format(mu['transcript'], mu['gene'],
-                                                                                   mu['cHGVS'], mu['pHGVS_3'])
+                                                                                    mu['cHGVS'], mu['pHGVS_3'])
                                         if mu['okr_mu'] == 'mutation':
                                             mu['mu_name_usual'] = '{} {}'.format(mu['gene'],
                                                                                  mu['pHGVS_1'].split('.')[-1])
                                         else:
-                                            mu['mu_name_usual'] = '{} {}'.format(mu['gene'],mu['okr_mu'])
+                                            mu['mu_name_usual'] = '{} {}'.format(mu['gene'], mu['okr_mu'])
 
                                     drugs = []
                                     # print(dic_m['okr'].items())
@@ -870,7 +872,6 @@ class ExportReport(Resource):
                                         mu['grade'] = 'III'
 
                                     mu['okrs'] = drugs
-
 
                                     list_mutation.append(mu)
                                     row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
@@ -891,14 +892,13 @@ class ExportReport(Resource):
                             rep_mutation = {'gene': gene, 'm_type': m_type, 'result': r_mutation}
                             detail_mu.append(rep_mutation)
                     list_mutation_sort = []
-                    for grade in ['I','II','III']:
+                    for grade in ['I', 'II', 'III']:
                         for mu in list_mutation:
                             if mu['grade'] == grade:
                                 list_mutation_sort.append(mu)
                     dic_m['mutation'] = list_mutation_sort  # 突变信息
                     dic_m['detail_mu'] = detail_mu  # 突变详情
                     # dic_m['list_m'] = list_m
-
 
             print(dic_m.keys())
 
@@ -922,9 +922,9 @@ class ExportReport(Resource):
 
             report.stage = '制作完成'
             db.session.commit()
-            msg = '申请单号为: {} 迈景编号为：{} 的报告成功生成'.format(req_mg,mg_id)
+            msg = '申请单号为: {} 迈景编号为：{} 的报告成功生成'.format(req_mg, mg_id)
         else:
-            msg = '申请单号为: {} 迈景编号为：{} 的报告变异未审核，请审核'.format(req_mg,mg_id)
+            msg = '申请单号为: {} 迈景编号为：{} 的报告变异未审核，请审核'.format(req_mg, mg_id)
 
         return {'msg': msg}
 

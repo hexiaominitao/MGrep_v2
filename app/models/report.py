@@ -21,6 +21,7 @@ class Report(db.Model):
     check_f = db.Column(db.String(255))  # 审核人
     check_r = db.Column(db.String(255))  # 复核人
     sample_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))
+    auto_okr = db.Column(db.String(10)) # 是否自动下载okr
     mutation = db.relationship('Mutations', backref='report', uselist=False)  # 突变
 
     def to_dict(self):
@@ -32,6 +33,7 @@ class Report(db.Model):
             'stage': self.stage,
             'report_user': self.report_user,
             'check_f': self.check_f,
-            'check_r': self.check_f
+            'check_r': self.check_f,
+            'auto_okr': self.auto_okr
         }
         return my_dict

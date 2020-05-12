@@ -13,7 +13,7 @@ principal = Principal()
 
 file_sam = UploadSet('filesam', DOCUMENTS)
 file_okr = UploadSet('fileokr', ('tsv','json','xls','xlsx','zip','csv'))
-file_pdf = UploadSet('filepdf', ('pdf',))
+file_pdf = UploadSet('filepdf', ('tsv',))
 
 
 def str2time(string):
