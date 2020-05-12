@@ -437,10 +437,11 @@ class DownloadOkr(Resource):
         dir_report_mg = os.path.join(dir_report, mg_id)
         list_mu = []
         for mu in mutation.mutation:
-            if mu.grade in ['I']:
-                pass
-            else:
-                list_mu.append(mu.to_dict())
+            if mu.status == '审核通过':
+                if mu.grade in ['I']:
+                    pass
+                else:
+                    list_mu.append(mu.to_dict())
         print(list_mu)
         res_f = get_result_file(seq,'.OKR.vcf')
         print(res_f)
