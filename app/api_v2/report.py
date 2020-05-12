@@ -870,9 +870,11 @@ class ExportReport(Resource):
 
                                     mu['okrs'] = drugs
 
+
                                     list_mutation.append(mu)
                                     row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
                                               'mu_name_usual': mu['mu_name_usual'], 'grade': mu['grade']}
+
                                     r_mutation.append(row_ir)
                             if r_mutation:
                                 pass
@@ -887,8 +889,12 @@ class ExportReport(Resource):
                                            'mu_name_usual': '', 'grade': ''}]
                             rep_mutation = {'gene': gene, 'm_type': m_type, 'result': r_mutation}
                             detail_mu.append(rep_mutation)
-
-                    dic_m['mutation'] = list_mutation  # 突变信息
+                    list_mutation_sort = []
+                    for grade in ['I','II','III']:
+                        for mu in list_mutation:
+                            if mu['grade'] == grade:
+                                list_mutation_sort.append(mu)
+                    dic_m['mutation'] = list_mutation_sort  # 突变信息
                     dic_m['detail_mu'] = detail_mu  # 突变详情
                     # dic_m['list_m'] = list_m
 
