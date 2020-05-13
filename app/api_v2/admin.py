@@ -5,6 +5,7 @@ from flask_restful import (reqparse, Resource, fields, request)
 
 from app.models import db
 from app.models.user import User, Role
+from app.models.record_config import CancerTypes
 from app.libs.get_data import read_json, splitN
 
 
@@ -102,3 +103,12 @@ class AdminRole(Resource):
         for role in roles:
             list_role.append(role.to_dict())
         return jsonify({'roles': list_role})
+
+
+class AdminConfig(Resource):
+    def get(self):
+        cancers = CancerTypes.query.all()
+        list_c = []
+        for cancer in cancers:
+            list_c.append(cancer.to_dict())
+        return jsonify({'cancers': list_c})
