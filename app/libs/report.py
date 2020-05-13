@@ -484,7 +484,7 @@ def get_qc_raw(seq):
     else:
         msg = '文件不存在'
     dic_out = {'qc': dict_result.get('QC'), 'filter': dict_result.get('filter'),
-               'raw': dict_result.get('Mutation.raw')}
+               'raw': dict_result.get('Mutation.raw'), 'w_list': dict_result.get('白名单')}
 
     return dic_out
 
@@ -541,6 +541,7 @@ def get6row(list_okr):
                 list_out.append(row)
     list_out = ((list_out, list_out[:5])[len(list_out) > 6])
     return list_out
+
 
 def get_clincl(dic_summary):
     list_okrs = []
