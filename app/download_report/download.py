@@ -8,7 +8,7 @@ from app.models.report import Report
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem
 
-from app.libs.report import first_check, get_rep_item, set_gene_list, dict2df
+from app.libs.report import first_check, get_rep_item, set_gene_list, dict2df, get_raw_file
 from app.libs.get_data import read_json, splitN
 from app.libs.ext import str2time,archive_file,set_time_now,archive_path
 
@@ -231,6 +231,18 @@ def download_ork(filename):
             send_from_directory(path_rep, '{}.xlsx'.format(filename), as_attachment=True, cache_timeout=10))
         return response
 
+@home.route('/api/download_raw/<id>_<type>/')
+def download_bam(id,type):
+    report = Report.query.filter(Report.id == id).first()
+    sam = report.sample_info_v
+    seq = sam.seq[0]
+    dic_file = get_raw_file(seq)
+    response = make_response(
+        send_file(dic_file.get(type),as_attachment=True, cache_timeout=5)
+    )
+    return response
+
+
 
 @home.route('/api/export/sampleinfo/<start>_<end>/')
 def export_sample_info(start, end):
@@ -305,3 +317,6 @@ def export_sample_info(start, end):
     df = dict2df(list_sam)
     df.to_excel(os.path.join(path_excel, '{}_{}样本信息.xlsx'.format(start, end)), index=False)
     return send_from_directory(path_excel, '{}_{}样本信息.xlsx'.format(start, end), as_attachment=True, cache_timeout=10)
+
+
+
