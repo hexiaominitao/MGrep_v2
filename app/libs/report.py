@@ -501,13 +501,12 @@ def get_raw_file(seq):
             continue
         for root, paths, files in os.walk(os.path.join(path_result, path_run)):
             for file in files:
-                if seq.sample_name in file:
-                    if  file.endswith('.results.xls'):
-                        dict_result['result'] = (os.path.join(root, file))
-                    if file.endswith('.bam'):
-                        dict_result['bam'] = (os.path.join(root, file))
-                    if file.endswith('.bai'):
-                        dict_result['bai'] = (os.path.join(root, file))
+                if file == '{}.results.xls'.format(seq.sample_name):
+                    dict_result['result'] = (os.path.join(root, file))
+                if file == '{}.bam'.format(seq.sample_name):
+                    dict_result['bam'] = (os.path.join(root, file))
+                if file == '{}.bai'.format(seq.sample_name):
+                    dict_result['bai'] = (os.path.join(root, file))
     return dict_result
 
 def get_result_file(seq, key):
