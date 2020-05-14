@@ -503,9 +503,9 @@ def get_raw_file(seq):
             for file in files:
                 if file == '{}.results.xls'.format(seq.sample_name):
                     dict_result['result'] = (os.path.join(root, file))
-                if file == '{}.bam'.format(seq.sample_name):
+                if file == '{}.raw.bam'.format(seq.sample_name):
                     dict_result['bam'] = (os.path.join(root, file))
-                if file == '{}.bai'.format(seq.sample_name):
+                if file == '{}.raw.bai'.format(seq.sample_name):
                     dict_result['bai'] = (os.path.join(root, file))
     return dict_result
 
