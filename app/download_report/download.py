@@ -2,7 +2,7 @@ import os
 from os import path
 import pandas as pd
 from docxtpl import DocxTemplate, InlineImage
-from datetime import timedelta,datetime
+from datetime import timedelta, datetime
 
 from app.models.report import Report
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
@@ -10,9 +10,9 @@ from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, dict2df, get_raw_file
 from app.libs.get_data import read_json, splitN
-from app.libs.ext import str2time,archive_file,set_time_now,archive_path
+from app.libs.ext import str2time, archive_file, set_time_now, archive_path
 
-from flask import (render_template, Blueprint, make_response, send_from_directory, current_app,send_file)
+from flask import (render_template, Blueprint, make_response, send_from_directory, current_app, send_file)
 
 home = Blueprint('home', __name__)
 
@@ -188,7 +188,7 @@ def download1(id, item, note):
     req_mg = sam.apply_info.req_mg
     dir_report_mg = os.path.join(dir_report, mg_id)
     now = datetime.strftime(datetime.now(), "%Y_%m_%d_%H_%M_%S")
-    file_zip = '{}_{}_{}.zip'.format(req_mg,mg_id,now)
+    file_zip = '{}_{}_{}.zip'.format(req_mg, mg_id, now)
 
     memoryzip = archive_path(dir_report_mg)
 
@@ -209,16 +209,17 @@ def download_all(list_rep):
         report = Report.query.filter(Report.id == ss[0]).first()
         sam = report.sample_info_v
         mg_id = sam.sample_id
-        for file in os.listdir(os.path.join(dir_report,mg_id)):
-            list_f.append(os.path.join(mg_id,file))
+        for file in os.listdir(os.path.join(dir_report, mg_id)):
+            list_f.append(os.path.join(mg_id, file))
     print(list_f)
-    now = datetime.strftime(datetime.now(),"%Y_%m_%d_%H_%M_%S")
+    now = datetime.strftime(datetime.now(), "%Y_%m_%d_%H_%M_%S")
     file_zip = '报告_{}.zip'.format(now)
-    memoryzip = archive_file(dir_report,list_f)
+    memoryzip = archive_file(dir_report, list_f)
     path_rep = os.path.join(os.getcwd(), dir_report)
     response = make_response(
-        send_file(memoryzip,attachment_filename=file_zip, as_attachment=True, cache_timeout=5))
+        send_file(memoryzip, attachment_filename=file_zip, as_attachment=True, cache_timeout=5))
     return response
+
 
 @home.route('/api/download_okr/<filename>/')
 def download_ork(filename):
@@ -231,17 +232,17 @@ def download_ork(filename):
             send_from_directory(path_rep, '{}.xlsx'.format(filename), as_attachment=True, cache_timeout=10))
         return response
 
+
 @home.route('/api/download_raw/<id>_<type>/')
-def download_bam(id,type):
+def download_bam(id, type):
     report = Report.query.filter(Report.id == id).first()
     sam = report.sample_info_v
     seq = sam.seq[0]
-    dic_file = get_raw_file(seq)
+    dic_file = {'result': seq.result_xls, 'bam': seq.bam, 'bai': seq.bai}
     response = make_response(
-        send_file(dic_file.get(type),as_attachment=True, cache_timeout=5)
+        send_file(dic_file.get(type), as_attachment=True, cache_timeout=5)
     )
     return response
-
 
 
 @home.route('/api/export/sampleinfo/<start>_<end>/')
@@ -317,6 +318,3 @@ def export_sample_info(start, end):
     df = dict2df(list_sam)
     df.to_excel(os.path.join(path_excel, '{}_{}样本信息.xlsx'.format(start, end)), index=False)
     return send_from_directory(path_excel, '{}_{}样本信息.xlsx'.format(start, end), as_attachment=True, cache_timeout=10)
-
-
-
