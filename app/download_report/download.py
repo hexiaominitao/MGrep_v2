@@ -238,7 +238,7 @@ def download_bam(id, type):
     report = Report.query.filter(Report.id == id).first()
     sam = report.sample_info_v
     seq = sam.seq[0]
-    dic_file = {'result': seq.result_xls, 'bam': seq.bam, 'bai': seq.bai}
+    dic_file = get_raw_file(seq)
     response = make_response(
         send_file(dic_file.get(type), as_attachment=True, cache_timeout=5)
     )

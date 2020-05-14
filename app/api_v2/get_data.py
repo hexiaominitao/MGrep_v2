@@ -314,7 +314,8 @@ class SeqQc(Resource):
         raw = dic_out.get('raw')
         if raw:
             dic_out['raw_title'] = [{'title': k,'key': k, 'width': '100'} for k in raw[0].keys()]
-        w_list = dic_out.get('白名单')
+        w_list = dic_out.get('w_list')
         if w_list:
             dic_out['w_list_title'] = [{'title': k, 'key': k, 'width': '100'} for k in raw[0].keys()]
+        # print(dic_out['w_list_title'])
         return jsonify(dic_out)
