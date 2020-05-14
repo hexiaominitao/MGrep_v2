@@ -30,6 +30,9 @@ class SeqInfo(db.Model):
     cancer = db.Column(db.String(255))  # 报告用癌症类型
     report_item = db.Column(db.String(255))  # 报告模板类型
     status = db.Column(db.String(255))  # 状态
+    result_xls = db.Column(db.String(255)) # result_xls路径
+    bam = db.Column(db.String(255))  # bam路径
+    bai = db.Column(db.String(255))  # bai路径
     run_info_id = db.Column(db.Integer(), db.ForeignKey('run_info.id'))
     sample_info_id = db.Column(db.Integer(), db.ForeignKey('sample_info_v.id'))
 
