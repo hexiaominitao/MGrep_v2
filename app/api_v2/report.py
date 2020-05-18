@@ -61,6 +61,7 @@ class ReportStart(Resource):
             all_rep.append(rep_dict)
         if 'admin' in [role.name for role in user.roles]:
             list_rep = all_rep
+        # rep_all = set(rep.to_dict() for rep in Report.query.all())
         dict_rep = {'sample': list_rep, 'all_rep': all_rep, 'total': len(Report.query.all())}
         return jsonify(dict_rep)
 
@@ -446,7 +447,7 @@ class DownloadOkr(Resource):
         print(res_f)
         vcf_f = os.path.join(os.getcwd(), dir_report_mg, '{}.okr.vcf'.format(mg_id))
 
-        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}{}.okr.tsv'.format(mg_id,okr_auto))
+        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}{}.okr.tsv'.format(mg_id, okr_auto))
         if os.path.exists(okr_f):
             os.remove(okr_f)
 
@@ -708,7 +709,7 @@ class ExportReport(Resource):
         list_m = []
         # okr
         dir_report_mg = os.path.join(dir_report, mg_id)
-        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}{}.okr.tsv'.format(mg_id,okr_auto))
+        okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}{}.okr.tsv'.format(mg_id, okr_auto))
         okr = is_okr(okr_f, '本样本中未发现有临床意义的生物标志物')
         if okr:
             all = fileokr_to_dict(okr_f)
