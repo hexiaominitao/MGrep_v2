@@ -12,6 +12,7 @@ from app.models.user import User
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations
 from app.models.annotate import Annotate, OKR, AnnotateAuto, OkrDrug, ClinicInterpretation
+from app.models.record_config import CancerTypes
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
     get_grade, get_drug, okr_create_n, md_create, get_okr_vcf, get_result_file, get_clincl
@@ -794,6 +795,7 @@ class ExportReport(Resource):
 
             dic_m['s'] = sam.to_dict()  # 样本信息
             dic_m['ap'] = sam.apply_info.to_dict()
+            dic_m['ap']['cancer'] = sam.seq[0].cancer
             # dic_m['sp'] = sam.pathology_info.to_dict()  # 病理信息
             dic_m['p'] = patient.to_dict()  # 病人信息
             print([k.sample_name for k in sam.seq])
