@@ -810,17 +810,29 @@ class ExportReport(Resource):
             print(cell_p)
             dic_m['cell_content'] = cell_p
             dic_m['date'] = set_time_now()
+            list_card = []
 
             for cc in config:
                 if item == cc['item']:
                     rep_item = get_rep_item(cc['item'])
+                    print(cc['基因检测范围'])
+
                     dic_m['c'] = {'item': rep_item, '检测内容': cc['检测内容'],
-                                  '检测方法': cc['检测方法']}  # 报告配置文件
+                                  '检测方法': cc['检测方法'], '检测内容前言': cc['检测内容前言'],
+                                  'contents': cc['附录（目录）'].split('\n'),'基因检测范围': cc['基因检测范围'].split('\n')}  # 报告配置文件
                     list_mutation = []
                     detail_mu = []
-
+                    list_trans = []
                     for row in cc['结果详情']:
                         gene = row['基因']
+                        list_trans.append(row)
+
+                        if rep_item in dict_items.get('card'):
+                            for card in gene_card:
+                                if gene == card['基因']:
+                                    list_card.append(card)
+
+                        dic_m['gene_card'] = list_card  # gene card
                         r_mutation = []
                         m_type = row['检测的变异类型']
                         if list_m:
@@ -899,11 +911,12 @@ class ExportReport(Resource):
                                 list_mutation_sort.append(mu)
                     dic_m['mutation'] = list_mutation_sort  # 突变信息
                     dic_m['detail_mu'] = detail_mu  # 突变详情
+                    dic_m['transcript'] = list_trans
                     # dic_m['list_m'] = list_m
 
             print(dic_m.keys())
 
-            temp_docx = os.path.join(path_docx, '52_t.docx')
+            temp_docx = os.path.join(path_docx, 'pgm.docx')
 
             if not os.path.exists(dir_report_mg):
                 os.mkdir(dir_report_mg)
@@ -912,10 +925,20 @@ class ExportReport(Resource):
             if os.path.exists(file):
                 os.remove(file)
 
+
             # for k, v in dic_m.items():
             #     print(k, '\n', v)
             # print(dic_m['mutation'])
             docx = DocxTemplate(temp_docx)
+            if list_card:
+                myimage = InlineImage(docx, os.path.join(path_docx, 'appendix_3.png'))
+                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
+                dic_m['img'] = myimage
+                dic_m['img2'] = myimage2
+            else:
+                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
+                dic_m['img'] = ''
+                dic_m['img2'] = myimage2
             docx.render(dic_m)
             docx.save(file)
             # os.system('libreoffice --convert-to pdf --outdir {} {}'.
