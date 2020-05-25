@@ -6,7 +6,11 @@ from flask_restful import (reqparse, Resource, fields, request)
 from app.models import db
 from app.models.user import User, Role
 from app.models.record_config import CancerTypes
+from app.models.report import Report
+from app.models.sample_v import ApplyInfo, SampleInfoV
+
 from app.libs.get_data import read_json, splitN
+from app.libs.report import del_db
 
 
 class AdminSample(Resource):
@@ -112,3 +116,41 @@ class AdminConfig(Resource):
         for cancer in cancers:
             list_c.append(cancer.to_dict())
         return jsonify({'cancers': list_c})
+
+
+class AdminReport(Resource):
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('page', type=int, help='页码')
+        self.parser.add_argument('page_per', type=int, help='每页数量')
+        self.parser.add_argument('id', type=int, help='报告ID')
+
+    def get(self):
+        args = self.parser.parse_args()
+        page = args.get('page')
+        page_per = args.get('page_per')
+        reps = Report.query.order_by(Report.id.desc()).paginate(page=page, per_page=page_per, error_out=False)
+        list_rep = []
+        for rep in reps.items:
+            list_rep.append(rep.to_dict())
+        total = Report.query.all()
+        return jsonify({'report': list_rep,'total': len(total)})
+
+    def post(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        args = self.parser.parse_args()
+        rep_id = args.get('id')
+        rep = Report.query.filter(Report.id==rep_id).first()
+        rep.sample_id = None
+        mutations = rep.mutation
+        if mutations:
+            del_db(db,mutations.mutation)
+            db.session.delete(mutations)
+        db.session.delete(rep)
+        db.session.commit()
+        return {'msg': '删除成功！！！'}
