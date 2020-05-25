@@ -10,7 +10,8 @@ from sqlalchemy import and_
 from app.models import db
 from app.models.user import User
 from app.models.run_info import RunInfo, SeqInfo
-from app.models.sample_v import (SampleInfoV, ApplyInfo, TreatInfoV, PathologyInfo, Operation, PatientInfoV, FamilyInfoV)
+from app.models.sample_v import (SampleInfoV, ApplyInfo, TreatInfoV, PathologyInfo, Operation, PatientInfoV,
+                                 FamilyInfoV)
 from app.models.report import Report
 
 from app.libs.get_data import read_json
@@ -80,7 +81,7 @@ class GetRunInfo(Resource):
                 for sam in apply.sample_infos:
                     if seq.sample_name in sam.sample_id:
                         sam.seq.append(seq)
-                        msg = save_reesult(seq,name)
+                        msg = save_reesult(seq, name, sam)
                         msgs.append(msg)
             elif seq.status == '结果已保存':
                 msgs.append('样本{}结果已经保存'.format(seq.sample_name))
@@ -88,7 +89,6 @@ class GetRunInfo(Resource):
                 msgs.append('样本{}未分析完成'.format(seq.sample_name))
 
         return {'msg': ','.join(msgs)}
-
 
     def delete(self):
         args = self.parser.parse_args()
@@ -119,9 +119,10 @@ class GetRunInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             print(sam)
-            SeqInfo.query.filter(SeqInfo.id==seq_id).update(sam)
+            SeqInfo.query.filter(SeqInfo.id == seq_id).update(sam)
         db.session.commit()
         return {'msg': '保存成功'}
+
 
 class GetSeqInfo(Resource):
     def __init__(self):
@@ -146,11 +147,11 @@ class GetSeqInfo(Resource):
             list_seq.append(seq.to_dict())
         run_info['seq'] = list_seq
         run_info['seq_title'] = [
-            {'type': 'selection','width': '50','align': 'center'},
+            {'type': 'selection', 'width': '50', 'align': 'center'},
             {'title': '操作', 'slot': 'action', 'width': '200'},
             {'title': '状态', 'key': 'status', 'width': '150'},
             {'title': '迈景编号', 'key': 'sample_name', 'width': '150'},
-            {'title': '申请单号','key': 'sample_mg', 'width': '150'},
+            {'title': '申请单号', 'key': 'sample_mg', 'width': '150'},
             {'title': '检测内容', 'key': 'item', 'width': '150'},
             {'title': '性别', 'key': 'gender', 'width': '150'},
             {'title': '样本类型', 'key': 'sam_type', 'width': '150'},
@@ -181,7 +182,7 @@ class GetSeqInfo(Resource):
         name = user.username
         for sam in sams:
             seq_id = sam.get('id')
-            seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
+            seq = SeqInfo.query.filter(SeqInfo.id == seq_id).first()
             if seq.status == '分析完成':
                 apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
                 if apply:
@@ -290,7 +291,7 @@ class GetSeqInfo(Resource):
         sams = (json.loads(data)['sams'])
         for sam in sams:
             seq_id = sam.get('id')
-            seq = SeqInfo.query.filter(SeqInfo.id==seq_id).first()
+            seq = SeqInfo.query.filter(SeqInfo.id == seq_id).first()
             seq.status = '重新分析'
         db.session.commit()
         return {'msg': '开始重新分析'}
@@ -299,21 +300,21 @@ class GetSeqInfo(Resource):
 class SeqQc(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('id',help='报告id')
+        self.parser.add_argument('id', help='报告id')
 
     def get(self):
         argv = self.parser.parse_args()
         rep_id = argv.get('id')
-        sam = Report.query.filter(Report.id==rep_id).first().sample_info_v
-        seq = SeqInfo.query.filter(SeqInfo.sample_name==sam.sample_id).first()
+        sam = Report.query.filter(Report.id == rep_id).first().sample_info_v
+        seq = SeqInfo.query.filter(SeqInfo.sample_name == sam.sample_id).first()
         dic_out = (get_qc_raw(seq))
         qc = dic_out.get('qc')
         if qc:
-            qc_title = [{'title': k,'key': k, 'width': '100'} for k in qc[0].keys()]
+            qc_title = [{'title': k, 'key': k, 'width': '100'} for k in qc[0].keys()]
             dic_out['qc_title'] = qc_title
         raw = dic_out.get('raw')
         if raw:
-            dic_out['raw_title'] = [{'title': k,'key': k, 'width': '100'} for k in raw[0].keys()]
+            dic_out['raw_title'] = [{'title': k, 'key': k, 'width': '100'} for k in raw[0].keys()]
         w_list = dic_out.get('w_list')
         if w_list:
             dic_out['w_list_title'] = [{'title': k, 'key': k, 'width': '100'} for k in w_list[0].keys()]

@@ -13,7 +13,7 @@ from app.models.annotate import ClinicInterpretation, OKR
 from app.models.report import Report
 from app.models.mutation import Mutation, Mutations, Chemotherapy
 from app.models.record_config import SalesInfo, HospitalInfo, SampleType, \
-    SeqItems, CancerTypes, Barcode, FlowItem
+    SeqItems, CancerTypes, Barcode, FlowItem, CancerTypes
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem, PathologyInfo, Operation
 
@@ -96,6 +96,17 @@ class RunInfoUpload(Resource):
         flowitems = set()
         for items in FlowItem.query.all():
             flowitems.add(items.name)
+        l_cancer = set()
+        for can in CancerTypes.query.all():
+            l_cancer.add(can.name)
+        dir_app = current_app.config['PRE_REPORT']
+        dir_pgm_remplate = os.path.join(dir_app, 'template_config', 'template_pgm.json')
+        config = read_json(dir_pgm_remplate, 'config')
+        l_item = set()
+        for row in config:
+            l_item.add(row.get('item'))
+
+
         try:
             title = get_excel_title(file)
             print(title)
@@ -103,7 +114,7 @@ class RunInfoUpload(Resource):
                 df_seq = get_seq_info(file)
                 for name, df in df_seq:
                     if name:
-                        print(df)
+                        # print(df)
                         title_df = [v for v in df.columns]
                         if '肿瘤类型(报告用)' not in title_df and '报告模板' not in title_df:
                             erro.append('上机信息未包含“肿瘤类型(报告用)”或“报告模板”')
@@ -124,6 +135,14 @@ class RunInfoUpload(Resource):
                                     db.session.commit()
                             barcode = dict_val.get('Barcode编号').split('/')
                             sam_type = dict_val.get('样本类型').split('/')
+                            cancer = dict_val.get('肿瘤类型(报告用)')
+                            rep_item = dict_val.get('报告模板')
+
+                            if cancer and (cancer not in l_cancer):
+                                erro.append(f'样本{dict_val.get("迈景编号")}癌症类型_{cancer}_不包含在数据库中，请修改后重试！！，所有类型：{"、".join(l_cancer)}。')
+
+                            if rep_item and (rep_item not in l_item):
+                                erro.append(f'样本{dict_val.get("迈景编号")}报告模板_{rep_item}_不包含在数据库中，请修改后重试！！，所有模板：{"、".join(l_item)}。')
 
                             for bar in barcode:
                                 if bar in barcodes:
@@ -135,7 +154,9 @@ class RunInfoUpload(Resource):
                                 erro.append('样本{}样本类型存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
 
                             seq = SeqInfo.query.filter(SeqInfo.sample_name == dict_val.get('迈景编号')).first()
+
                             if seq:
+                                print(f"样本id为{seq.id}")
                                 erro.append('样本{}信息已存在'.format(dict_val.get('迈景编号')))
                                 pass
                             else:
