@@ -292,7 +292,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id == seq_id).first()
-            seq.status = '分析完成'
+            seq.status = '重新分析'
         db.session.commit()
         return {'msg': '开始重新分析'}
 
