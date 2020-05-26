@@ -120,6 +120,7 @@ class RunInfoUpload(Resource):
                             erro.append('上机信息未包含“肿瘤类型(报告用)”或“报告模板”')
                         dict_run = df2dict(df)
                         for dict_val in dict_run.values():
+                            cur_erro = []
                             run = RunInfo.query.filter(RunInfo.name == name).first()
                             if run:
                                 pass
@@ -137,27 +138,29 @@ class RunInfoUpload(Resource):
                             sam_type = dict_val.get('样本类型').split('/')
                             cancer = dict_val.get('肿瘤类型(报告用)')
                             rep_item = dict_val.get('报告模板')
+                            print(f'样本{dict_val.get("迈景编号")}')
 
                             if cancer and (cancer not in l_cancer):
-                                erro.append(f'样本{dict_val.get("迈景编号")}癌症类型_{cancer}_不包含在数据库中，请修改后重试！！，所有类型：{"、".join(l_cancer)}。')
+                                cur_erro.append(f'样本{dict_val.get("迈景编号")}癌症类型_{cancer}_不包含在数据库中，请修改后重试！！，所有类型：{"、".join(l_cancer)}。')
 
                             if rep_item and (rep_item not in l_item):
-                                erro.append(f'样本{dict_val.get("迈景编号")}报告模板_{rep_item}_不包含在数据库中，请修改后重试！！，所有模板：{"、".join(l_item)}。')
+                                cur_erro.append(f'样本{dict_val.get("迈景编号")}报告模板_{rep_item}_不包含在数据库中，请修改后重试！！，所有模板：{"、".join(l_item)}。')
 
                             for bar in barcode:
                                 if bar in barcodes:
                                     continue
-                                erro.append('样本{}Barcode编号存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
+                                cur_erro.append('样本{}Barcode编号存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
                             for i in sam_type:
                                 if i in flowitems:
                                     continue
-                                erro.append('样本{}样本类型存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
+                                cur_erro.append('样本{}样本类型存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
 
-                            seq = SeqInfo.query.filter(SeqInfo.sample_name == dict_val.get('迈景编号')).first()
+                            seq = SeqInfo.query.filter(and_(SeqInfo.sample_name == dict_val.get('迈景编号'),
+                                                            SeqInfo.barcode==dict_val.get('Barcode编号'))).first()
 
                             if seq:
                                 print(f"样本id为{seq.id}")
-                                erro.append('样本{}信息已存在'.format(dict_val.get('迈景编号')))
+                                cur_erro.append('样本_{}_信息已存在'.format(dict_val.get('迈景编号')))
                                 pass
                             else:
                                 seq = SeqInfo(sample_name=dict_val.get('迈景编号'), sample_mg=dict_val.get('申请单号'),
@@ -168,10 +171,11 @@ class RunInfoUpload(Resource):
                                               gender=dict_val.get('性别'))
                                 db.session.add(seq)
                                 run.seq_info.append(seq)
-                            if erro:
+                            if cur_erro:
                                 pass
                             else:
                                 db.session.commit()
+                            erro.extend(cur_erro)
             else:
                 dict_run = excel2dict(file)
                 for dict_val in dict_run.values():
@@ -200,7 +204,7 @@ class RunInfoUpload(Resource):
             msg = '文件有问题,请检查后再上传!!!!!'
         os.remove(file)
         if erro:
-            msg = ','.join(erro)
+            msg = '>>>>'.join(erro)
         return {'msg': msg}, 200
 
 
