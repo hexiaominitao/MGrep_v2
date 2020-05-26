@@ -188,7 +188,7 @@ class GetSeqInfo(Resource):
                 if apply:
                     print(f'申请单信息id:{apply.id}')
                     for sam in apply.sample_infos:
-                        if seq.camcer:
+                        if seq.cancer:
                             if seq.sample_name in sam.sample_id:
                                 sam.seq.append(seq)
                                 print(seq.cell_percent)
