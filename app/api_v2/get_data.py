@@ -186,8 +186,9 @@ class GetSeqInfo(Resource):
             if seq.status == '分析完成':
                 apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
                 if apply:
+                    print(f'申请单信息id:{apply.id}')
                     for sam in apply.sample_infos:
-                        if seq.sample_name in sam.sample_id:
+                        if seq.sample_name in sam.sample_id and seq.cancer:
                             sam.seq.append(seq)
                             print(seq.cell_percent)
                             pathology = PathologyInfo(cell_content=seq.cell_percent)
@@ -195,6 +196,8 @@ class GetSeqInfo(Resource):
                             sam.pathology_info = pathology
                             msg = save_reesult(seq, name, sam)
                             msgs.append(msg)
+                        else:
+                            msgs.append(f'样本{seq.sample_name} 肿瘤类型（报告用未填写）')
                 else:
                     msgs.append('样本{} 的样本信息未录入，请到样本信息登记处录入'.format(seq.sample_name))
             elif seq.status == '结果已保存':
