@@ -53,7 +53,7 @@ class SampleInfoVUpload(Resource):
         file = file_sam.path(filename)
         list_sam = excel_to_dict(file)
         for row in list_sam:
-            apply = ApplyInfo.query.filter(ApplyInfo.req_mg == row.get('申请单号')).first()
+            apply = ApplyInfo.query.filter(and_(ApplyInfo.req_mg == row.get('申请单号'),ApplyInfo.mg_id==row.get('迈景编号'))).first()
             if apply:
                 pass
             else:

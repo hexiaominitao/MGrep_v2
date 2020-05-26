@@ -184,23 +184,24 @@ class GetSeqInfo(Resource):
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id == seq_id).first()
             if seq.status == '分析完成':
-                apply = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).first()
-                if apply:
-                    print(f'申请单信息id:{apply.id}')
-                    for sam in apply.sample_infos:
-                        if seq.cancer:
-                            if seq.sample_name in sam.sample_id:
-                                sam.seq.append(seq)
-                                print(seq.cell_percent)
-                                pathology = PathologyInfo(cell_content=seq.cell_percent)
-                                db.session.add(pathology)
-                                sam.pathology_info = pathology
-                                msg = save_reesult(seq, name, sam)
-                                msgs.append(msg)
+                applys = ApplyInfo.query.filter(ApplyInfo.req_mg == seq.sample_mg).all()
+                if applys:
+                    for apply in applys:
+                        print(f'申请单信息id:{apply.id}')
+                        for sam in apply.sample_infos:
+                            if seq.cancer:
+                                if seq.sample_name in sam.sample_id:
+                                    sam.seq.append(seq)
+                                    print(seq.cell_percent)
+                                    pathology = PathologyInfo(cell_content=seq.cell_percent)
+                                    db.session.add(pathology)
+                                    sam.pathology_info = pathology
+                                    msg = save_reesult(seq, name, sam)
+                                    msgs.append(msg)
+                                else:
+                                    msgs.append(f'样本{seq.sample_name} 迈景编号与样本信息不符')
                             else:
-                                msgs.append(f'样本{seq.sample_name} 迈景编号与样本信息不符')
-                        else:
-                            msgs.append(f'样本{seq.sample_name} 肿瘤类型（报告用未填写）')
+                                msgs.append(f'样本{seq.sample_name} 肿瘤类型（报告用未填写）')
 
                 else:
                     msgs.append('样本{} 的样本信息未录入，请到样本信息登记处录入'.format(seq.sample_name))
