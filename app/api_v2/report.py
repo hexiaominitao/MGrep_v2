@@ -2,6 +2,7 @@ import os, json
 from docx2pdf import convert
 
 from docxtpl import DocxTemplate, InlineImage
+from docx.shared import Mm
 
 from flask import (jsonify, current_app, send_from_directory, Response, make_response, send_file)
 from flask_restful import (reqparse, Resource, request)
@@ -821,7 +822,7 @@ class ExportReport(Resource):
 
                     dic_m['c'] = {'item': rep_item, '检测内容': cc['检测内容'],
                                   '检测方法': cc['检测方法'], '检测内容前言': cc['检测内容前言'],
-                                  'contents': cc['附录（目录）'].split('\n'),'基因检测范围': cc['基因检测范围'].split('\n')}  # 报告配置文件
+                                  'contents': cc['附录（目录）'].split('\n'), '基因检测范围': cc['基因检测范围'].split('\n')}  # 报告配置文件
                     list_mutation = []
                     detail_mu = []
                     list_trans = []
@@ -922,23 +923,22 @@ class ExportReport(Resource):
 
             if not os.path.exists(dir_report_mg):
                 os.mkdir(dir_report_mg)
-            file = os.path.join(dir_report_mg, '{}_{}.docx'.format(mg_id, item))
+            file = os.path.join(dir_report_mg, '{}_{}_迈景基因检测报告_{}.docx'.format(mg_id, item, req_mg))
             # file_pdf = os.path.join(dir_report_mg, '{}_{}.pdf'.format(mg_id, item))
             if os.path.exists(file):
                 os.remove(file)
-
 
             # for k, v in dic_m.items():
             #     print(k, '\n', v)
             # print(dic_m['mutation'])
             docx = DocxTemplate(temp_docx)
             if list_card:
-                myimage1 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
-                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
+                myimage1 = InlineImage(docx, os.path.join(path_docx, 'appendix_3.png'), width=Mm(40), height=Mm(8))
+                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'), width=Mm(50), height=Mm(8))
                 dic_m['img'] = myimage1
                 dic_m['img2'] = myimage2
             else:
-                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
+                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'), width=Mm(50), height=Mm(8))
                 dic_m['img'] = ''
                 dic_m['img2'] = myimage2
             docx.render(dic_m)
