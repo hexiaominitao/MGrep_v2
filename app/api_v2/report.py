@@ -933,12 +933,12 @@ class ExportReport(Resource):
             # print(dic_m['mutation'])
             docx = DocxTemplate(temp_docx)
             if list_card:
-                myimage1 = InlineImage(docx, os.path.join(path_docx, 'appendix_3.png'), width=Mm(40), height=Mm(8))
-                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'), width=Mm(50), height=Mm(8))
+                myimage1 = InlineImage(docx, os.path.join(path_docx, 'appendix_3.png'))
+                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
                 dic_m['img'] = myimage1
                 dic_m['img2'] = myimage2
             else:
-                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'), width=Mm(50), height=Mm(8))
+                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
                 dic_m['img'] = ''
                 dic_m['img2'] = myimage2
             docx.render(dic_m)
