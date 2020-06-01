@@ -151,12 +151,15 @@ def archive_file(dir,files):
 
 def time_set(str):
     out = ''
-    if len(str) == 8:
-        out = '{}.{}.{}'.format(str[:4],str[4:6],str[6:])
-        try:
-            datetime.datetime.strptime(out,"%Y.%m.%d")
-        except:
+    if str:
+        if len(str) == 8:
+            out = '{}.{}.{}'.format(str[:4], str[4:6], str[6:])
+            try:
+                datetime.datetime.strptime(out, "%Y.%m.%d")
+            except:
+                out = '日期错误'
+        else:
             out = '日期错误'
     else:
-        out = '日期错误'
+        out = ''
     return out

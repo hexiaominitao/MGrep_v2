@@ -53,23 +53,62 @@ class SampleInfoVUpload(Resource):
         file = file_sam.path(filename)
         list_sam = excel_to_dict(file)
         for row in list_sam:
-            apply = ApplyInfo.query.filter(and_(ApplyInfo.req_mg == row.get('申请单号'),ApplyInfo.mg_id==row.get('迈景编号'))).first()
+            apply = ApplyInfo.query.filter(
+                and_(ApplyInfo.req_mg == row.get('申请单号'), ApplyInfo.mg_id == row.get('迈景编号'))).first()
             if apply:
-                pass
+                dic_row = {'name': row.get('患者姓名'), 'age': row.get('病人年龄'), 'gender': row.get('病人性别'),
+                           'nation': row.get('民族'), 'origo': row.get('籍贯'), 'contact': row.get('病人联系方式'),
+                           'ID_number': row.get('病人身份证号码'), 'address': row.get('病人地址'),
+                           'have_family': row.get('有无家族遗传疾病'), 'targeted_info': row.get('是否靶向药治疗'),
+                           'smoke': row.get('有无吸烟史'), 'chem_info': row.get('是否接受化疗'), 'radio_info': row.get('是否放疗'),
+                           'mg_id': row.get('迈景编号'), 'req_mg': row.get('申请单号'), 'sales': row.get('销售代表'),
+                           'pi_name': row.get('PI姓名'), 'outpatient_id': row.get('门诊/住院号'), 'doctor': row.get('医生姓名'),
+                           'hosptial': row.get('医院名称'), 'room': row.get('科室'), 'cancer_d': row.get('病理诊断'),
+                           'seq_type': row.get('项目类型'), 'pathological': row.get('病理诊断'), 'note': row.get('备注'),
+                           'to': row.get('报告收件人'), 'phone_n': row.get('联系电话'), 'addr': row.get('联系地址'),
+                           'sample_id': row.get('迈景编号'), 'pnumber': row.get('病理号'), 'Tytime': row.get('取样时间'),
+                           'receive_t': row.get('收样日期'), 'sample_type': row.get('样本类型（报告用）'), 'mth': row.get('采样方式'),
+                           'mth_position': row.get('样本来源'), 'sample_count': row.get('数量')}
+                pat = apply.patient_info_v
+                PatientInfoV.query.filter(PatientInfoV.id == pat.id).update(
+                    {'name': row.get('患者姓名'), 'age': row.get('病人年龄'), 'gender': row.get('病人性别'),
+                     'nation': row.get('民族'), 'origo': row.get('籍贯'), 'contact': row.get('病人联系方式'),
+                     'ID_number': row.get('病人身份证号码'), 'address': row.get('病人地址'),
+                     'have_family': row.get('有无家族遗传疾病'), 'targeted_info': row.get('是否靶向药治疗'),
+                     'smoke': row.get('有无吸烟史'), 'chem_info': row.get('是否接受化疗'), 'radio_info': row.get('是否放疗')})
+                ApplyInfo.query.filter(ApplyInfo.id == apply.id).update(
+                    {'mg_id': row.get('迈景编号'), 'req_mg': row.get('申请单号'), 'sales': row.get('销售代表'),
+                     'pi_name': row.get('PI姓名'), 'outpatient_id': row.get('门诊/住院号'), 'doctor': row.get('医生姓名'),
+                     'hosptial': row.get('医院名称'), 'room': row.get('科室'), 'cancer_d': row.get('病理诊断'),
+                     'seq_type': row.get('项目类型'), 'pathological': row.get('病理诊断'), 'note': row.get('备注')})
+                sam = apply.sample_infos[0]
+                SampleInfoV.query.filter(SampleInfoV.id == sam.id).update(
+                    {'sample_id': row.get('迈景编号'), 'pnumber': row.get('病理号'), 'Tytime': row.get('取样时间'),
+                     'receive_t': row.get('收样日期'), 'sample_type': row.get('样本类型（报告用）'), 'mth': row.get('采样方式'),
+                     'mth_position': row.get('样本来源'), 'sample_count': row.get('数量')})
+                db.session.commit()
+
             else:
                 pat = PatientInfoV(name=row.get('患者姓名'), age=row.get('病人年龄'), gender=row.get('病人性别'),
-                                   nation=row.get('民族')
-                                   , origo=row.get('籍贯'), contact=row.get('病人联系方式'), ID_number=row.get('病人身份证号码'),
-                                   address=row.get('病人地址'))
+                                   nation=row.get('民族'), origo=row.get('籍贯'), contact=row.get('病人联系方式'),
+                                   ID_number=row.get('病人身份证号码'), address=row.get('病人地址'),
+                                   have_family=row.get('有无家族遗传疾病'),
+                                   targeted_info=row.get('是否靶向药治疗'), smoke=row.get('有无吸烟史'),
+                                   chem_info=row.get('是否接受化疗'), radio_info=row.get('是否放疗'))
                 db.session.add(pat)
                 apply = ApplyInfo(mg_id=row.get('迈景编号'), req_mg=row.get('申请单号'), sales=row.get('销售代表'),
+                                  pi_name=row.get('PI姓名'),
                                   outpatient_id=row.get('门诊/住院号'), doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
                                   room=row.get('科室'), cancer_d=row.get('病理诊断'), seq_type=row.get('项目类型'),
                                   pathological=row.get('病理诊断'), note=row.get('备注'))
                 db.session.add(apply)
                 pat.applys.append(apply)
-                sam = SampleInfoV(sample_id=row.get('迈景编号'), pnumber=row.get('病理号')
-                                  , sample_type=row.get('样本类型（报告用）'), mth=row.get('采样方式')
+                # sned_mth = SendMethodV(to=row.get('报告收件人'), phone_n=row.get('联系电话'), addr=row.get('联系地址'))
+                # db.session.add(sned_mth)
+                # apply.send_methods = sned_mth
+                sam = SampleInfoV(sample_id=row.get('迈景编号'), pnumber=row.get('病理号'), Tytime=row.get('取样时间'),
+                                  receive_t=row.get('收样日期')
+                                  , sample_type=row.get('样本类型（报告用）'), mth=row.get('采样方式'), mth_position=row.get('样本来源')
                                   , sample_count=row.get('数量'))
                 db.session.add(sam)
                 apply.sample_infos.append(sam)
@@ -106,7 +145,6 @@ class RunInfoUpload(Resource):
         for row in config:
             l_item.add(row.get('item'))
 
-
         try:
             title = get_excel_title(file)
             print(title)
@@ -141,10 +179,12 @@ class RunInfoUpload(Resource):
                             print(f'样本{dict_val.get("迈景编号")}')
 
                             if cancer and (cancer not in l_cancer):
-                                cur_erro.append(f'样本{dict_val.get("迈景编号")}癌症类型_{cancer}_不包含在数据库中，请修改后重试！！，所有类型：{"、".join(l_cancer)}。')
+                                cur_erro.append(
+                                    f'样本{dict_val.get("迈景编号")}癌症类型_{cancer}_不包含在数据库中，请修改后重试！！，所有类型：{"、".join(l_cancer)}。')
 
                             if rep_item and (rep_item not in l_item):
-                                cur_erro.append(f'样本{dict_val.get("迈景编号")}报告模板_{rep_item}_不包含在数据库中，请修改后重试！！，所有模板：{"、".join(l_item)}。')
+                                cur_erro.append(
+                                    f'样本{dict_val.get("迈景编号")}报告模板_{rep_item}_不包含在数据库中，请修改后重试！！，所有模板：{"、".join(l_item)}。')
 
                             for bar in barcode:
                                 if bar in barcodes:
@@ -156,7 +196,7 @@ class RunInfoUpload(Resource):
                                 cur_erro.append('样本{}样本类型存在问题，请检查后重试！！'.format(dict_val.get('迈景编号')))
 
                             seq = SeqInfo.query.filter(and_(SeqInfo.sample_name == dict_val.get('迈景编号'),
-                                                            SeqInfo.barcode==dict_val.get('Barcode编号'))).first()
+                                                            SeqInfo.barcode == dict_val.get('Barcode编号'))).first()
 
                             if seq:
                                 print(f"样本id为{seq.id}")
@@ -304,7 +344,7 @@ class IrUpload(Resource):
         dir_report_mg = os.path.join(dir_report, mg_id)
         if not os.path.exists(dir_report_mg):
             os.mkdir(dir_report_mg)
-        shutil.copy2(os.path.join(os.getcwd(),file),dir_report_mg)
+        shutil.copy2(os.path.join(os.getcwd(), file), dir_report_mg)
         print(dir_report_mg)
         os.remove(file)
         return {'msg': '保存完成'}
