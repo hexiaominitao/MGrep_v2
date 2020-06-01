@@ -153,8 +153,8 @@ class SampleInfoV(db.Model):
     sample_type = db.Column(db.String(50), nullable=True)  # 样本类型
     mth = db.Column(db.String(100))  # 采样方式
     mth_position = db.Column(db.String(100))  # 采样部位
-    # Tytime = db.Column(db.String(100))  # 采样时间
-    # receive_t = db.Column(db.String(100)) # 收样时间
+    Tytime = db.Column(db.String(100))  # 采样时间
+    receive_t = db.Column(db.String(100)) # 收样时间
     sample_count = db.Column(db.String(50), nullable=True)  # 样本数量
     note = db.Column(db.String(500), nullable=True)  # 备注
 
