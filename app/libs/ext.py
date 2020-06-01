@@ -148,3 +148,15 @@ def archive_file(dir,files):
                 zf.writestr(file,fp.read())
     memory_zip.seek(0)
     return memory_zip
+
+def time_set(str):
+    out = ''
+    if len(str) == 8:
+        out = '{}.{}.{}'.format(str[:4],str[4:6],str[6:])
+        try:
+            datetime.datetime.strptime(out,"%Y.%m.%d")
+        except:
+            out = '日期错误'
+    else:
+        out = '日期错误'
+    return out

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from . import db
-from app.libs.ext import get_utc_time
+from app.libs.ext import get_utc_time, time_set
 
 
 class PatientInfoV(db.Model):
@@ -28,7 +28,7 @@ class PatientInfoV(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id, 'name': self.name,
-            'age': self.age, 'gender': self.gender,
+            'age': self.age if '个月' in self.age else f'{self.age}个月', 'gender': self.gender,
             'nation': self.nation, 'origo': self.origo, 'contact': self.contact,
             'ID_number': self.ID_number, 'address': self.address, 'smoke': self.smoke,
             'targeted_info': self.targeted_info, 'have_family': self.have_family,
@@ -153,7 +153,8 @@ class SampleInfoV(db.Model):
     sample_type = db.Column(db.String(50), nullable=True)  # 样本类型
     mth = db.Column(db.String(100))  # 采样方式
     mth_position = db.Column(db.String(100))  # 采样部位
-    Tytime = db.Column(db.Date(), nullable=True)  # 采样时间
+    # Tytime = db.Column(db.String(100))  # 采样时间
+    # receive_t = db.Column(db.String(100)) # 收样时间
     sample_count = db.Column(db.String(50), nullable=True)  # 样本数量
     note = db.Column(db.String(500), nullable=True)  # 备注
 
@@ -169,8 +170,8 @@ class SampleInfoV(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id, 'code': self.sample_id[-2:], 'sample_type': self.sample_type,
-            'mth': self.mth, 'mth_position': self.mth_position, 'Tytime': get_utc_time(self.Tytime),
-            'pnumber': self.pnumber,
+            'mth': self.mth, 'mth_position': self.mth_position, 'Tytime': time_set(self.Tytime),
+            'pnumber': self.pnumber,'receive_t': time_set(self.receive_t),
             'counts': self.sample_count,
             'note': self.note
         }
