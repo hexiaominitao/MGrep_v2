@@ -169,14 +169,14 @@ class RunInfoUpload(Resource):
 
                                 db.session.add(run)
                                 if erro:
-                                    pass
+                                    break
                                 else:
                                     db.session.commit()
                             barcode = dict_val.get('Barcode编号').split('/')
                             sam_type = dict_val.get('样本类型').split('/')
                             cancer = dict_val.get('肿瘤类型(报告用)')
                             rep_item = dict_val.get('报告模板')
-                            print(f'样本{dict_val.get("迈景编号")}')
+                            # print(f'样本{dict_val.get("迈景编号")}')
 
                             if cancer and (cancer not in l_cancer):
                                 cur_erro.append(
@@ -201,7 +201,6 @@ class RunInfoUpload(Resource):
                             if seq:
                                 print(f"样本id为{seq.id}")
                                 cur_erro.append('样本_{}_信息已存在'.format(dict_val.get('迈景编号')))
-                                pass
                             else:
                                 seq = SeqInfo(sample_name=dict_val.get('迈景编号'), sample_mg=dict_val.get('申请单号'),
                                               item=dict_val.get('检测内容'), barcode=dict_val.get('Barcode编号'),
@@ -209,13 +208,18 @@ class RunInfoUpload(Resource):
                                               report_item=dict_val.get('报告模板'), sam_type=dict_val.get('样本类型'),
                                               cell_percent=dict_val.get('肿瘤细胞占比'), status='准备分析',
                                               gender=dict_val.get('性别'))
-                                db.session.add(seq)
-                                run.seq_info.append(seq)
+                                if cur_erro:
+                                    pass
+                                else:
+                                    db.session.add(seq)
+                                    run.seq_info.append(seq)
                             if cur_erro:
-                                pass
+                                erro.extend(cur_erro)
+                                continue
                             else:
+                                print(f'样本{dict_val.get("迈景编号")}保存成功')
                                 db.session.commit()
-                            erro.extend(cur_erro)
+
             else:
                 dict_run = excel2dict(file)
                 for dict_val in dict_run.values():
@@ -227,7 +231,7 @@ class RunInfoUpload(Resource):
                                       start_T=time_set(dict_val.get('上机时间')),
                                       end_T=time_set(dict_val.get('下机时间')))
                         db.session.add(run)
-                        db.session.commit()
+                        # db.session.commit()
                     seq = SeqInfo.query.filter(SeqInfo.sample_name == dict_val.get('样本编号')).first()
                     if seq:
                         pass
@@ -237,10 +241,11 @@ class RunInfoUpload(Resource):
                                       note=dict_val.get('备注'))
                         db.session.add(seq)
                         run.seq_info.append(seq)
-                    db.session.commit()
+                    # db.session.commit()
 
             msg = '上机信息上传成功!'
         except IOError:
+            os.remove(file)
             msg = '文件有问题,请检查后再上传!!!!!'
         os.remove(file)
         if erro:

@@ -28,7 +28,7 @@ class PatientInfoV(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id, 'name': self.name,
-            'age': self.age if '个月' in self.age else f'{self.age}个月', 'gender': self.gender,
+            'age': self.age if '个月' in self.age else f'{self.age}岁', 'gender': self.gender,
             'nation': self.nation, 'origo': self.origo, 'contact': self.contact,
             'ID_number': self.ID_number, 'address': self.address, 'smoke': self.smoke,
             'targeted_info': self.targeted_info, 'have_family': self.have_family,
