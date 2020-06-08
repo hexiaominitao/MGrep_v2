@@ -667,6 +667,7 @@ class ExportReport(Resource):
         self.parser.add_argument('id', type=int, help='报告id')
         self.parser.add_argument('item', type=str, help='报告模板')
         self.parser.add_argument('note', type=str, help='下载okr')
+        self.parser.add_argument('hospital', type=str, help='医院')
 
     def post(self):
         token = request.headers.get('token')  # 权限
@@ -697,6 +698,7 @@ class ExportReport(Resource):
         rep_id = args.get('id')
         item = args.get('item')
         note = args.get('note')
+        hospital = args.get('hospital')
 
         if note == '1':
             okr_auto = 'auto'
@@ -919,11 +921,22 @@ class ExportReport(Resource):
 
             print(dic_m.keys())
 
-            temp_docx = os.path.join(path_docx, 'pgm.docx')
+            if hospital == 'mg':
+                if list_card:
+                    temp_docx = os.path.join(path_docx, 'pgm.docx')
+                else:
+                    temp_docx = os.path.join(path_docx, 'pgm_52.docx')
+            if hospital == 'nk':
+                if list_card:
+                    temp_docx = os.path.join(path_docx, 'nk.docx')
+                else:
+                    temp_docx = os.path.join(path_docx, 'nk_52.docx')
+            if hospital == 'zsy':
+                temp_docx = os.path.join(path_docx, 'zsy.docx')
 
             if not os.path.exists(dir_report_mg):
                 os.mkdir(dir_report_mg)
-            file = os.path.join(dir_report_mg, '{}_{}_迈景基因检测报告_{}.docx'.format(mg_id, item, req_mg))
+            file = os.path.join(dir_report_mg, '{}_{}_{}_迈景基因检测报告_{}.docx'.format(mg_id, item, hospital, req_mg))
             # file_pdf = os.path.join(dir_report_mg, '{}_{}.pdf'.format(mg_id, item))
             if os.path.exists(file):
                 os.remove(file)
@@ -932,15 +945,10 @@ class ExportReport(Resource):
             #     print(k, '\n', v)
             # print(dic_m['mutation'])
             docx = DocxTemplate(temp_docx)
-            if list_card:
-                myimage1 = InlineImage(docx, os.path.join(path_docx, 'appendix_3.png'))
-                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
-                dic_m['img'] = myimage1
-                dic_m['img2'] = myimage2
-            else:
-                myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
-                dic_m['img'] = ''
-                dic_m['img2'] = myimage2
+            # if list_card:
+            #     myimage1 = InlineImage(docx, os.path.join(path_docx, 'appendix_3.png'))
+            #     myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
+            #     dic_m['img'] = myimage1
             docx.render(dic_m)
             docx.save(file)
             # os.system('libreoffice --convert-to pdf --outdir {} {}'.
