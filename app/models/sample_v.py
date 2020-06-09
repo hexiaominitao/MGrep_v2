@@ -93,7 +93,7 @@ class ApplyInfo(db.Model):
     hosptial = db.Column(db.String(50), nullable=True)  # 送检单位
     room = db.Column(db.String(50), nullable=True)  # 送检科室
     cancer = db.Column(db.String(100))  # 结果解释用癌症类型
-    cancer_d = db.Column(db.String(100))  # 肿瘤类型
+    cancer_d = db.Column(db.String(100))  # 临床诊断
     original = db.Column(db.String(500))  # 原发部位
     metastasis = db.Column(db.String(500))  # 转移部位
     seq_type = db.Column(db.String(50), nullable=True)  # 项目类型

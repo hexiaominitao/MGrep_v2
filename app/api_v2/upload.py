@@ -63,7 +63,7 @@ class SampleInfoVUpload(Resource):
                            'smoke': row.get('有无吸烟史'), 'chem_info': row.get('是否接受化疗'), 'radio_info': row.get('是否放疗'),
                            'mg_id': row.get('迈景编号'), 'req_mg': row.get('申请单号'), 'sales': row.get('销售代表'),
                            'pi_name': row.get('PI姓名'), 'outpatient_id': row.get('门诊/住院号'), 'doctor': row.get('医生姓名'),
-                           'hosptial': row.get('医院名称'), 'room': row.get('科室'), 'cancer_d': row.get('病理诊断'),
+                           'hosptial': row.get('医院名称'), 'room': row.get('科室'), 'cancer_d': row.get('临床诊断'),
                            'seq_type': row.get('项目类型'), 'pathological': row.get('病理诊断'), 'note': row.get('备注'),
                            'to': row.get('报告收件人'), 'phone_n': row.get('联系电话'), 'addr': row.get('联系地址'),
                            'sample_id': row.get('迈景编号'), 'pnumber': row.get('病理号'), 'Tytime': row.get('取样时间'),
@@ -79,7 +79,7 @@ class SampleInfoVUpload(Resource):
                 ApplyInfo.query.filter(ApplyInfo.id == apply.id).update(
                     {'mg_id': row.get('迈景编号'), 'req_mg': row.get('申请单号'), 'sales': row.get('销售代表'),
                      'pi_name': row.get('PI姓名'), 'outpatient_id': row.get('门诊/住院号'), 'doctor': row.get('医生姓名'),
-                     'hosptial': row.get('医院名称'), 'room': row.get('科室'), 'cancer_d': row.get('病理诊断'),
+                     'hosptial': row.get('医院名称'), 'room': row.get('科室'), 'cancer_d': row.get('临床诊断'),
                      'seq_type': row.get('项目类型'), 'pathological': row.get('病理诊断'), 'note': row.get('备注')})
                 sam = apply.sample_infos[0]
                 SampleInfoV.query.filter(SampleInfoV.id == sam.id).update(
@@ -99,7 +99,7 @@ class SampleInfoVUpload(Resource):
                 apply = ApplyInfo(mg_id=row.get('迈景编号'), req_mg=row.get('申请单号'), sales=row.get('销售代表'),
                                   pi_name=row.get('PI姓名'),
                                   outpatient_id=row.get('门诊/住院号'), doctor=row.get('医生姓名'), hosptial=row.get('医院名称'),
-                                  room=row.get('科室'), cancer_d=row.get('病理诊断'), seq_type=row.get('项目类型'),
+                                  room=row.get('科室'), cancer_d=row.get('临床诊断'), seq_type=row.get('项目类型'),
                                   pathological=row.get('病理诊断'), note=row.get('备注'))
                 db.session.add(apply)
                 pat.applys.append(apply)
