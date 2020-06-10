@@ -923,6 +923,7 @@ class ExportReport(Resource):
                                         mu['type_z'] = '基因扩增'
                                     elif mu['mu_type'] == '缺失':
                                         mu['type_z'] = '缺失突变'
+                                        mu['mu_name_z'] = f"{mu['transcript']}({mu['gene']}):{mu['cHGVS']} ({mu['pHGVS_1']})"
 
                                     else:
                                         mu[
