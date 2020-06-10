@@ -116,10 +116,12 @@ def md_create(df, dic_in, disease):
     elif mutation == 'fusion':
         dic_in['gene'] = dic_in['gene'].split('-')[-1]
     gene = dic_in['gene']
+    print(mutation)
     df_mutation = df[df['disease'].str.contains(disease) &
                      df['gene_name'].str.contains(gene) & (df['protein_alteration'] == mutation)]
 
     dic_out = df2dict(df_mutation)
+    print(dic_out)
 
     return dic_out
 
@@ -312,7 +314,7 @@ def get_drug(list_dic):
     list_nccn = []
     list_clinical = []
     for dic_out in list_dic.values():
-        for level in ['NCCN', 'Clinical + III', 'Clinical + II/III']:
+        for level in ['NMPA','NCCN', 'Clinical + III', 'Clinical + II/III']:
             if level in dic_out['evidence_level']:
                 for row in dic_out['drug'].split(','):
                     list_nccn.append(
@@ -509,6 +511,7 @@ def get_raw_file(seq):
                     if file == '{}.bam.bai'.format(seq.sample_name):
                         dict_result['bai'] = (os.path.realpath(os.path.join(root, file)))
     return dict_result
+
 
 def get_result_file(seq, key):
     run = seq.run_info

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from . import db
-from app.libs.ext import get_utc_time, time_set
+from app.libs.ext import get_utc_time, time_set, get_treat, get_family_info
 
 
 class PatientInfoV(db.Model):
@@ -32,7 +32,9 @@ class PatientInfoV(db.Model):
             'nation': self.nation, 'origo': self.origo, 'contact': self.contact,
             'ID_number': self.ID_number, 'address': self.address, 'smoke': self.smoke,
             'targeted_info': self.targeted_info, 'have_family': self.have_family,
-            'chem_info': self.chem_info, 'radio_info': self.radio_info
+            'chem_info': self.chem_info, 'radio_info': self.radio_info,
+            'family_info': get_family_info(self.have_family),
+            'treat_info': get_treat({'靶向治疗': self.targeted_info, '化疗': self.chem_info, '放疗': self.radio_info}),
         }
         for k, v in my_dict.items():
             if not v:
@@ -72,7 +74,7 @@ class TreatInfoV(db.Model):
     def to_dict(self):
         my_dict = {
             'id': self.id, 'name': self.name,
-            'treat_date': [get_utc_time(self.star_time),get_utc_time(self.end_time)],
+            'treat_date': [get_utc_time(self.star_time), get_utc_time(self.end_time)],
             'effect': self.effect
         }
         for k, v in my_dict.items():
@@ -93,13 +95,15 @@ class ApplyInfo(db.Model):
     hosptial = db.Column(db.String(50), nullable=True)  # 送检单位
     room = db.Column(db.String(50), nullable=True)  # 送检科室
     cancer = db.Column(db.String(100))  # 结果解释用癌症类型
-    cancer_d = db.Column(db.String(100))  # 临床诊断
+    cancer_d = db.Column(db.String(100))  # 肿瘤类型
     original = db.Column(db.String(500))  # 原发部位
     metastasis = db.Column(db.String(500))  # 转移部位
     seq_type = db.Column(db.String(50), nullable=True)  # 项目类型
     pathological = db.Column(db.String(500), nullable=True)  # 病理诊断
     pathological_date = db.Column(db.Date(), nullable=True)  # 病理诊断日期
-    submit_time = db.Column(db.DateTime, default=datetime.now()) # 保存时间
+    pathological_code = db.Column(db.String(50))  # 病理号
+    hosptial_code = db.Column(db.String(50))  # 门诊/住院号
+    submit_time = db.Column(db.DateTime, default=datetime.now())  # 保存时间
 
     note = db.Column(db.String(1000))  # 备注
 
@@ -111,9 +115,12 @@ class ApplyInfo(db.Model):
 
     def to_dict(self):
         my_dict = {
-            'id': self.id, 'req_mg': self.req_mg,'seq_type': self.seq_type, 'mg_id': self.mg_id, 'pi_name': self.pi_name, 'sales': self.sales,
+            'id': self.id, 'req_mg': self.req_mg, 'seq_type': self.seq_type, 'mg_id': self.mg_id,
+            'pi_name': self.pi_name, 'sales': self.sales,
             'outpatient_id': self.outpatient_id, 'doctor': self.doctor, 'hosptial': self.hosptial,
             'room': self.room, 'cancer': self.cancer, 'cancer_d': self.cancer_d,
+            'pathological_code': self.pathological_code,
+            'hosptial_code': self.hosptial_code,
             'original': self.original, 'metastasis': self.metastasis, 'pathological': self.pathological,
             'pathological_date': self.pathological_date, 'note': self.note
         }
@@ -154,7 +161,8 @@ class SampleInfoV(db.Model):
     mth = db.Column(db.String(100))  # 采样方式
     mth_position = db.Column(db.String(100))  # 采样部位
     Tytime = db.Column(db.String(100))  # 采样时间
-    receive_t = db.Column(db.String(100)) # 收样时间
+    receive_t = db.Column(db.String(100))  # 收样时间
+    send_t = db.Column(db.String(100))  # 送样日期
     sample_count = db.Column(db.String(50), nullable=True)  # 样本数量
     note = db.Column(db.String(500), nullable=True)  # 备注
 
@@ -171,8 +179,8 @@ class SampleInfoV(db.Model):
         my_dict = {
             'id': self.id, 'code': self.sample_id[-2:], 'sample_type': self.sample_type,
             'mth': self.mth, 'mth_position': self.mth_position, 'Tytime': time_set(self.Tytime),
-            'pnumber': self.pnumber,'receive_t': time_set(self.receive_t),
-            'counts': self.sample_count,
+            'pnumber': self.pnumber, 'receive_t': time_set(self.receive_t),
+            'counts': self.sample_count, 'send_t': time_set(self.send_t),
             'note': self.note
         }
         for k, v in my_dict.items():
@@ -222,9 +230,6 @@ class PathologyInfo(db.Model):
             'spical_note': self.spical_note
         }
         return dict
-
-
-
 
 
 class Operation(db.Model):

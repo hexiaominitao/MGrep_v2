@@ -17,7 +17,7 @@ from app.models.record_config import CancerTypes
 
 from app.libs.report import first_check, get_rep_item, set_gene_list, del_db, dict2df, okr_create, grade_mutation, \
     get_grade, get_drug, okr_create_n, md_create, get_okr_vcf, get_result_file, get_clincl
-from app.libs.ext import set_time_now
+from app.libs.ext import set_time_now, dic_mu_type, dic_zsy_introduce
 from app.libs.okr_ext import fileokr_to_dict, create_reports_using_report_file, is_okr
 from app.libs.get_data import read_json, splitN
 
@@ -239,6 +239,7 @@ class EditMutation(Resource):
         for okr in okrs:
             list_md.append(okr.to_dict())
         df_md = dict2df(list_md)
+        print(df_md[df_md['id'] == 193])
 
         drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
 
@@ -314,6 +315,7 @@ class AnnotateMutation(Resource):
         for okr in okrs:
             list_okr.append(okr.to_dict())
         df = dict2df(list_okr)
+        print(df)
         cancers = set(df['disease'].values)
         dic_m['cancers'] = [{'value': v, 'label': v} for v in cancers]
         drug_effect = {'indicated', 'contraindicated', 'resistance', 'not_recommended'}
@@ -415,6 +417,7 @@ class DownloadOkr(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('id', type=int, help='报告id')
+        self.parser.add_argument('item', type=str, help='检测项目')
 
     def post(self):
         token = request.headers.get('token')  # 权限
@@ -424,8 +427,15 @@ class DownloadOkr(Resource):
 
         args = self.parser.parse_args()
         rep_id = args.get('id')
+        item = args.get('item')
+        print(item)
+        dir_pre = current_app.config['PRE_REPORT']
         dir_res = current_app.config['RES_REPORT']
         dir_report = os.path.join(dir_res, 'report')
+
+        dir_pgm_remplate = os.path.join(dir_pre, 'template_config', 'template_pgm.json')
+        config = read_json(dir_pgm_remplate, 'config')
+
         report = Report.query.filter(Report.id == rep_id).first()
         seq = report.sample_info_v.seq[0]
         sam = report.sample_info_v
@@ -442,6 +452,17 @@ class DownloadOkr(Resource):
                 else:
                     list_mu.append(mu.to_dict())
         print(list_mu)
+        for cc in config:
+            list_m = []
+            if item == cc['item']:
+                for row in cc['结果详情']:
+                    gene = row['基因']
+                    m_type = row['检测的变异类型']
+                    if list_mu:
+                        for mu in list_mu:
+                            if (mu['gene'] == gene and mu['mu_type'] in m_type):
+                                list_m.append(mu)
+        print(list_m)
         okr_auto = ''
         if report.auto_okr == 'No':
             okr_auto = 'auto'
@@ -453,7 +474,7 @@ class DownloadOkr(Resource):
         if os.path.exists(okr_f):
             os.remove(okr_f)
 
-        get_okr_vcf(res_f, list_mu, vcf_f)
+        get_okr_vcf(res_f, list_m, vcf_f)
         # print(vcf_f,cancer,okr_f)
         create_reports_using_report_file(vcf_f, cancer, okr_f)
 
@@ -820,7 +841,7 @@ class ExportReport(Resource):
             for cc in config:
                 if item == cc['item']:
                     rep_item = get_rep_item(cc['item'])
-                    print(cc['基因检测范围'])
+                    # print(cc['基因检测范围'])
 
                     dic_m['c'] = {'item': rep_item, '检测内容': cc['检测内容'],
                                   '检测方法': cc['检测方法'], '检测内容前言': cc['检测内容前言'],
@@ -875,6 +896,7 @@ class ExportReport(Resource):
 
                                     drugs = []
                                     # print(dic_m['okr'].items())
+                                    # print(111,dic_m.get('okr_summary'))
                                     if dic_m.get('okr_summary'):
                                         list_drug = get_clincl(dic_m['okr_summary'])
                                         for row in list_drug:
@@ -890,8 +912,38 @@ class ExportReport(Resource):
                                         mu['grade'] = 'III'
 
                                     mu['okrs'] = drugs
+                                    mu['grade_z'] = f"{mu['grade']}类变异"
+                                    mu['type_z'] = dic_mu_type.get(mu['function_types'])
+                                    if mu['mu_type'] == '融合':
+                                        mu['mu_name_z'] = mu['exon']
+                                        mu['type_z'] = '基因融合'
+
+                                    elif mu['mu_type'] == '拷贝数变异':
+                                        mu['mu_name_z'] = mu['mu_name']
+                                        mu['type_z'] = '基因扩增'
+                                    elif mu['mu_type'] == '缺失':
+                                        mu['type_z'] = '缺失突变'
+
+                                    else:
+                                        mu[
+                                            'mu_name_z'] = f"{mu['transcript']}({mu['gene']}):{mu['cHGVS']} ({mu['pHGVS_1']})"
+
+                                    mu['mu_af_z'] = f"{mu['mu_af']}条序列" if (not '/' in mu['mu_af']) and (
+                                        not '%' in mu['mu_af']) else mu['mu_af']
+                                    # if mu['okrs'] != '暂无':
+                                    #     print(mu['okrs'])
+
+                                    drug_z = [f"{row['level']}期的{row['drug']}" for row in mu['drugs']] if mu[
+                                                                                                              'drugs'] != '暂无' else []
+                                    mu['zsy_okr'] = f"{mu['gene']}目前在{dic_m['ap']['cancer']}" \
+                                                    f"中对应的临床试验靶向治疗药物有:{'、'.join(drug_z)}" if mu['grade'] in ['II',
+                                                                                                             'III'] else ''
 
                                     list_mutation.append(mu)
+                                    print(mu)
+
+                                    # mu['']
+
                                     row_ir = {'result': mu['mu_name'], 'mu_af': mu['mu_af'],
                                               'mu_name_usual': mu['mu_name_usual'], 'grade': mu['grade']}
 
@@ -921,22 +973,33 @@ class ExportReport(Resource):
 
             print(dic_m.keys())
 
-            if hospital == 'mg':
-                if list_card:
-                    temp_docx = os.path.join(path_docx, 'pgm.docx')
-                else:
-                    temp_docx = os.path.join(path_docx, 'pgm_52.docx')
-            if hospital == 'nk':
-                if list_card:
-                    temp_docx = os.path.join(path_docx, 'nk.docx')
-                else:
-                    temp_docx = os.path.join(path_docx, 'nk_52.docx')
-            if hospital == 'zsy':
-                temp_docx = os.path.join(path_docx, 'zsy.docx')
-
             if not os.path.exists(dir_report_mg):
                 os.mkdir(dir_report_mg)
-            file = os.path.join(dir_report_mg, '{}_{}_{}_迈景基因检测报告_{}.docx'.format(mg_id, item, hospital, req_mg))
+
+            if hospital == 'zsy':
+                temp_docx = os.path.join(path_docx, 'zsy.docx')
+                dic_m['zsy'] = dic_zsy_introduce.get(get_rep_item(item))
+                file = os.path.join(dir_report_mg,
+                                    '{}_{}_{}_{}_{}.docx'.format(mg_id, item, (set_time_now()).replace('.','_'), dic_m['p']['name'],
+                                                                 req_mg))
+
+
+            else:
+                if hospital == 'mg':
+                    if list_card:
+                        temp_docx = os.path.join(path_docx, 'pgm.docx')
+                    else:
+                        temp_docx = os.path.join(path_docx, 'pgm_52.docx')
+                    file = os.path.join(dir_report_mg,
+                                        '{}_{}_迈景基因检测报告_{}.docx'.format(mg_id, item, req_mg))
+                if hospital == 'nk':
+                    if list_card:
+                        temp_docx = os.path.join(path_docx, 'nk.docx')
+                    else:
+                        temp_docx = os.path.join(path_docx, 'nk_52.docx')
+                    file = os.path.join(dir_report_mg,
+                                        '{}_{}_农垦基因检测报告_{}.docx'.format(mg_id, item, req_mg))
+
             # file_pdf = os.path.join(dir_report_mg, '{}_{}.pdf'.format(mg_id, item))
             if os.path.exists(file):
                 os.remove(file)
@@ -944,12 +1007,14 @@ class ExportReport(Resource):
             # for k, v in dic_m.items():
             #     print(k, '\n', v)
             # print(dic_m['mutation'])
-            docx = DocxTemplate(temp_docx)
+
             # if list_card:
             #     myimage1 = InlineImage(docx, os.path.join(path_docx, 'appendix_3.png'))
             #     myimage2 = InlineImage(docx, os.path.join(path_docx, 'appendix_4.png'))
             #     dic_m['img'] = myimage1
+            docx = DocxTemplate(temp_docx)
             docx.render(dic_m)
+
             docx.save(file)
             # os.system('libreoffice --convert-to pdf --outdir {} {}'.
             #           format(os.path.join(os.getcwd(),dir_report_mg),file))
