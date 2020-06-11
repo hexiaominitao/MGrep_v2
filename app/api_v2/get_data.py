@@ -15,8 +15,8 @@ from app.models.sample_v import (SampleInfoV, ApplyInfo, TreatInfoV, PathologyIn
 from app.models.report import Report
 
 from app.libs.get_data import read_json
-from app.libs.ext import str2time, set_float
-from app.libs.report import save_reesult, get_qc_raw
+from app.libs.ext import str2time, set_float, time_set, set_time_now, calculate_time
+from app.libs.report import save_reesult, get_qc_raw, dict2df
 
 
 class GetAllSample(Resource):
@@ -82,6 +82,7 @@ class GetRunInfo(Resource):
                     if seq.sample_name in sam.sample_id:
                         sam.seq.append(seq)
                         msg = save_reesult(seq, name, sam)
+
                         msgs.append(msg)
             elif seq.status == '结果已保存':
                 msgs.append('样本{}结果已经保存'.format(seq.sample_name))
@@ -177,6 +178,10 @@ class GetSeqInfo(Resource):
         dir_app = current_app.config['PRE_REPORT']
         dir_sample = os.path.join(dir_app, 'sample', 'sample.json')
         samples = read_json(dir_sample, 'sample_info')[0]['sams']
+        dir_res = current_app.config['RES_REPORT']
+        dir_report = os.path.join(dir_res, 'report')
+        if not os.path.exists(dir_report):
+            os.mkdir(dir_report)
         err = []
         msgs = []
         name = user.username
@@ -198,6 +203,44 @@ class GetSeqInfo(Resource):
                                     sam.pathology_info = pathology
                                     msg = save_reesult(seq, name, sam)
                                     msgs.append(msg)
+
+                                    dic_out = (get_qc_raw(seq))
+                                    qc = dic_out.get('qc')
+
+                                    dic_qc = {}
+                                    for row in qc:
+                                        if 'D' in row['Sample']:
+                                            dic_qc['on_target'] = row['On_Target']
+                                            dic_qc['coverage'] = row['Coverage']
+                                            dic_qc['dna_reads'] = row['Clean_reads']
+                                            dic_qc['depth'] = row['Depth(X)']
+                                            dic_qc['uniformity'] = row['Uniformity']
+                                        if 'R' in row['Sample']:
+                                            dic_qc['rna_reads'] = row['RNA_mapped_reads']
+                                    pat = apply.patient_info_v.to_dict()
+                                    dic_detail = {'迈景编号': apply.mg_id, '申请单号': apply.req_mg, '检测内容': seq.item,
+                                                  '申请单检测项目': seq.report_item,
+                                                  '治疗史，家族史': f"{pat['treat_info']},{pat['family_info']}",
+                                                  '癌症类型': apply.cancer_d, '样本类型': seq.sam_type,
+                                                  '肿瘤细胞纯度': seq.cell_percent,
+                                                  'DNA mapped reads数': dic_qc.get('dna_reads'),
+                                                  'on target': dic_qc.get('on_target'), '测序深度': dic_qc.get('depth'),
+                                                  '均一性': dic_qc.get('uniformity'),
+                                                  '覆盖完整性': dic_qc.get('coverage'),
+                                                  'RNA mapped reads数': dic_qc.get('rna_reads') if dic_qc.get('rna_reads') else '',
+                                                  '检测的突变': '', '靶向药物': '', '销售': apply.sales,
+                                                  '报告状态': '', '报告制作人': '', '收样日期': time_set(sam.receive_t),
+                                                  '报告日期': set_time_now(),
+                                                  '质控时间': f"{calculate_time(time_set(sam.receive_t),set_time_now())}天"}
+                                    df = dict2df([dic_detail])
+                                    mg_id = apply.mg_id
+                                    req_mg = apply.req_mg
+                                    dir_report_mg = os.path.join(dir_report, mg_id)
+                                    if not os.path.exists(dir_report_mg):
+                                        os.mkdir(dir_report_mg)
+                                    excel_f = os.path.join(dir_report_mg,f"{mg_id}_{req_mg}.xlsx")
+                                    df.to_excel(excel_f,sheet_name='详情',index=False)
+
                                 else:
                                     msgs.append(f'样本{seq.sample_name} 迈景编号与样本信息不符')
                             else:
@@ -300,7 +343,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id == seq_id).first()
-            seq.status = '分析完成'
+            seq.status = '重新分析'
         db.session.commit()
         return {'msg': '开始重新分析'}
 

@@ -700,6 +700,8 @@ class ExportReport(Resource):
         path_docx = os.path.join(dir_pre, 'template_docx')
         dir_res = current_app.config['RES_REPORT']
         dir_report = os.path.join(dir_res, 'report')
+        if not os.path.exists(dir_report):
+            os.mkdir(dir_report)
 
         dir_pgm_remplate = os.path.join(dir_pre, 'template_config', 'template_pgm.json')
         config = read_json(dir_pgm_remplate, 'config')
@@ -712,8 +714,6 @@ class ExportReport(Resource):
         for row in transcript:
             dic_transcript[row['gene']] = row['transcript']
 
-        if not os.path.exists(dir_report):
-            os.mkdir(dir_report)
 
         args = self.parser.parse_args()
         rep_id = args.get('id')
@@ -734,6 +734,8 @@ class ExportReport(Resource):
         list_m = []
         # okr
         dir_report_mg = os.path.join(dir_report, mg_id)
+        if not os.path.exists(dir_report_mg):
+            os.mkdir(dir_report_mg)
         okr_f = os.path.join(os.getcwd(), dir_report_mg, '{}{}.okr.tsv'.format(mg_id, okr_auto))
         okr = is_okr(okr_f, '本样本中未发现有临床意义的生物标志物')
         if okr:

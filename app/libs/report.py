@@ -107,6 +107,10 @@ def dict2df(list_dic):
     return df
 
 
+def generate_detail(dict_d):
+    pass
+
+
 def md_create(df, dic_in, disease):
     mutation = dic_in['okr_mu']
     if mutation == 'exon 14 skipping' and 'MET' in dic_in['gene']:

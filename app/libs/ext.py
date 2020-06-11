@@ -122,6 +122,13 @@ def str2time(str):
     return time
 
 
+def calculate_time(str_t1,str_t2):
+    start = str2time(str_t1)
+    end = str2time(str_t2)
+    time = end -start
+    return time.days + 1
+
+
 def set_time_now():
     now = datetime.datetime.now()
     return datetime.datetime.strftime(now, "%Y.%m.%d")
