@@ -17,9 +17,9 @@ from app.models.record_config import SalesInfo, HospitalInfo, SampleType, \
 from app.models.sample_v import PatientInfoV, FamilyInfoV, TreatInfoV, ApplyInfo, \
     SendMethodV, SampleInfoV, ReportItem, PathologyInfo, Operation
 
-from app.libs.ext import file_sam, file_okr, file_pdf
+from app.libs.ext import file_sam, file_okr, file_pdf, file_request
 from app.libs.upload import save_json_file, excel_to_dict, get_excel_title, get_seq_info, excel2dict, df2dict, time_set, \
-    tsv_to_list, file_2_dict, m_excel2list
+    tsv_to_list, file_2_dict, m_excel2list, unzip_file
 from app.libs.report import del_db
 from app.libs.ir import save_mutation
 from app.libs.get_data import read_json
@@ -466,3 +466,21 @@ class GeneralUpload(Resource):
 
         db.session.commit()
         os.remove(file)
+
+
+class ApplyUpload(Resource):
+    def post(self):
+        filename = file_request.save(request.files['file'])
+        file = file_request.path(filename)
+        dir_apply = current_app.config['UPLOADED_FILEREQ_DEST']
+        dic_apply_filename = os.path.join(dir_apply,filename.strip('.zip'))
+        if not os.path.exists(dir_apply):
+            os.mkdir(dir_apply)
+        if not os.path.exists(dic_apply_filename):
+            os.mkdir(dic_apply_filename)
+        unzip_file(file, dic_apply_filename)
+
+
+
+        os.remove(file)
+        return {'msg': '申请单上传成功!!'}

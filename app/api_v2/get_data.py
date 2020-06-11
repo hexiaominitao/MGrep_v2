@@ -1,4 +1,4 @@
-import os
+import os, shutil
 import json
 import datetime
 
@@ -17,6 +17,7 @@ from app.models.report import Report
 from app.libs.get_data import read_json
 from app.libs.ext import str2time, set_float, time_set, set_time_now, calculate_time
 from app.libs.report import save_reesult, get_qc_raw, dict2df
+from app.libs.upload import find_apply
 
 
 class GetAllSample(Resource):
@@ -227,19 +228,25 @@ class GetSeqInfo(Resource):
                                                   'on target': dic_qc.get('on_target'), '测序深度': dic_qc.get('depth'),
                                                   '均一性': dic_qc.get('uniformity'),
                                                   '覆盖完整性': dic_qc.get('coverage'),
-                                                  'RNA mapped reads数': dic_qc.get('rna_reads') if dic_qc.get('rna_reads') else '',
+                                                  'RNA mapped reads数': dic_qc.get('rna_reads') if dic_qc.get(
+                                                      'rna_reads') else '',
                                                   '检测的突变': '', '靶向药物': '', '销售': apply.sales,
                                                   '报告状态': '', '报告制作人': '', '收样日期': time_set(sam.receive_t),
                                                   '报告日期': set_time_now(),
-                                                  '质控时间': f"{calculate_time(time_set(sam.receive_t),set_time_now())}天"}
+                                                  '质控时间': f"{calculate_time(time_set(sam.receive_t), set_time_now())}天"}
                                     df = dict2df([dic_detail])
                                     mg_id = apply.mg_id
                                     req_mg = apply.req_mg
                                     dir_report_mg = os.path.join(dir_report, mg_id)
                                     if not os.path.exists(dir_report_mg):
                                         os.mkdir(dir_report_mg)
-                                    excel_f = os.path.join(dir_report_mg,f"{mg_id}_{req_mg}.xlsx")
-                                    df.to_excel(excel_f,sheet_name='详情',index=False)
+                                    excel_f = os.path.join(dir_report_mg, f"{mg_id}_{req_mg}.xlsx")
+                                    df.to_excel(excel_f, sheet_name='详情', index=False)
+                                    dir_apply = current_app.config['UPLOADED_FILEREQ_DEST']
+                                    apply_f = find_apply(time_set(sam.receive_t), apply.req_mg, dir_apply)
+                                    for file in apply_f:
+                                        if file:
+                                            shutil.copy2(file, os.path.join(dir_report_mg, os.path.split(file)[-1]))
 
                                 else:
                                     msgs.append(f'样本{seq.sample_name} 迈景编号与样本信息不符')
@@ -343,7 +350,7 @@ class GetSeqInfo(Resource):
         for sam in sams:
             seq_id = sam.get('id')
             seq = SeqInfo.query.filter(SeqInfo.id == seq_id).first()
-            seq.status = '重新分析'
+            seq.status = '分析完成'
         db.session.commit()
         return {'msg': '开始重新分析'}
 

@@ -1,8 +1,12 @@
 from flata import Flata
 from flata.storages import JSONStorage
 import pandas as pd
-import xlrd
+import xlrd, os
 import datetime
+import zipfile
+from collections import OrderedDict
+
+from app.libs.ext import set_time_now, calculate_time, str2time
 
 
 def save_json_file(db_path, dic_file, table_name):
@@ -170,3 +174,30 @@ def m_excel2list(file):
     for name, df in df_a.items():
         res_dict[name] = df2list(df)
     return res_dict
+
+
+def unzip_file(file, path_unzip):
+    zipfile.ZipFile(file).extractall(path_unzip)
+
+
+def find_apply(rec_date, rep_mg, dir_apply):
+    list_f = [p for p in os.listdir(os.path.join(os.getcwd(), dir_apply))]
+    list_f.sort()
+    list_f.reverse()
+    if rec_date:
+        dic_f = OrderedDict()
+        dic_f.update({calculate_time(rec_date, f'{f[:4]}.{f[4:6]}.{f[6:]}'): f for f in list_f})
+        list_k = ([f for f in dic_f.keys() if f > 0])
+        list_k.sort()
+        list_f = ([dic_f[k] for k in list_k])
+    apply_f = []
+    for f in list_f:
+        root = os.path.join(os.getcwd(), dir_apply, f)
+        for file in os.listdir(root):
+            # print(file)
+            if rep_mg in file and file.endswith('.pdf'):
+                # print(file)
+                apply_f.append(os.path.join(root, file))
+                break
+
+    return apply_f
