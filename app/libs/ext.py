@@ -14,6 +14,7 @@ principal = Principal()
 file_sam = UploadSet('filesam', DOCUMENTS)
 file_okr = UploadSet('fileokr', ('tsv', 'json', 'xls', 'xlsx', 'zip', 'csv'))
 file_pdf = UploadSet('filepdf', ('tsv',))
+file_request = UploadSet('filereq',('pdf','zip'))
 
 
 def str2time(string):

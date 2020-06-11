@@ -4,7 +4,7 @@ from flask_login import current_user
 from flask_uploads import configure_uploads, patch_request_class
 
 from app.models import db
-from app.libs.ext import (bcrypt, login_magager, principal, file_sam, file_okr, file_pdf)
+from app.libs.ext import (bcrypt, login_magager, principal, file_sam, file_okr, file_pdf, file_request)
 
 
 def create_app(config_name):
@@ -19,6 +19,7 @@ def create_app(config_name):
     configure_uploads(app, file_sam)
     configure_uploads(app, file_okr)
     configure_uploads(app, file_pdf)
+    configure_uploads(app, file_request)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

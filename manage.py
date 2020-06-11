@@ -6,7 +6,7 @@ from flask_migrate import (Migrate, MigrateCommand)
 
 from app import create_app
 from app.config import DevConfig
-from app.models import (db, annotate, mutation, report, run_info)
+from app.models import (db, annotate, mutation, report, run_info, chemo_report)
 from app.models.user import User, Role
 
 app = create_app(DevConfig)
@@ -97,7 +97,8 @@ def set_up():
     dir_report = current_app.config['RES_REPORT']
     dir_upload = current_app.config['UPLOADED_FILESAM_DEST']
     dir_pdf = current_app.config['UPLOADED_FILEPDF_DEST']
-    for dir in [dir_static, dir_pre_report, dir_report, dir_upload, dir_pdf]:
+    dir_apply = current_app.config['UPLOADED_FILEREQ_DEST']
+    for dir in [dir_static, dir_pre_report, dir_report, dir_upload, dir_pdf, dir_apply]:
         if not os.path.exists(dir):
             os.mkdir(dir)
 

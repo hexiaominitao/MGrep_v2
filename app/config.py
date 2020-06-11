@@ -21,6 +21,7 @@ class Config(object):
     UPLOADED_FILEPDF_DEST = 'app/static/res_report/okr'
     UPLOADED_FILESAM_DEST = 'app/static/upload'
     UPLOADED_FILEOKR_DEST = 'app/static/upload'
+    UPLOADED_FILEREQ_DEST = 'app/static/apply'
 
     MONGODB_SETTING = {
         'db': 'local',
